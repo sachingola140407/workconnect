@@ -8,7 +8,7 @@ const activeLocations = new Map();
 function initSocket(httpServer, clientUrl) {
   io = new Server(httpServer, {
     cors: {
-      origin: '*', // Permissive for local testing and dev
+      origin: (origin, callback) => callback(null, true),
       methods: ['GET', 'POST', 'PATCH'],
       credentials: true,
     },
