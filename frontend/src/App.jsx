@@ -9,6 +9,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ServicesPage from './pages/ServicesPage';
+import LiveTrackingPage from './pages/LiveTrackingPage';
 import CustomerDashboard from './pages/CustomerDashboard';
 import ProfessionalDashboard from './pages/ProfessionalDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -26,6 +27,7 @@ export default function App() {
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/track/:bookingId" element={<LiveTrackingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />

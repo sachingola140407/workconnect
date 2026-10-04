@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+const apiBase = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/api`
+  : '/api';
+
+export const getSocketUrl = () => {
+  return import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || '/';
+};
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: apiBase,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -53,6 +61,8 @@ export const adminAPI = {
   getUsers: (params) => api.get('/admin/users', { params }),
   setUserStatus: (id, isActive) => api.patch(`/admin/users/${id}/status`, { isActive }),
   verifyProfessional: (id, isVerified) => api.patch(`/admin/professionals/${id}/verify`, { isVerified }),
+  getProfessionalActivity: (params) => api.get('/admin/professionals/activity', { params }),
+  getProfessionalJobHistory: (id) => api.get(`/admin/professionals/${id}/jobs`),
 };
 
 export const servicesAPI = {
@@ -68,6 +78,22 @@ export const bookingsAPI = {
   create: (data) => api.post('/bookings', data),
   getMyBookings: () => api.get('/bookings'),
   updateStatus: (id, status) => api.patch(`/bookings/${id}/status`, { status }),
+  getTracking: (id) => api.get(`/bookings/${id}/track`),
+  updateTrackingLocation: (id, data) => api.patch(`/bookings/${id}/track-location`, data),
+};
+
+export const paymentsAPI = {
+  submitBill: (data) => api.post('/payments/submit-bill', data),
+  createOrder: (data) => api.post('/payments/create-order', data),
+  verifyPayment: (data) => api.post('/payments/verify', data),
+  generateQR: (data) => api.post('/payments/generate-qr', data),
+  markCashPaid: (data) => api.post('/payments/cash-customer-paid', data),
+  confirmCashReceived: (data) => api.post('/payments/cash-pro-confirmed', data),
+  settlePlatformFee: (data) => api.post('/payments/settle-platform-fee', data),
+  getPayment: (bookingId) => api.get(`/payments/booking/${bookingId}`),
+  getInvoice: (bookingId) => api.get(`/payments/invoice/${bookingId}`),
+  getEarnings: () => api.get('/payments/earnings'),
+  getAdminStats: () => api.get('/payments/admin-stats'),
 };
 
 export default api;

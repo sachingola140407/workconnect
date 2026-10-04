@@ -11,6 +11,7 @@
     "start:backend": "cd backend && npm start",
     "dev:backend": "cd backend && npm run dev",
     "start:frontend": "cd frontend && npm run dev",
+    "build": "npm --prefix frontend run build",
     "build:frontend": "cd frontend && npm run build",
     "test:phase1": "node scripts/test_phase1.js"
   }

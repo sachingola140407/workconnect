@@ -11,6 +11,7 @@ async function createBooking(req, res, next) {
       professionalId,
       serviceId,
       price,
+      visitingCharge,
       customerAddress,
       notes,
       scheduledAt,
@@ -30,6 +31,7 @@ async function createBooking(req, res, next) {
       professionalId,
       serviceId,
       price: parseFloat(price) || 0,
+      visitingCharge: parseFloat(visitingCharge) || 99,
       customerAddress,
       notes,
       scheduledAt,
@@ -48,8 +50,15 @@ async function createBooking(req, res, next) {
 async function getMyBookings(req, res, next) {
   try {
     let bookings = [];
-    if (req.user.role === 'professional') {
+    const { role } = req.query;
+
+    if (req.user.role === 'professional' && role !== 'customer') {
       bookings = await Booking.getByProfessionalId(req.user.id);
+      // Fallback: If no professional jobs received yet, check if they made customer bookings
+      if (bookings.length === 0) {
+        const custBookings = await Booking.getByCustomerId(req.user.id);
+        if (custBookings.length > 0) bookings = custBookings;
+      }
     } else {
       bookings = await Booking.getByCustomerId(req.user.id);
     }
@@ -75,8 +84,12 @@ async function updateBookingStatus(req, res, next) {
       'on_the_way',
       'arrived',
       'working',
+      'work_completed',
+      'payment_pending',
+      'payment_completed',
       'completed',
       'cancelled',
+      'reviewed',
     ];
 
     if (!status || !validStatuses.includes(status)) {
@@ -94,8 +107,55 @@ async function updateBookingStatus(req, res, next) {
   }
 }
 
+/**
+ * Get live location and ETA tracking details for real-time live map view
+ */
+async function getTracking(req, res, next) {
+  try {
+    const { id } = req.params;
+    const tracking = await Booking.getTrackingDetails(id);
+
+    if (!tracking) {
+      return errorResponse(res, 404, 'Booking tracking details not found');
+    }
+
+    return successResponse(res, 200, 'Tracking details retrieved', tracking);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Update professional's moving location coordinates (simulation / live GPS)
+ */
+async function updateTrackingLocation(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { latitude, longitude } = req.body;
+
+    if (latitude === undefined || longitude === undefined) {
+      return errorResponse(res, 400, 'latitude and longitude are required');
+    }
+
+    const updated = await Booking.updateTrackingLocation(id, {
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+    });
+
+    if (!updated) {
+      return errorResponse(res, 404, 'Booking or professional not found');
+    }
+
+    return successResponse(res, 200, 'Location updated successfully', updated);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createBooking,
   getMyBookings,
   updateBookingStatus,
+  getTracking,
+  updateTrackingLocation,
 };

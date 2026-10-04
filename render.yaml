@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: fixigo-backend
+    env: node
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fixigo-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        value: '*'
+      - key: RAZORPAY_KEY_ID
+        value: rzp_test_1DP5mmOlF5G5ag
+      - key: RAZORPAY_KEY_SECRET
+        value: s9G7aL7yG5xL8v9K4w1m0o1p
+      - key: RAZORPAY_WEBHOOK_SECRET
+        value: fixigo_webhook_secret_2026
+
+databases:
+  - name: fixigo-db
+    plan: free
+    region: oregon
+    databaseName: workconnect
+    user: postgres

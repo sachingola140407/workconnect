@@ -47,6 +47,7 @@ export default function ServicesPage() {
 
   // Booking Modal State
   const [selectedProForBooking, setSelectedProForBooking] = useState(null);
+  const [createdBookingId, setCreatedBookingId] = useState(null);
   const [bookingAddress, setBookingAddress] = useState('');
   const [bookingNotes, setBookingNotes] = useState('');
   const [bookingDate, setBookingDate] = useState('');
@@ -197,23 +198,28 @@ export default function ServicesPage() {
         throw new Error('Please select a valid service for this professional');
       }
 
-      await bookingsAPI.create({
+      const res = await bookingsAPI.create({
         professionalId: selectedProForBooking.id,
         serviceId: proService.id,
         price: selectedProForBooking.price,
+        visitingCharge: selectedProForBooking.visiting_charge || 99,
         customerAddress: bookingAddress,
         notes: bookingNotes,
         scheduledAt: bookingDate || new Date().toISOString(),
         customerLocation: userLocation,
       });
 
+      const newBooking = res.data?.data;
+      if (newBooking?.id) {
+        setCreatedBookingId(newBooking.id);
+        setTimeout(() => {
+          navigate(`/track/${newBooking.id}`);
+        }, 1200);
+      }
+
       setBookingSuccess(
-        `Service request successfully sent to ${selectedProForBooking.name}! They have been notified.`
+        `Service request confirmed with ${selectedProForBooking.name}! Opening live tracking screen...`
       );
-      setTimeout(() => {
-        setSelectedProForBooking(null);
-        setBookingSuccess(null);
-      }, 2500);
     } catch (err) {
       setBookingError(err.response?.data?.message || err.message || 'Failed to submit booking');
     } finally {
@@ -419,31 +425,36 @@ export default function ServicesPage() {
                   </div>
                 </div>
 
-                {/* Highlights Row: Rating, Experience, Price, Distance */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '0.5rem', background: '#f8fafc', padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem', fontSize: '0.85rem' }}>
+                {/* Highlights Row: Rating, Experience, Visiting Charge, Base Rate, Distance */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(95px, 1fr))', gap: '0.45rem', background: '#f8fafc', padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem', fontSize: '0.85rem' }}>
                   <div>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', display: 'block' }}>Rating</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.725rem', display: 'block' }}>Rating</span>
                     <strong style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                      <Star size={14} fill="#f59e0b" color="#f59e0b" />
-                      {pro.rating.toFixed(1)} <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>({pro.review_count})</span>
+                      <Star size={13} fill="#f59e0b" color="#f59e0b" />
+                      {pro.rating.toFixed(1)} <span style={{ color: 'var(--text-light)', fontWeight: 400, fontSize: '0.75rem' }}>({pro.review_count})</span>
                     </strong>
                   </div>
 
                   <div>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', display: 'block' }}>Experience</span>
-                    <strong>{pro.experience} Years</strong>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.725rem', display: 'block' }}>Experience</span>
+                    <strong>{pro.experience} Yrs</strong>
+                  </div>
+
+                  <div style={{ background: '#ecfdf5', padding: '0.2rem 0.4rem', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
+                    <span style={{ color: '#047857', fontSize: '0.725rem', display: 'block', fontWeight: 700 }}>Visiting Fee</span>
+                    <strong style={{ color: '#059669', fontSize: '0.95rem' }}>₹{pro.visiting_charge}</strong>
                   </div>
 
                   <div>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', display: 'block' }}>Base Rate</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.725rem', display: 'block' }}>Hourly Rate</span>
                     <strong style={{ color: 'var(--primary)' }}>₹{pro.price}/hr</strong>
                   </div>
 
                   <div>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', display: 'block' }}>Distance</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.725rem', display: 'block' }}>Distance</span>
                     <strong>
                       {pro.distance_km !== null ? (
-                        `${pro.distance_km} km away`
+                        `${pro.distance_km} km`
                       ) : (
                         <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>Nearby</span>
                       )}
@@ -521,89 +532,150 @@ export default function ServicesPage() {
               </button>
             </div>
 
-            {bookingSuccess && (
-              <div className="alert alert-success">
-                <CheckCircle size={18} />
-                <div>{bookingSuccess}</div>
+            {bookingSuccess ? (
+              <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+                <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', fontSize: '2rem' }}>
+                  <CheckCircle size={36} />
+                </div>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>
+                  Request Sent Successfully!
+                </h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '400px', margin: '0 auto 1.25rem', lineHeight: '1.5' }}>
+                  <strong>{selectedProForBooking.name}</strong> has received your service alert. Once accepted, you can track their real-time arrival location on the live GPS map!
+                </p>
+
+                <div style={{ background: '#f8fafc', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem', maxWidth: '380px', margin: '0 auto 1.5rem', textAlign: 'left', fontSize: '0.875rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Doorstep Visiting Fee:</span>
+                    <strong style={{ color: 'var(--primary)' }}>₹{selectedProForBooking.visiting_charge || 99}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Estimated Arrival:</span>
+                    <strong style={{ color: '#10b981' }}>15 - 25 mins</strong>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '380px', margin: '0 auto' }}>
+                  {createdBookingId && (
+                    <button
+                      onClick={() => navigate(`/track/${createdBookingId}`)}
+                      className="btn btn-primary"
+                      style={{ padding: '0.85rem 1.25rem', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: '#f59e0b', borderColor: '#f59e0b', color: '#0f172a' }}
+                    >
+                      🛵 Track Specialist Live Map
+                    </button>
+                  )}
+                  <button
+                    onClick={() => navigate('/customer')}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.75rem 1.25rem', fontWeight: 600 }}
+                  >
+                    Go to Customer Dashboard
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedProForBooking(null);
+                      setBookingSuccess(null);
+                    }}
+                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.875rem', cursor: 'pointer', marginTop: '0.25rem' }}
+                  >
+                    Dismiss
+                  </button>
+                </div>
               </div>
+            ) : (
+              <form onSubmit={handleSubmitBooking}>
+                {bookingError && (
+                  <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
+                    <AlertCircle size={18} />
+                    <div>{bookingError}</div>
+                  </div>
+                )}
+
+                {/* Transparent Price Callout */}
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 'var(--radius-md)', padding: '0.85rem 1rem', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#166534', fontWeight: 600 }}>🛵 Doorstep Visiting / Inspection Fee:</span>
+                    <strong style={{ color: '#15803d', fontSize: '1rem' }}>₹{selectedProForBooking.visiting_charge || 99}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#166534', fontWeight: 600 }}>⏱️ Standard Hourly Rate:</span>
+                    <strong style={{ color: '#15803d', fontSize: '1rem' }}>₹{selectedProForBooking.price}/hr</strong>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#15803d', marginTop: '0.4rem', borderTop: '1px dashed #bbf7d0', paddingTop: '0.35rem' }}>
+                    ✓ 100% Transparent: Pay visiting fee on arrival. No surge pricing or hidden charges.
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Service Required</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={
+                      selectedProForBooking.services?.find(
+                        (s) => s.name.toLowerCase() === selectedService.toLowerCase()
+                      )?.name || selectedProForBooking.services?.[0]?.name || 'Home Repair'
+                    }
+                    readOnly
+                    style={{ background: '#f8fafc', fontWeight: 600 }}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Your Service Address / Location *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. Flat 402, Block B, Connaught Place, New Delhi"
+                    value={bookingAddress}
+                    onChange={(e) => setBookingAddress(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Preferred Date &amp; Time (Optional)</label>
+                  <input
+                    type="datetime-local"
+                    className="form-input"
+                    value={bookingDate}
+                    onChange={(e) => setBookingDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Problem Details &amp; Notes for Specialist</label>
+                  <textarea
+                    className="form-textarea"
+                    placeholder="Describe what needs to be fixed (e.g. pipe leakage under kitchen sink, circuit trip, AC cooling issue)..."
+                    value={bookingNotes}
+                    onChange={(e) => setBookingNotes(e.target.value)}
+                    rows="3"
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProForBooking(null)}
+                    className="btn btn-secondary"
+                    disabled={bookingSubmitting}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={bookingSubmitting}
+                  >
+                    <Send size={16} />
+                    {bookingSubmitting ? 'Sending Request...' : 'Confirm & Send Request'}
+                  </button>
+                </div>
+              </form>
             )}
-
-            {bookingError && (
-              <div className="alert alert-error">
-                <AlertCircle size={18} />
-                <div>{bookingError}</div>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmitBooking}>
-              <div className="form-group">
-                <label className="form-label">Service Required</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={
-                    selectedProForBooking.services?.find(
-                      (s) => s.name.toLowerCase() === selectedService.toLowerCase()
-                    )?.name || selectedProForBooking.services?.[0]?.name || 'Home Repair'
-                  }
-                  readOnly
-                  style={{ background: '#f8fafc', fontWeight: 600 }}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Your Service Address / Location *</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. Flat 402, Block B, Connaught Place, New Delhi"
-                  value={bookingAddress}
-                  onChange={(e) => setBookingAddress(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Preferred Date &amp; Time (Optional)</label>
-                <input
-                  type="datetime-local"
-                  className="form-input"
-                  value={bookingDate}
-                  onChange={(e) => setBookingDate(e.target.value)}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Problem Details &amp; Notes for Specialist</label>
-                <textarea
-                  className="form-textarea"
-                  placeholder="Describe what needs to be fixed (e.g. pipe leakage under kitchen sink, circuit trip, AC cooling issue)..."
-                  value={bookingNotes}
-                  onChange={(e) => setBookingNotes(e.target.value)}
-                  rows="3"
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedProForBooking(null)}
-                  className="btn btn-secondary"
-                  disabled={bookingSubmitting}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={bookingSubmitting}
-                >
-                  <Send size={16} />
-                  {bookingSubmitting ? 'Sending Request...' : 'Confirm & Send Request'}
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}

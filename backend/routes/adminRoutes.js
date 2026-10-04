@@ -35,4 +35,18 @@ router.patch('/users/:id/status', adminController.setUserStatus);
  */
 router.patch('/professionals/:id/verify', adminController.verifyProfessional);
 
+/**
+ * @route   GET /api/admin/professionals/activity
+ * @desc    Get all professionals' activity, acceptance & completion rates
+ * @access  Private (Admin only)
+ */
+router.get('/professionals/activity', adminController.getProfessionalActivity);
+
+/**
+ * @route   GET /api/admin/professionals/:id/jobs
+ * @desc    Get detailed job audit log for a specific professional
+ * @access  Private (Admin only)
+ */
+router.get('/professionals/:id/jobs', adminController.getProfessionalJobHistory);
+
 module.exports = router;

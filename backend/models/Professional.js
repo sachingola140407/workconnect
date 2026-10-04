@@ -29,6 +29,7 @@ class Professional {
     const query = `
       SELECT 
         p.id, p.user_id, p.bio, p.experience, p.rating, p.review_count, p.price,
+        COALESCE(p.visiting_charge, 99.00) AS visiting_charge,
         p.is_available, p.is_verified, p.address,
         ST_X(p.location::geometry) AS longitude,
         ST_Y(p.location::geometry) AS latitude,
@@ -37,6 +38,27 @@ class Professional {
       WHERE p.user_id = $1;
     `;
     const { rows } = await db.query(query, [userId]);
+    return rows[0] || null;
+  }
+
+  /**
+   * Find professional profile by professional ID
+   */
+  static async findById(id) {
+    const query = `
+      SELECT 
+        p.id, p.user_id, p.bio, p.experience, p.rating, p.review_count, p.price,
+        COALESCE(p.visiting_charge, 99.00) AS visiting_charge,
+        p.is_available, p.is_verified, p.address,
+        u.name, u.email, u.phone,
+        ST_X(p.location::geometry) AS longitude,
+        ST_Y(p.location::geometry) AS latitude,
+        p.created_at, p.updated_at
+      FROM professionals p
+      JOIN users u ON p.user_id = u.id
+      WHERE p.id = $1 OR p.user_id = $1;
+    `;
+    const { rows } = await db.query(query, [id]);
     return rows[0] || null;
   }
 
@@ -203,6 +225,7 @@ class Professional {
         p.rating,
         p.review_count,
         p.price,
+        p.visiting_charge,
         p.is_available,
         p.is_verified,
         p.address,
@@ -235,6 +258,7 @@ class Professional {
     return rows.map((pro, index) => ({
       ...pro,
       price: parseFloat(pro.price) || 0,
+      visiting_charge: parseFloat(pro.visiting_charge) || 99,
       rating: parseFloat(pro.rating) || 0,
       experience: parseInt(pro.experience, 10) || 0,
       distance_km: pro.distance_km !== null ? parseFloat(pro.distance_km) : null,
@@ -259,6 +283,7 @@ class Professional {
         p.rating,
         p.review_count,
         p.price,
+        p.visiting_charge,
         p.is_available,
         p.is_verified,
         p.address,
@@ -290,9 +315,116 @@ class Professional {
     return {
       ...pro,
       price: parseFloat(pro.price) || 0,
+      visiting_charge: parseFloat(pro.visiting_charge) || 99,
       rating: parseFloat(pro.rating) || 0,
       experience: parseInt(pro.experience, 10) || 0,
     };
+  }
+
+  /**
+   * Get comprehensive activity & acceptance metrics for all professionals (Admin Audit)
+   */
+  static async getActivityStats({ search } = {}) {
+    let whereSql = '';
+    const values = [];
+
+    if (search) {
+      values.push(`%${search.trim()}%`);
+      whereSql = `WHERE u.name ILIKE $1 OR u.email ILIKE $1 OR p.address ILIKE $1`;
+    }
+
+    const query = `
+      SELECT 
+        p.id,
+        p.user_id,
+        u.name,
+        u.email,
+        u.phone,
+        p.experience,
+        p.rating,
+        p.review_count,
+        p.price,
+        p.visiting_charge,
+        p.is_available,
+        p.is_verified,
+        p.address,
+        COUNT(b.id) AS total_requests,
+        COUNT(b.id) FILTER (WHERE b.status IN ('accepted', 'on_the_way', 'arrived', 'working', 'completed')) AS accepted_requests,
+        COUNT(b.id) FILTER (WHERE b.status = 'completed') AS completed_requests,
+        COUNT(b.id) FILTER (WHERE b.status = 'rejected') AS rejected_requests,
+        COUNT(b.id) FILTER (WHERE b.status = 'pending') AS pending_requests,
+        COALESCE(SUM(b.price) FILTER (WHERE b.status = 'completed'), 0) AS total_earnings,
+        COALESCE(
+          json_agg(
+            DISTINCT jsonb_build_object('name', s.name, 'category', s.category)
+          ) FILTER (WHERE s.id IS NOT NULL),
+          '[]'
+        ) AS services
+      FROM professionals p
+      JOIN users u ON p.user_id = u.id
+      LEFT JOIN professional_services ps ON p.id = ps.professional_id
+      LEFT JOIN services s ON ps.service_id = s.id
+      LEFT JOIN bookings b ON p.id = b.professional_id
+      ${whereSql}
+      GROUP BY p.id, u.id
+      ORDER BY total_requests DESC, completed_requests DESC, p.rating DESC;
+    `;
+
+    const { rows } = await db.query(query, values);
+
+    return rows.map((r) => {
+      const total = parseInt(r.total_requests, 10) || 0;
+      const accepted = parseInt(r.accepted_requests, 10) || 0;
+      const completed = parseInt(r.completed_requests, 10) || 0;
+      const rejected = parseInt(r.rejected_requests, 10) || 0;
+      const pending = parseInt(r.pending_requests, 10) || 0;
+
+      const acceptanceRate = total > 0 ? Math.round((accepted / total) * 100) : 0;
+      const completionRate = accepted > 0 ? Math.round((completed / accepted) * 100) : 0;
+
+      return {
+        ...r,
+        price: parseFloat(r.price) || 0,
+        visiting_charge: parseFloat(r.visiting_charge) || 99,
+        rating: parseFloat(r.rating) || 0,
+        total_requests: total,
+        accepted_requests: accepted,
+        completed_requests: completed,
+        rejected_requests: rejected,
+        pending_requests: pending,
+        acceptance_rate: acceptanceRate,
+        completion_rate: completionRate,
+        total_earnings: parseFloat(r.total_earnings) || 0,
+      };
+    });
+  }
+
+  /**
+   * Get detailed job history of a specific professional (Admin Audit)
+   */
+  static async getJobHistory(professionalId) {
+    const query = `
+      SELECT 
+        b.id,
+        b.status,
+        b.price,
+        b.visiting_charge,
+        b.customer_address,
+        b.notes,
+        b.created_at,
+        b.updated_at,
+        s.name AS service_name,
+        u.name AS customer_name,
+        u.phone AS customer_phone,
+        u.email AS customer_email
+      FROM bookings b
+      JOIN services s ON b.service_id = s.id
+      JOIN users u ON b.customer_id = u.id
+      WHERE b.professional_id = $1
+      ORDER BY b.created_at DESC;
+    `;
+    const { rows } = await db.query(query, [professionalId]);
+    return rows;
   }
 }
 

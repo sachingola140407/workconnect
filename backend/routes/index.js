@@ -6,6 +6,7 @@ const adminRoutes = require('./adminRoutes');
 const serviceRoutes = require('./serviceRoutes');
 const professionalRoutes = require('./professionalRoutes');
 const bookingRoutes = require('./bookingRoutes');
+const paymentRoutes = require('./paymentRoutes');
 const db = require('../config/db');
 
 /**
@@ -52,5 +53,6 @@ router.use('/admin', adminRoutes);
 router.use('/services', serviceRoutes);
 router.use('/professionals', professionalRoutes);
 router.use('/bookings', bookingRoutes);
+router.use('/payments', paymentRoutes);
 
 module.exports = router;

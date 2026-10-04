@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
@@ -6,10 +7,15 @@ require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const apiRoutes = require('./routes/index');
 const errorHandler = require('./middleware/errorHandler');
 const { apiRateLimiter } = require('./middleware/rateLimitMiddleware');
+const { initSocket } = require('./services/socketService');
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+
+// Initialize real-time Socket.IO server
+initSocket(server, CLIENT_URL);
 
 // 1. CORS Configuration
 const corsOptions = {
@@ -73,9 +79,9 @@ app.use(errorHandler);
 
 // 9. Start Server
 if (require.main === module) {
-  app.listen(PORT, '0.0.0.0', () => {
+  server.listen(PORT, '0.0.0.0', () => {
     console.log(`====================================================`);
-    console.log(` Fixigo Backend Server running on port ${PORT}`);
+    console.log(` Fixigo Backend Server + Socket.IO on port ${PORT}`);
     console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(` Health check: http://localhost:${PORT}/api/health`);
     console.log(` API Endpoint: http://localhost:${PORT}/api`);
@@ -83,4 +89,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = app;
+module.exports = { app, server };

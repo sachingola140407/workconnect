@@ -1,3 +1,4 @@
+const db = require('../config/db');
 const User = require('../models/User');
 const Professional = require('../models/Professional');
 const { hashPassword, comparePassword } = require('../utils/hash');
@@ -34,13 +35,25 @@ class AuthService {
     if (role === 'professional') {
       professional = await Professional.create({
         userId: user.id,
-        bio: professionalDetails.bio || `Hello, I'm ${name}, a professional on WorkConnect.`,
-        experience: professionalDetails.experience || 0,
-        price: professionalDetails.price || 0,
-        address: professionalDetails.address || '',
-        longitude: professionalDetails.longitude || null,
-        latitude: professionalDetails.latitude || null,
+        bio: professionalDetails.bio || `Hello, I'm ${name}, a professional specialist on Fixigo.`,
+        experience: professionalDetails.experience || 3,
+        price: professionalDetails.price || 350,
+        address: professionalDetails.address || 'Delhi NCR',
+        longitude: professionalDetails.longitude || 77.2090,
+        latitude: professionalDetails.latitude || 28.6139,
       });
+
+      // Link selected service if provided
+      if (professionalDetails.serviceId) {
+        try {
+          await db.query(
+            `INSERT INTO professional_services (professional_id, service_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+            [professional.id, professionalDetails.serviceId]
+          );
+        } catch (linkErr) {
+          console.error('[AuthService] Error linking professional service:', linkErr);
+        }
+      }
     }
 
     // 5. Generate JWT token
