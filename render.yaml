@@ -32,4 +32,4 @@ databases:
     plan: free
     region: oregon
     databaseName: workconnect
-    user: postgres
+    user: workconnect_user
