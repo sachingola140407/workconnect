@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { userAPI } from '../services/api';
+import { userAPI, bookingsAPI } from '../services/api';
 import {
   Briefcase,
   Star,
@@ -14,7 +14,10 @@ import {
   Edit2,
   Save,
   AlertCircle,
-  IndianRupee,
+  ClipboardList,
+  Navigation,
+  Check,
+  X,
 } from 'lucide-react';
 
 export default function ProfessionalDashboard() {
@@ -31,6 +34,10 @@ export default function ProfessionalDashboard() {
   const [price, setPrice] = useState(pro.price || 0);
   const [address, setAddress] = useState(pro.address || '');
 
+  // Bookings / Service Jobs state
+  const [jobs, setJobs] = useState([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -45,6 +52,22 @@ export default function ProfessionalDashboard() {
     }
   }, [user]);
 
+  // Load incoming jobs
+  const fetchJobs = async () => {
+    try {
+      const res = await bookingsAPI.getMyBookings();
+      setJobs(res.data.data || []);
+    } catch (err) {
+      console.error('Failed to load professional jobs:', err);
+    } finally {
+      setLoadingJobs(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
   // Handle live availability toggle
   const handleToggleAvailability = async () => {
     setIsUpdatingAvail(true);
@@ -53,7 +76,7 @@ export default function ProfessionalDashboard() {
 
     const newStatus = !isAvailable;
     try {
-      const res = await userAPI.toggleAvailability(newStatus);
+      await userAPI.toggleAvailability(newStatus);
       setIsAvailable(newStatus);
       updateUser({
         professional: {
@@ -61,7 +84,7 @@ export default function ProfessionalDashboard() {
           isAvailable: newStatus,
         },
       });
-      setMessage(`You are now ${newStatus ? 'AVAILABLE for bookings' : 'UNAVAILABLE / BUSY'}`);
+      setMessage(`Status updated: You are now ${newStatus ? 'ONLINE & AVAILABLE' : 'OFFLINE / BUSY'}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update availability status');
     } finally {
@@ -91,11 +114,24 @@ export default function ProfessionalDashboard() {
         },
       });
       setIsEditing(false);
-      setMessage('Professional profile updated successfully!');
+      setMessage('Professional profile updated successfully on Fixigo!');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update professional profile');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Update job lifecycle status
+  const handleUpdateJobStatus = async (jobId, newStatus) => {
+    try {
+      await bookingsAPI.updateStatus(jobId, newStatus);
+      setJobs((prev) =>
+        prev.map((j) => (j.id === jobId ? { ...j, status: newStatus } : j))
+      );
+      setMessage(`Job status updated to: ${newStatus.toUpperCase()}`);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update job status');
     }
   };
 
@@ -107,12 +143,12 @@ export default function ProfessionalDashboard() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
-                Professional Partner Dashboard
+                Fixigo Partner Dashboard
               </h1>
-              <span className="badge badge-professional">Partner</span>
+              <span className="badge badge-professional">Fixigo Specialist</span>
             </div>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              Manage your services, set real-time availability, and configure your public profile.
+              Manage service inquiries, toggle real-time availability, and update your profile rates.
             </p>
           </div>
 
@@ -150,7 +186,7 @@ export default function ProfessionalDashboard() {
               </div>
               <div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: isAvailable ? '#15803d' : '#b91c1c' }}>
-                  Status: {isAvailable ? 'Available for Jobs' : 'Currently Unavailable / Busy'}
+                  Status: {isAvailable ? 'Available for Customer Jobs' : 'Currently Unavailable / Busy'}
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   {isAvailable
@@ -218,6 +254,114 @@ export default function ProfessionalDashboard() {
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 400 }}>({pro.reviewCount || 0})</span>
             </div>
           </div>
+        </div>
+
+        {/* Incoming Service Jobs Section */}
+        <div className="card" style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+            <ClipboardList size={22} color="var(--primary)" />
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
+              Incoming Customer Service Requests
+            </h3>
+          </div>
+
+          {loadingJobs ? (
+            <div style={{ textAlign: 'center', padding: '2.5rem 0', color: 'var(--text-muted)' }}>
+              Loading service inquiries...
+            </div>
+          ) : jobs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
+              <p>No active service requests right now. Keep your status <strong>Available</strong> to receive nearby leads!</p>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Address</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobs.map((job) => (
+                    <tr key={job.id}>
+                      <td>
+                        <strong>{job.customer_name}</strong>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{job.customer_phone || job.customer_email}</div>
+                      </td>
+                      <td>
+                        <span className="badge badge-customer">{job.service_name}</span>
+                      </td>
+                      <td style={{ fontSize: '0.85rem' }}>{job.customer_address}</td>
+                      <td style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>{job.notes || 'No extra notes'}</td>
+                      <td>
+                        <span className="badge badge-available">{job.status}</span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        {job.status === 'pending' && (
+                          <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
+                            <button
+                              onClick={() => handleUpdateJobStatus(job.id, 'accepted')}
+                              className="btn btn-sm btn-success"
+                            >
+                              <Check size={14} /> Accept
+                            </button>
+                            <button
+                              onClick={() => handleUpdateJobStatus(job.id, 'rejected')}
+                              className="btn btn-sm btn-danger"
+                            >
+                              <X size={14} /> Reject
+                            </button>
+                          </div>
+                        )}
+                        {job.status === 'accepted' && (
+                          <button
+                            onClick={() => handleUpdateJobStatus(job.id, 'on_the_way')}
+                            className="btn btn-sm btn-primary"
+                          >
+                            On the Way &rarr;
+                          </button>
+                        )}
+                        {job.status === 'on_the_way' && (
+                          <button
+                            onClick={() => handleUpdateJobStatus(job.id, 'arrived')}
+                            className="btn btn-sm btn-primary"
+                          >
+                            Mark Arrived &rarr;
+                          </button>
+                        )}
+                        {job.status === 'arrived' && (
+                          <button
+                            onClick={() => handleUpdateJobStatus(job.id, 'working')}
+                            className="btn btn-sm btn-primary"
+                          >
+                            Start Working &rarr;
+                          </button>
+                        )}
+                        {job.status === 'working' && (
+                          <button
+                            onClick={() => handleUpdateJobStatus(job.id, 'completed')}
+                            className="btn btn-sm btn-success"
+                          >
+                            Complete Job &check;
+                          </button>
+                        )}
+                        {job.status === 'completed' && (
+                          <span style={{ fontSize: '0.8rem', color: 'var(--success)', fontWeight: 700 }}>
+                            Finished
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Profile Card & Form */}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Wrench, User, LogOut, Shield, Briefcase, Home, Layers } from 'lucide-react';
+import { Wrench, User, LogOut, Shield, Briefcase, Home, Layers, Search } from 'lucide-react';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -43,7 +43,9 @@ export default function Navbar() {
           <div className="brand-icon">
             <Wrench size={20} />
           </div>
-          <span>Work<span style={{ color: 'var(--primary)' }}>Connect</span></span>
+          <span style={{ fontSize: '1.45rem', fontWeight: 900, letterSpacing: '-0.02em' }}>
+            Fixi<span style={{ color: 'var(--primary)' }}>go</span>
+          </span>
         </Link>
 
         <ul className="nav-links">
@@ -57,7 +59,17 @@ export default function Navbar() {
             </Link>
           </li>
 
-          {isAuthenticated ? (
+          <li>
+            <Link
+              to="/services"
+              className={`nav-link ${location.pathname.startsWith('/services') ? 'active' : ''}`}
+            >
+              <Search size={16} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '4px' }} />
+              Find Services
+            </Link>
+          </li>
+
+          {isAuthenticated && (
             <>
               <li>
                 <Link
@@ -69,26 +81,13 @@ export default function Navbar() {
                 </Link>
               </li>
 
-              {user.role === 'customer' && (
-                <li>
-                  <Link
-                    to="/customer"
-                    className="nav-link"
-                    title="Find nearby services"
-                  >
-                    Find Services
-                  </Link>
-                </li>
-              )}
-
               {user.role === 'professional' && (
                 <li>
                   <Link
                     to="/professional"
                     className="nav-link"
-                    title="View professional jobs"
                   >
-                    My Jobs
+                    My Service Jobs
                   </Link>
                 </li>
               )}
@@ -98,21 +97,11 @@ export default function Navbar() {
                   <Link
                     to="/admin"
                     className="nav-link"
-                    title="Platform administration"
                   >
                     User Management
                   </Link>
                 </li>
               )}
-            </>
-          ) : (
-            <>
-              <li>
-                <a href="#roles" className="nav-link">Roles</a>
-              </li>
-              <li>
-                <a href="#features" className="nav-link">Features</a>
-              </li>
             </>
           )}
         </ul>
@@ -134,7 +123,7 @@ export default function Navbar() {
               <button
                 onClick={handleLogout}
                 className="btn btn-secondary btn-sm"
-                title="Log out of WorkConnect"
+                title="Log out of Fixigo"
               >
                 <LogOut size={14} />
                 Logout

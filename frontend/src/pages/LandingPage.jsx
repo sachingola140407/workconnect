@@ -15,6 +15,7 @@ import {
   Users,
   CheckCircle,
   ArrowRight,
+  ChevronRight,
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -33,13 +34,17 @@ export default function LandingPage() {
   };
 
   const services = [
-    { name: 'Electrician', icon: <Zap size={24} color="#f59e0b" />, count: '7 nearby' },
-    { name: 'Plumber', icon: <Wrench size={24} color="#2563eb" />, count: '5 nearby' },
-    { name: 'AC Repair', icon: <Wind size={24} color="#06b6d4" />, count: '4 nearby' },
-    { name: 'Carpenter', icon: <Hammer size={24} color="#d97706" />, count: '6 nearby' },
-    { name: 'Painter', icon: <Paintbrush size={24} color="#ec4899" />, count: '3 nearby' },
-    { name: 'Deep Cleaning', icon: <Sparkles size={24} color="#10b981" />, count: '8 nearby' },
+    { name: 'Plumber', category: 'Plumber', icon: <Wrench size={26} color="#2563eb" />, count: '2 verified pros nearby', desc: 'Pipe leakages, taps, drainage, water tank lines' },
+    { name: 'Electrician', category: 'Electrician', icon: <Zap size={26} color="#f59e0b" />, count: '2 verified pros nearby', desc: 'Short circuits, wiring, switchboards, MCB repair' },
+    { name: 'AC Repair', category: 'AC Repairer', icon: <Wind size={26} color="#06b6d4" />, count: '1 verified pro nearby', desc: 'Cooling service, gas refill, compressor, installation' },
+    { name: 'Carpenter', category: 'Carpenter', icon: <Hammer size={26} color="#d97706" />, count: '1 verified pro nearby', desc: 'Furniture repairs, modular woodwork, door locks' },
+    { name: 'Painter', category: 'Painter', icon: <Paintbrush size={26} color="#ec4899" />, count: '1 verified pro nearby', desc: 'Interior & exterior wall painting, waterproof primer' },
+    { name: 'Deep Cleaning', category: 'Cleaner', icon: <Sparkles size={26} color="#10b981" />, count: '1 verified pro nearby', desc: 'Bathroom sanitation, kitchen deep clean, sofa wash' },
   ];
+
+  const handleServiceClick = (category) => {
+    navigate(`/services?category=${encodeURIComponent(category)}`);
+  };
 
   return (
     <div>
@@ -47,47 +52,46 @@ export default function LandingPage() {
       <section className="hero">
         <div className="container">
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#dbeafe', color: '#1e40af', padding: '0.35rem 0.85rem', borderRadius: '9999px', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1.25rem' }}>
-            <Award size={16} /> 100% Free &amp; Open-Source Location Matching
+            <Award size={16} /> 100% Free &amp; Open-Source Local Matching
           </div>
           <h1 className="hero-title">
-            Connect with Skilled Local Experts <br />
-            <span className="hero-highlight">Instantly in Your Neighborhood</span>
+            Connect with Trusted Local Experts <br />
+            <span className="hero-highlight">Instantly on Fixigo</span>
           </h1>
           <p className="hero-subtitle">
-            WorkConnect matches you with verified electricians, plumbers, carpenters, and technicians using high-precision PostGIS spatial technology &mdash; completely free with zero paid APIs.
+            Fixigo connects customers with nearby plumbers, electricians, AC mechanics, carpenters, and technicians using real-time PostGIS location matching &mdash; with zero paid APIs.
           </p>
 
           <div className="hero-actions">
+            <Link to="/services" className="btn btn-primary btn-lg">
+              Find Services Now <ArrowRight size={18} />
+            </Link>
+
             {isAuthenticated ? (
               <Link
                 to={user?.role === 'admin' ? '/admin' : user?.role === 'professional' ? '/professional' : '/customer'}
-                className="btn btn-primary btn-lg"
+                className="btn btn-secondary btn-lg"
               >
-                Go to Your {user?.role?.toUpperCase()} Dashboard <ArrowRight size={18} />
+                Go to Dashboard
               </Link>
             ) : (
-              <>
-                <Link to="/register?role=customer" className="btn btn-primary btn-lg">
-                  Hire a Professional <ArrowRight size={18} />
-                </Link>
-                <Link to="/register?role=professional" className="btn btn-secondary btn-lg">
-                  Join as a Service Partner
-                </Link>
-              </>
+              <Link to="/register?role=professional" className="btn btn-secondary btn-lg">
+                Join as a Fixigo Partner
+              </Link>
             )}
           </div>
 
           {/* Quick Demo Login Banner */}
           <div className="demo-box" style={{ maxWidth: '780px', margin: '2.5rem auto 0' }}>
             <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--secondary)', marginBottom: '0.4rem' }}>
-              ⚡ Instant Demo Credentials (Phase 1 Ready)
+              ⚡ Instant Demo Logins (Click to try Fixigo)
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              Click any role below to instantly log in and experience WorkConnect's role-based platform:
+              Click any account below to instantly log in and experience Fixigo's role-based platform:
             </p>
             <div className="demo-buttons">
               <button
-                onClick={() => handleQuickLogin('customer@workconnect.com', 'customer')}
+                onClick={() => handleQuickLogin('customer@fixigo.com', 'customer')}
                 className="btn btn-secondary btn-sm"
               >
                 👤 Customer Demo (Arun)
@@ -99,7 +103,13 @@ export default function LandingPage() {
                 ⚡ Electrician Demo (Rahul)
               </button>
               <button
-                onClick={() => handleQuickLogin('admin@workconnect.com', 'admin')}
+                onClick={() => handleQuickLogin('rajesh.plumber@fixigo.com', 'professional')}
+                className="btn btn-secondary btn-sm"
+              >
+                🔧 Plumber Demo (Rajesh)
+              </button>
+              <button
+                onClick={() => handleQuickLogin('admin@fixigo.com', 'admin')}
                 className="btn btn-secondary btn-sm"
               >
                 🛡️ Platform Admin Demo
@@ -109,30 +119,75 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Services Grid Preview */}
+      {/* Services Grid Preview - CLICKABLE */}
       <section style={{ padding: '3.5rem 0' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.35rem' }}>
+              Click Any Service to View Nearby Specialists
+            </div>
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--secondary)' }}>
               Popular Home &amp; Professional Services
             </h2>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-              Discover trusted specialists ready to serve in your locality
+              Click on a card below to discover available plumbers, electricians, AC repairers, and more
             </p>
           </div>
 
           <div className="grid-3">
             {services.map((svc, i) => (
-              <div key={i} className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', cursor: 'pointer' }}>
-                <div style={{ padding: '0.85rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {svc.icon}
+              <div
+                key={i}
+                onClick={() => handleServiceClick(svc.category)}
+                className="card"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.85rem',
+                  cursor: 'pointer',
+                  border: '1.5px solid var(--border)',
+                  transition: 'all 0.2s ease',
+                  padding: '1.5rem',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--primary)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ padding: '0.85rem', background: '#eff6ff', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {svc.icon}
+                  </div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)', background: '#dbeafe', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>
+                    {svc.count}
+                  </span>
                 </div>
+
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{svc.name}</h3>
-                  <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>{svc.count}</span>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--secondary)' }}>
+                    {svc.name}
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem', lineHeight: '1.4' }}>
+                    {svc.desc}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--primary)', fontWeight: 700, fontSize: '0.875rem', marginTop: 'auto', paddingTop: '0.5rem' }}>
+                  <span>View Nearby {svc.name}s</span>
+                  <ChevronRight size={16} />
                 </div>
               </div>
             ))}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
+            <Link to="/services" className="btn btn-secondary btn-lg">
+              Explore All Categories &amp; Search Nearby Specialists <ArrowRight size={18} />
+            </Link>
           </div>
         </div>
       </section>
@@ -145,7 +200,7 @@ export default function LandingPage() {
               Tailored Experiences for Three Core Roles
             </h2>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-              WorkConnect provides dedicated interfaces and security controls for each platform participant
+              Fixigo provides dedicated interfaces and security controls for each platform participant
             </p>
           </div>
 
@@ -167,7 +222,7 @@ export default function LandingPage() {
                   <CheckCircle size={16} color="var(--success)" /> PostGIS radius matching &amp; ranking
                 </li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <CheckCircle size={16} color="var(--success)" /> Interactive OpenStreetMap view
+                  <CheckCircle size={16} color="var(--success)" /> Instant service booking requests
                 </li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <CheckCircle size={16} color="var(--success)" /> Booking history &amp; reviews
@@ -223,51 +278,6 @@ export default function LandingPage() {
                   <CheckCircle size={16} color="var(--success)" /> Aggregated system metrics
                 </li>
               </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Tech Architecture Section */}
-      <section id="features" style={{ padding: '3.5rem 0', background: '#f8fafc' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
-              Engineered with 100% Open Technologies
-            </h2>
-            <p style={{ color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-              Zero proprietary dependencies or paid API keys required
-            </p>
-          </div>
-
-          <div className="grid-4">
-            <div className="card" style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>🗺️</div>
-              <h4 style={{ fontWeight: 700 }}>PostGIS &amp; PostgreSQL</h4>
-              <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-                Native spatial indexing &amp; distance calculations via ST_DWithin and ST_Distance.
-              </p>
-            </div>
-            <div className="card" style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>📍</div>
-              <h4 style={{ fontWeight: 700 }}>Leaflet &amp; OSM</h4>
-              <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-                OpenStreetMap tile layers and responsive Leaflet map controls with zero cost.
-              </p>
-            </div>
-            <div className="card" style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>🔐</div>
-              <h4 style={{ fontWeight: 700 }}>JWT &amp; Bcrypt</h4>
-              <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-                Hardened authentication with salted password hashes and role-based access control.
-              </p>
-            </div>
-            <div className="card" style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>⚡</div>
-              <h4 style={{ fontWeight: 700 }}>React + Vite</h4>
-              <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-                Lightning-fast single page application with modern components and state management.
-              </p>
             </div>
           </div>
         </div>

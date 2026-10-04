@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { userAPI } from '../services/api';
+import { userAPI, bookingsAPI } from '../services/api';
 import {
   User,
   Phone,
@@ -14,16 +15,57 @@ import {
   AlertCircle,
   Search,
   Sparkles,
+  Wrench,
+  Zap,
+  Wind,
+  Hammer,
+  Paintbrush,
+  Car,
+  Cpu,
+  ChevronRight,
+  ClipboardList,
 } from 'lucide-react';
 
 export default function CustomerDashboard() {
   const { user, updateUser } = useAuth();
+  const navigate = useNavigate();
+
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Bookings state
+  const [bookings, setBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+
+  const services = [
+    { name: 'Plumber', category: 'Plumber', icon: <Wrench size={22} color="#2563eb" /> },
+    { name: 'Electrician', category: 'Electrician', icon: <Zap size={22} color="#f59e0b" /> },
+    { name: 'AC Repair', category: 'AC Repairer', icon: <Wind size={22} color="#06b6d4" /> },
+    { name: 'Carpenter', category: 'Carpenter', icon: <Hammer size={22} color="#d97706" /> },
+    { name: 'Painter', category: 'Painter', icon: <Paintbrush size={22} color="#ec4899" /> },
+    { name: 'Cleaning', category: 'Cleaner', icon: <Sparkles size={22} color="#10b981" /> },
+    { name: 'Mechanic', category: 'Mechanic', icon: <Car size={22} color="#ef4444" /> },
+    { name: 'Appliances', category: 'Appliance Repairer', icon: <Cpu size={22} color="#6366f1" /> },
+  ];
+
+  // Fetch customer bookings
+  useEffect(() => {
+    async function loadBookings() {
+      try {
+        const res = await bookingsAPI.getMyBookings();
+        setBookings(res.data.data || []);
+      } catch (err) {
+        console.error('Failed to load bookings:', err);
+      } finally {
+        setLoadingBookings(false);
+      }
+    }
+    loadBookings();
+  }, []);
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
@@ -43,6 +85,26 @@ export default function CustomerDashboard() {
     }
   };
 
+  const handleServiceClick = (category) => {
+    navigate(`/services?category=${encodeURIComponent(category)}`);
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'accepted':
+      case 'completed':
+        return <span className="badge badge-verified">{status}</span>;
+      case 'on_the_way':
+      case 'working':
+        return <span className="badge badge-customer">{status.replace('_', ' ')}</span>;
+      case 'rejected':
+      case 'cancelled':
+        return <span className="badge badge-unavailable">{status}</span>;
+      default:
+        return <span className="badge badge-admin">Pending</span>;
+    }
+  };
+
   return (
     <div style={{ padding: '2.5rem 0' }}>
       <div className="container">
@@ -53,20 +115,28 @@ export default function CustomerDashboard() {
               <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
                 Welcome back, {user?.name}!
               </h1>
-              <span className="badge badge-customer">Customer</span>
+              <span className="badge badge-customer">Fixigo Customer</span>
             </div>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              Manage your personal details, discover nearby skilled professionals, and track your requests.
+              Book nearby plumbers, electricians, and technicians or track your active service requests.
             </p>
           </div>
 
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="btn btn-secondary btn-sm"
-          >
-            <Edit2 size={15} />
-            {isEditing ? 'Cancel Editing' : 'Edit Profile'}
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              onClick={() => navigate('/services')}
+              className="btn btn-primary btn-sm"
+            >
+              <Search size={15} /> Find Services
+            </button>
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="btn btn-secondary btn-sm"
+            >
+              <Edit2 size={15} />
+              {isEditing ? 'Cancel Editing' : 'Edit Profile'}
+            </button>
+          </div>
         </div>
 
         {message && (
@@ -83,6 +153,63 @@ export default function CustomerDashboard() {
           </div>
         )}
 
+        {/* Quick Service Booking Grid */}
+        <div className="card" style={{ marginBottom: '2rem', background: '#ffffff' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--secondary)' }}>
+                Need a Repair or Service? Select Below
+              </h2>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                Click any service to view verified nearby professionals ready to help
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/services')}
+              className="btn btn-secondary btn-sm"
+            >
+              View All <ChevronRight size={14} />
+            </button>
+          </div>
+
+          <div className="grid-4" style={{ gap: '0.85rem' }}>
+            {services.map((svc, i) => (
+              <div
+                key={i}
+                onClick={() => handleServiceClick(svc.category)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.85rem',
+                  padding: '1rem',
+                  background: '#f8fafc',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-md)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--primary)';
+                  e.currentTarget.style.background = '#eff6ff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.background = '#f8fafc';
+                }}
+              >
+                <div style={{ background: 'white', padding: '0.5rem', borderRadius: 'var(--radius-sm)', display: 'flex', boxShadow: 'var(--shadow-sm)' }}>
+                  {svc.icon}
+                </div>
+                <div>
+                  <strong style={{ fontSize: '0.95rem', display: 'block' }}>{svc.name}</strong>
+                  <span style={{ fontSize: '0.775rem', color: 'var(--primary)', fontWeight: 600 }}>Find Pros &rarr;</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Profile and Booking History Row */}
         <div className="grid-2">
           {/* Customer Profile Card */}
           <div className="card">
@@ -92,7 +219,7 @@ export default function CustomerDashboard() {
               </div>
               <div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{user?.name}</h3>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Registered Customer</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Fixigo Member</span>
               </div>
             </div>
 
@@ -153,35 +280,46 @@ export default function CustomerDashboard() {
             )}
           </div>
 
-          {/* Quick Actions & Feature Preview */}
+          {/* Customer Service Requests / Bookings History */}
           <div className="card">
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Sparkles size={18} color="var(--primary)" />
-              Next Step: Location &amp; Professional Search
-            </h3>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-              Phase 1 authentication and user database are active. Next in Phase 2 &amp; 3, you can allow browser location to view nearby verified service partners.
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ padding: '0.85rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <MapPin size={20} color="var(--primary)" />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Nearby Location Search</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>PostGIS 5km search radius</div>
-                </div>
-                <span className="badge badge-unverified">Phase 3</span>
-              </div>
-
-              <div style={{ padding: '0.85rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Clock size={20} color="var(--success)" />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Instant Bookings</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Send booking request to nearby pros</div>
-                </div>
-                <span className="badge badge-unverified">Phase 6</span>
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+              <ClipboardList size={20} color="var(--primary)" />
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Your Service Requests</h3>
             </div>
+
+            {loadingBookings ? (
+              <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-muted)' }}>
+                Loading service requests...
+              </div>
+            ) : bookings.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)' }}>
+                <p style={{ fontSize: '0.925rem', marginBottom: '1rem' }}>
+                  You have not submitted any service requests yet.
+                </p>
+                <button
+                  onClick={() => navigate('/services')}
+                  className="btn btn-primary btn-sm"
+                >
+                  Book a Specialist Now
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '380px', overflowY: 'auto' }}>
+                {bookings.map((b) => (
+                  <div key={b.id} style={{ padding: '0.85rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <strong style={{ fontSize: '0.95rem' }}>{b.service_name}</strong>
+                      {getStatusBadge(b.status)}
+                    </div>
+                    <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                      <div>Partner: <strong>{b.professional_name}</strong> (&phone; {b.professional_phone || 'Available after accept'})</div>
+                      <div>Address: {b.customer_address}</div>
+                      <div>Requested: {new Date(b.created_at).toLocaleString()}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

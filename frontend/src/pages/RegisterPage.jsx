@@ -76,7 +76,7 @@ export default function RegisterPage() {
         <div className="card">
           <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--secondary)' }}>
-              Join WorkConnect
+              Join Fixigo
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
               Create an account as a customer or service partner

@@ -3,6 +3,9 @@ const router = express.Router();
 const authRoutes = require('./authRoutes');
 const userRoutes = require('./userRoutes');
 const adminRoutes = require('./adminRoutes');
+const serviceRoutes = require('./serviceRoutes');
+const professionalRoutes = require('./professionalRoutes');
+const bookingRoutes = require('./bookingRoutes');
 const db = require('../config/db');
 
 /**
@@ -18,7 +21,7 @@ router.get('/health', async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      service: 'WorkConnect API',
+      service: 'Fixigo API',
       status: 'operational',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
@@ -28,12 +31,12 @@ router.get('/health', async (req, res) => {
         time: dbResult.rows[0].db_time,
         postgis: dbResult.rows[0].postgis,
       },
-      phase: 'Phase 1 - Authentication + Database + User Roles',
+      phase: 'Phase 2 - Professional Profiles, Services & Matching',
     });
   } catch (error) {
     return res.status(503).json({
       success: false,
-      service: 'WorkConnect API',
+      service: 'Fixigo API',
       status: 'degraded',
       error: error.message,
       uptime: process.uptime(),
@@ -46,5 +49,8 @@ router.get('/health', async (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/admin', adminRoutes);
+router.use('/services', serviceRoutes);
+router.use('/professionals', professionalRoutes);
+router.use('/bookings', bookingRoutes);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, AlertCircle, Eye, EyeOff, Shield, Briefcase, User, CheckCircle2 } from 'lucide-react';
+import { LogIn, AlertCircle, Eye, EyeOff, Shield, Briefcase, User, Wrench } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -23,7 +23,6 @@ export default function LoginPage() {
 
     try {
       const loggedInUser = await login(email, password);
-      // Determine redirection target
       if (from) {
         navigate(from, { replace: true });
       } else {
@@ -52,11 +51,11 @@ export default function LoginPage() {
       <div className="container" style={{ maxWidth: '480px' }}>
         <div className="card">
           <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--secondary)' }}>
-              Sign in to WorkConnect
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
+              Sign in to Fixigo
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-              Access your personalized dashboard &amp; services
+              Access your local service dashboard &amp; bookings
             </p>
           </div>
 
@@ -129,12 +128,22 @@ export default function LoginPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <button
                 type="button"
-                onClick={() => handleQuickDemo('customer@workconnect.com')}
+                onClick={() => handleQuickDemo('customer@fixigo.com')}
                 className="btn btn-secondary btn-sm"
                 style={{ justifyContent: 'flex-start', textAlign: 'left' }}
               >
                 <User size={14} color="var(--primary)" />
-                <strong>Customer:</strong> customer@workconnect.com
+                <strong>Customer:</strong> customer@fixigo.com
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickDemo('rajesh.plumber@fixigo.com')}
+                className="btn btn-secondary btn-sm"
+                style={{ justifyContent: 'flex-start', textAlign: 'left' }}
+              >
+                <Wrench size={14} color="#2563eb" />
+                <strong>Plumber:</strong> rajesh.plumber@fixigo.com
               </button>
 
               <button
@@ -149,12 +158,12 @@ export default function LoginPage() {
 
               <button
                 type="button"
-                onClick={() => handleQuickDemo('admin@workconnect.com')}
+                onClick={() => handleQuickDemo('admin@fixigo.com')}
                 className="btn btn-secondary btn-sm"
                 style={{ justifyContent: 'flex-start', textAlign: 'left' }}
               >
                 <Shield size={14} color="var(--warning)" />
-                <strong>Admin:</strong> admin@workconnect.com
+                <strong>Admin:</strong> admin@fixigo.com
               </button>
             </div>
           </div>

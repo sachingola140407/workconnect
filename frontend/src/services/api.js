@@ -24,7 +24,6 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear token on 401 Unauthorized if it's invalid
       if (localStorage.getItem('token')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -54,6 +53,21 @@ export const adminAPI = {
   getUsers: (params) => api.get('/admin/users', { params }),
   setUserStatus: (id, isActive) => api.patch(`/admin/users/${id}/status`, { isActive }),
   verifyProfessional: (id, isVerified) => api.patch(`/admin/professionals/${id}/verify`, { isVerified }),
+};
+
+export const servicesAPI = {
+  getAll: () => api.get('/services'),
+};
+
+export const professionalsAPI = {
+  search: (params) => api.get('/professionals', { params }),
+  getById: (id) => api.get(`/professionals/${id}`),
+};
+
+export const bookingsAPI = {
+  create: (data) => api.post('/bookings', data),
+  getMyBookings: () => api.get('/bookings'),
+  updateStatus: (id, status) => api.patch(`/bookings/${id}/status`, { status }),
 };
 
 export default api;

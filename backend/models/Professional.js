@@ -101,6 +101,199 @@ class Professional {
     const { rows } = await db.query(query, [userId, longitude, latitude, address]);
     return rows[0] || null;
   }
+
+  /**
+   * Search and rank professionals using PostGIS spatial matching, service filtering, and ranking
+   */
+  static async searchNearby({
+    service,
+    serviceId,
+    search,
+    isAvailable,
+    latitude = null,
+    longitude = null,
+    radiusKm = 25,
+    sortBy = 'best_match',
+  } = {}) {
+    const values = [];
+    let paramIndex = 1;
+    const whereClauses = ['u.is_active = TRUE'];
+
+    // Location calculation expressions
+    let distanceSelectSql = 'NULL AS distance_km';
+    let distanceOrderBySql = '';
+
+    if (longitude !== null && latitude !== null && !isNaN(longitude) && !isNaN(latitude)) {
+      const lngParam = paramIndex++;
+      const latParam = paramIndex++;
+      values.push(parseFloat(longitude), parseFloat(latitude));
+
+      // ST_Distance returns meters on geography type, divide by 1000 for km
+      distanceSelectSql = `
+        ROUND(
+          (ST_Distance(p.location, ST_SetSRID(ST_MakePoint($${lngParam}, $${latParam}), 4326)::geography) / 1000.0)::numeric,
+          1
+        ) AS distance_km
+      `;
+
+      if (radiusKm && !isNaN(radiusKm)) {
+        const radiusMetersParam = paramIndex++;
+        values.push(parseFloat(radiusKm) * 1000);
+        whereClauses.push(
+          `ST_DWithin(p.location, ST_SetSRID(ST_MakePoint($${lngParam}, $${latParam}), 4326)::geography, $${radiusMetersParam})`
+        );
+      }
+    }
+
+    if (isAvailable === true || isAvailable === 'true') {
+      whereClauses.push('p.is_available = TRUE');
+    }
+
+    if (serviceId) {
+      const svcParam = paramIndex++;
+      values.push(serviceId);
+      whereClauses.push(
+        `p.id IN (SELECT professional_id FROM professional_services WHERE service_id = $${svcParam})`
+      );
+    } else if (service && service !== 'all') {
+      const svcParam = paramIndex++;
+      values.push(`%${service.trim()}%`);
+      whereClauses.push(`
+        p.id IN (
+          SELECT ps.professional_id 
+          FROM professional_services ps
+          JOIN services s ON ps.service_id = s.id
+          WHERE s.name ILIKE $${svcParam} OR s.category ILIKE $${svcParam}
+        )
+      `);
+    }
+
+    if (search) {
+      const searchParam = paramIndex++;
+      values.push(`%${search.trim()}%`);
+      whereClauses.push(`(u.name ILIKE $${searchParam} OR p.bio ILIKE $${searchParam} OR p.address ILIKE $${searchParam})`);
+    }
+
+    // Determine Sort Order
+    let orderClause = 'ORDER BY p.is_available DESC, p.rating DESC, p.experience DESC';
+    if (sortBy === 'distance' && longitude !== null && latitude !== null) {
+      orderClause = 'ORDER BY distance_km ASC NULLS LAST, p.rating DESC';
+    } else if (sortBy === 'rating') {
+      orderClause = 'ORDER BY p.rating DESC, p.review_count DESC';
+    } else if (sortBy === 'experience') {
+      orderClause = 'ORDER BY p.experience DESC, p.rating DESC';
+    } else if (sortBy === 'price_asc') {
+      orderClause = 'ORDER BY p.price ASC, p.rating DESC';
+    } else if (sortBy === 'price_desc') {
+      orderClause = 'ORDER BY p.price DESC';
+    }
+
+    const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    const query = `
+      SELECT 
+        p.id,
+        p.user_id,
+        u.name,
+        u.email,
+        u.phone,
+        u.avatar_url,
+        p.bio,
+        p.experience,
+        p.rating,
+        p.review_count,
+        p.price,
+        p.is_available,
+        p.is_verified,
+        p.address,
+        ST_X(p.location::geometry) AS longitude,
+        ST_Y(p.location::geometry) AS latitude,
+        ${distanceSelectSql},
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'id', s.id,
+              'name', s.name,
+              'category', s.category,
+              'icon', s.icon
+            )
+          ) FILTER (WHERE s.id IS NOT NULL),
+          '[]'
+        ) AS services
+      FROM professionals p
+      JOIN users u ON p.user_id = u.id
+      LEFT JOIN professional_services ps ON p.id = ps.professional_id
+      LEFT JOIN services s ON ps.service_id = s.id
+      ${whereSql}
+      GROUP BY p.id, u.id, p.location
+      ${orderClause};
+    `;
+
+    const { rows } = await db.query(query, values);
+
+    // Format & assign Best Match badge to #1 highest-ranked professional
+    return rows.map((pro, index) => ({
+      ...pro,
+      price: parseFloat(pro.price) || 0,
+      rating: parseFloat(pro.rating) || 0,
+      experience: parseInt(pro.experience, 10) || 0,
+      distance_km: pro.distance_km !== null ? parseFloat(pro.distance_km) : null,
+      isBestMatch: index === 0 && rows.length > 0 && pro.is_available,
+    }));
+  }
+
+  /**
+   * Get single professional profile with full services & user info
+   */
+  static async getById(id) {
+    const query = `
+      SELECT 
+        p.id,
+        p.user_id,
+        u.name,
+        u.email,
+        u.phone,
+        u.avatar_url,
+        p.bio,
+        p.experience,
+        p.rating,
+        p.review_count,
+        p.price,
+        p.is_available,
+        p.is_verified,
+        p.address,
+        ST_X(p.location::geometry) AS longitude,
+        ST_Y(p.location::geometry) AS latitude,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'id', s.id,
+              'name', s.name,
+              'category', s.category,
+              'icon', s.icon,
+              'description', s.description
+            )
+          ) FILTER (WHERE s.id IS NOT NULL),
+          '[]'
+        ) AS services
+      FROM professionals p
+      JOIN users u ON p.user_id = u.id
+      LEFT JOIN professional_services ps ON p.id = ps.professional_id
+      LEFT JOIN services s ON ps.service_id = s.id
+      WHERE p.id = $1 OR p.user_id = $1
+      GROUP BY p.id, u.id;
+    `;
+    const { rows } = await db.query(query, [id]);
+    if (!rows[0]) return null;
+
+    const pro = rows[0];
+    return {
+      ...pro,
+      price: parseFloat(pro.price) || 0,
+      rating: parseFloat(pro.rating) || 0,
+      experience: parseInt(pro.experience, 10) || 0,
+    };
+  }
 }
 
 module.exports = Professional;
