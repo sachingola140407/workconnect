@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Local database data & logs
+postgres_data/
+postgres_run/
+*.log
+
+# Environment variables
+.env
+backend/.env
+
+# Build outputs
+dist/
+frontend/dist/
+
+# OS and Editor files
+.DS_Store
+.vscode/
+.idea/

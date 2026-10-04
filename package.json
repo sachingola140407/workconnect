@@ -1,0 +1,17 @@
+{
+  "name": "workconnect",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WorkConnect - Location-based Professional Services Platform",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "db:migrate": "node database/migrate.js",
+    "db:seed": "node database/seed.js",
+    "db:setup": "node database/migrate.js && node database/seed.js",
+    "start:backend": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "test:phase1": "node scripts/test_phase1.js"
+  }
+}

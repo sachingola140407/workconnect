@@ -1,0 +1,25 @@
+{
+  "name": "workconnect-backend",
+  "version": "1.0.0",
+  "description": "WorkConnect Backend API - Location-based Professional Services Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node ../scripts/test_phase1.js",
+    "migrate": "node ../database/migrate.js",
+    "seed": "node ../database/seed.js"
+  },
+  "keywords": ["workconnect", "location-based", "postgis", "services"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.3"
+  }
+}
