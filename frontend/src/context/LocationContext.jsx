@@ -39,11 +39,39 @@ export function LocationProvider({ children }) {
   const [statusMessage, setStatusMessage] = useState(null);
   const hasTriggeredRef = useRef(false);
 
-  // Fast reverse geocoding with 2.5s timeout
+  // High-accuracy reverse geocoding (BigDataCloud + Nominatim fallback)
   const reverseGeocode = useCallback(async (latitude, longitude) => {
+    // 1. Primary: BigDataCloud client reverse geocode (fast, no CORS restriction, highly accurate across India)
+    try {
+      const bdcRes = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+      );
+      if (bdcRes.ok) {
+        const data = await bdcRes.json();
+        const cityName =
+          data.city ||
+          data.locality ||
+          data.principalSubdivision ||
+          'Your Location';
+        const address =
+          [data.locality, data.city, data.principalSubdivision, data.countryName]
+            .filter(Boolean)
+            .filter((v, i, a) => a.indexOf(v) === i)
+            .join(', ') || `${cityName}, Local Area`;
+
+        return {
+          city: cityName,
+          address,
+        };
+      }
+    } catch (e) {
+      console.warn('BigDataCloud reverse geocoding failed, trying Nominatim fallback:', e);
+    }
+
+    // 2. Secondary fallback: Nominatim OpenStreetMap
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2500);
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
 
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
@@ -54,44 +82,36 @@ export function LocationProvider({ children }) {
       );
       clearTimeout(timeoutId);
 
-      if (!res.ok) throw new Error('Geocoding service unavailable');
-      const data = await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        const addr = data.address || {};
+        const cityName =
+          addr.city ||
+          addr.town ||
+          addr.suburb ||
+          addr.neighbourhood ||
+          addr.county ||
+          addr.state_district ||
+          addr.state ||
+          'Your Location';
 
-      const addr = data.address || {};
-      const cityName =
-        addr.city ||
-        addr.town ||
-        addr.suburb ||
-        addr.neighbourhood ||
-        addr.county ||
-        addr.state_district ||
-        addr.state ||
-        'Local Area';
+        const fullAddress =
+          data.display_name ||
+          [addr.road, addr.suburb, cityName, addr.state].filter(Boolean).join(', ');
 
-      const fullAddress =
-        data.display_name ||
-        [addr.road, addr.suburb, cityName, addr.state].filter(Boolean).join(', ');
-
-      return {
-        city: cityName,
-        address: fullAddress,
-      };
-    } catch (err) {
-      // Find closest known hub
-      let closest = POPULAR_CITIES[0];
-      let minDistance = Infinity;
-      for (const city of POPULAR_CITIES) {
-        const d = Math.hypot(city.latitude - latitude, city.longitude - longitude);
-        if (d < minDistance) {
-          minDistance = d;
-          closest = city;
-        }
+        return {
+          city: cityName,
+          address: fullAddress,
+        };
       }
-      return {
-        city: closest.name,
-        address: `${closest.name}, Local Area`,
-      };
+    } catch (err) {
+      console.warn('Nominatim fallback also failed:', err);
     }
+
+    return {
+      city: 'Your Location',
+      address: `GPS Location (${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° E)`,
+    };
   }, []);
 
   // Set location directly (manual or city select)
