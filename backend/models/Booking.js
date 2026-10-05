@@ -173,12 +173,15 @@ class Booking {
   }
 
   /**
-   * Update booking status with lifecycle timestamps and real-time broadcasts
+   * Update booking status with lifecycle timestamps, professional busy toggle, and real-time broadcasts
    */
   static async updateStatus(id, status) {
+    const Professional = require('./Professional');
     let timestampField = '';
-    if (status === 'on_the_way') {
-      timestampField = ', started_at = COALESCE(started_at, NOW())';
+    if (status === 'accepted') {
+      timestampField = ', accepted_at = COALESCE(accepted_at, NOW())';
+    } else if (status === 'on_the_way') {
+      timestampField = ', started_at = COALESCE(started_at, NOW()), journey_started_at = COALESCE(journey_started_at, NOW())';
     } else if (status === 'arrived') {
       timestampField = ', arrived_at = COALESCE(arrived_at, NOW())';
     } else if (status === 'working') {
@@ -199,12 +202,26 @@ class Booking {
     const updated = rows[0] || null;
 
     if (updated) {
-      // Real-time broadcast
-      emitToBooking(id, 'booking:status-change', {
+      // Toggle busy status in professionals table (Prompt 2 Section 14)
+      try {
+        if (status === 'accepted' || status === 'on_the_way' || status === 'working') {
+          await Professional.setBusyStatus(updated.professional_id, true);
+        } else if (['work_completed', 'completed', 'cancelled', 'rejected'].includes(status)) {
+          await Professional.setBusyStatus(updated.professional_id, false);
+        }
+      } catch (proErr) {
+        console.warn('[Booking] Could not update pro busy status:', proErr.message);
+      }
+
+      // Real-time broadcast to both room styles (Prompt 2 Section 17)
+      const statusPayload = {
         bookingId: id,
-        status,
+        status: status.toUpperCase(),
+        normalizedStatus: status,
         updatedAt: updated.updated_at,
-      });
+      };
+      emitToBooking(id, 'booking:status', statusPayload);
+      emitToBooking(id, 'booking:status-change', statusPayload);
 
       // Status specific events
       if (status === 'accepted') emitToBooking(id, 'booking:accepted', { bookingId: id });
@@ -236,6 +253,8 @@ class Booking {
         b.customer_address,
         b.notes,
         b.scheduled_at,
+        b.accepted_at,
+        b.journey_started_at,
         b.started_at,
         b.arrived_at,
         b.work_started_at,
@@ -243,12 +262,15 @@ class Booking {
         b.completed_at,
         b.created_at,
         b.updated_at,
+        b.last_location_update_at,
+        b.estimated_arrival_minutes,
+        b.estimated_distance_km,
         ST_X(b.customer_location::geometry) AS customer_lng,
         ST_Y(b.customer_location::geometry) AS customer_lat,
-        ST_X(p.location::geometry) AS professional_lng,
-        ST_Y(p.location::geometry) AS professional_lat,
+        COALESCE(ST_X(b.professional_location::geometry), ST_X(p.location::geometry)) AS professional_lng,
+        COALESCE(ST_Y(b.professional_location::geometry), ST_Y(p.location::geometry)) AS professional_lat,
         ROUND(
-          (ST_Distance(p.location, b.customer_location) / 1000.0)::numeric,
+          (ST_Distance(COALESCE(b.professional_location, p.location), b.customer_location) / 1000.0)::numeric,
           2
         ) AS distance_km,
         s.id AS service_id,
@@ -280,13 +302,15 @@ class Booking {
     if (!rows[0]) return null;
 
     const r = rows[0];
-    const distanceKm = r.distance_km !== null ? parseFloat(r.distance_km) : 1.2;
+    const distanceKm = r.estimated_distance_km !== null
+      ? parseFloat(r.estimated_distance_km)
+      : (r.distance_km !== null ? parseFloat(r.distance_km) : 1.2);
 
-    // Calculate dynamic ETA based on distance and status
-    let etaMinutes = Math.max(3, Math.round(distanceKm * 4 + 2));
-    if (r.status === 'arrived') etaMinutes = 0;
-    else if (r.status === 'working') etaMinutes = 0;
-    else if (r.status === 'work_completed' || r.status === 'payment_pending' || r.status === 'payment_completed' || r.status === 'completed') {
+    let etaMinutes = r.estimated_arrival_minutes !== null
+      ? parseInt(r.estimated_arrival_minutes, 10)
+      : Math.max(2, Math.round(distanceKm * 3.5 + 2));
+
+    if (['arrived', 'working', 'work_completed', 'payment_pending', 'payment_completed', 'completed'].includes(r.status)) {
       etaMinutes = 0;
     }
 
@@ -308,21 +332,52 @@ class Booking {
   }
 
   /**
-   * Update professional location for real-time tracking simulation
+   * Update professional location for real-time tracking
    */
-  static async updateTrackingLocation(bookingId, { latitude, longitude }) {
-    const bookingRes = await db.query('SELECT professional_id FROM bookings WHERE id = $1', [bookingId]);
+  static async updateTrackingLocation(bookingId, { latitude, longitude, etaMinutes = null, distanceKm = null }) {
+    const bookingRes = await db.query(
+      `SELECT b.id, b.professional_id, 
+              ST_X(b.customer_location::geometry) as cust_lng, 
+              ST_Y(b.customer_location::geometry) as cust_lat
+       FROM bookings b 
+       WHERE b.id = $1`,
+      [bookingId]
+    );
     if (!bookingRes.rows[0]) return null;
 
-    const proId = bookingRes.rows[0].professional_id;
-    const query = `
+    const b = bookingRes.rows[0];
+    const proId = b.professional_id;
+
+    // Update bookings table
+    const updateBookingQuery = `
+      UPDATE bookings
+      SET 
+        professional_location = ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography,
+        last_location_update_at = NOW(),
+        estimated_arrival_minutes = COALESCE($4, estimated_arrival_minutes),
+        estimated_distance_km = COALESCE($5, estimated_distance_km),
+        updated_at = NOW()
+      WHERE id = $1
+      RETURNING id, estimated_arrival_minutes, estimated_distance_km, last_location_update_at;
+    `;
+    await db.query(updateBookingQuery, [bookingId, longitude, latitude, etaMinutes, distanceKm]);
+
+    // Update professionals table
+    const updateProQuery = `
       UPDATE professionals
-      SET location = ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography
+      SET 
+        location = ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography,
+        location_updated_at = NOW(),
+        updated_at = NOW()
       WHERE id = $1
       RETURNING id, ST_X(location::geometry) as professional_lng, ST_Y(location::geometry) as professional_lat;
     `;
-    const { rows } = await db.query(query, [proId, longitude, latitude]);
-    return rows[0] || null;
+    const { rows } = await db.query(updateProQuery, [proId, longitude, latitude]);
+    return {
+      ...rows[0],
+      customer_lat: b.cust_lat,
+      customer_lng: b.cust_lng,
+    };
   }
 }
 

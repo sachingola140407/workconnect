@@ -1,8 +1,10 @@
 const Professional = require('../models/Professional');
+const { MAX_SERVICE_RADIUS_KM } = require('../config/constants');
 const { successResponse, errorResponse } = require('../utils/response');
 
 /**
  * Search professionals with PostGIS geospatial matching and category filters
+ * Strictly enforces MAX_SERVICE_RADIUS_KM = 10 KM unless explicitly expanded
  */
 async function getProfessionals(req, res, next) {
   try {
@@ -13,40 +15,29 @@ async function getProfessionals(req, res, next) {
       isAvailable,
       lat,
       lng,
-      radius = 25,
+      radius,
+      expand,
       sortBy = 'best_match',
     } = req.query;
 
-    let professionals = await Professional.searchNearby({
+    const professionals = await Professional.searchNearby({
       service,
       serviceId,
       search,
       isAvailable,
       latitude: lat ? parseFloat(lat) : null,
       longitude: lng ? parseFloat(lng) : null,
-      radiusKm: radius ? parseFloat(radius) : 50,
+      radiusKm: radius ? parseFloat(radius) : MAX_SERVICE_RADIUS_KM,
+      expand: expand === 'true' || expand === true,
       sortBy,
     });
-
-    // Graceful fallback: If strict radius filter returned 0 results, search nearest available specialists
-    if (professionals.length === 0 && lat && lng) {
-      professionals = await Professional.searchNearby({
-        service,
-        serviceId,
-        search,
-        isAvailable,
-        latitude: parseFloat(lat),
-        longitude: parseFloat(lng),
-        radiusKm: null, // no boundary, just distance sorted
-        sortBy: 'distance',
-      });
-    }
 
     return successResponse(res, 200, 'Professionals retrieved successfully', {
       total: professionals.length,
       filter: {
         service: service || 'all',
         hasLocation: !!(lat && lng),
+        radiusKm: expand === 'true' ? (parseFloat(radius) || 50) : MAX_SERVICE_RADIUS_KM,
         sortBy,
       },
       professionals,
@@ -62,7 +53,7 @@ async function getProfessionals(req, res, next) {
 async function getProfessionalById(req, res, next) {
   try {
     const { id } = req.params;
-    const professional = await Professional.getById(id);
+    const professional = await Professional.findById(id);
 
     if (!professional) {
       return errorResponse(res, 404, 'Professional not found');
@@ -74,7 +65,49 @@ async function getProfessionalById(req, res, next) {
   }
 }
 
+/**
+ * Toggle professional Online/Offline status (Prompt 2 Section 14)
+ */
+async function toggleOnlineStatus(req, res, next) {
+  try {
+    const { isOnline } = req.body;
+    const updated = await Professional.setOnlineStatus(req.user.id, isOnline !== false);
+    return successResponse(
+      res,
+      200,
+      `Online status updated to ${isOnline !== false ? 'ONLINE' : 'OFFLINE'}`,
+      updated
+    );
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Update professional's current location (Prompt 2 Section 8 & 20)
+ */
+async function updateLocation(req, res, next) {
+  try {
+    const { latitude, longitude, address } = req.body;
+    if (latitude === undefined || longitude === undefined) {
+      return errorResponse(res, 400, 'latitude and longitude are required');
+    }
+
+    const updated = await Professional.updateLocation(req.user.id, {
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+      address,
+    });
+
+    return successResponse(res, 200, 'Location updated successfully', updated);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getProfessionals,
   getProfessionalById,
+  toggleOnlineStatus,
+  updateLocation,
 };

@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { MAX_SERVICE_RADIUS_KM } = require('../config/constants');
 
 class Professional {
   /**
@@ -14,9 +15,9 @@ class Professional {
     }
 
     const query = `
-      INSERT INTO professionals (user_id, bio, experience, price, address, location)
-      VALUES ($1, $2, $3, $4, $5, ${locationSql})
-      RETURNING id, user_id, bio, experience, rating, review_count, price, is_available, is_verified, address, created_at;
+      INSERT INTO professionals (user_id, bio, experience, price, address, location, is_verified, is_available, is_online, is_busy)
+      VALUES ($1, $2, $3, $4, $5, ${locationSql}, TRUE, TRUE, TRUE, FALSE)
+      RETURNING id, user_id, bio, experience, rating, review_count, price, is_available, is_verified, is_online, is_busy, address, created_at;
     `;
     const { rows } = await db.query(query, values);
     return rows[0];
@@ -30,7 +31,11 @@ class Professional {
       SELECT 
         p.id, p.user_id, p.bio, p.experience, p.rating, p.review_count, p.price,
         COALESCE(p.visiting_charge, 99.00) AS visiting_charge,
-        p.is_available, p.is_verified, p.address,
+        p.is_available, p.is_verified,
+        COALESCE(p.is_online, TRUE) AS is_online,
+        COALESCE(p.is_busy, FALSE) AS is_busy,
+        p.location_updated_at,
+        p.address,
         ST_X(p.location::geometry) AS longitude,
         ST_Y(p.location::geometry) AS latitude,
         p.created_at, p.updated_at
@@ -49,7 +54,11 @@ class Professional {
       SELECT 
         p.id, p.user_id, p.bio, p.experience, p.rating, p.review_count, p.price,
         COALESCE(p.visiting_charge, 99.00) AS visiting_charge,
-        p.is_available, p.is_verified, p.address,
+        p.is_available, p.is_verified,
+        COALESCE(p.is_online, TRUE) AS is_online,
+        COALESCE(p.is_busy, FALSE) AS is_busy,
+        p.location_updated_at,
+        p.address,
         u.name, u.email, u.phone,
         ST_X(p.location::geometry) AS longitude,
         ST_Y(p.location::geometry) AS latitude,
@@ -91,13 +100,41 @@ class Professional {
   }
 
   /**
+   * Toggle online/offline status (Prompt 2 Section 14)
+   */
+  static async setOnlineStatus(userId, isOnline) {
+    const query = `
+      UPDATE professionals
+      SET is_online = $2, updated_at = NOW()
+      WHERE user_id = $1 OR id = $1
+      RETURNING id, user_id, is_online, updated_at;
+    `;
+    const { rows } = await db.query(query, [userId, isOnline]);
+    return rows[0] || null;
+  }
+
+  /**
+   * Set busy status (Prompt 2 Section 14: Available -> Busy upon accept, Busy -> Available upon complete)
+   */
+  static async setBusyStatus(idOrUserId, isBusy) {
+    const query = `
+      UPDATE professionals
+      SET is_busy = $2, updated_at = NOW()
+      WHERE id = $1 OR user_id = $1
+      RETURNING id, user_id, is_busy, updated_at;
+    `;
+    const { rows } = await db.query(query, [idOrUserId, isBusy]);
+    return rows[0] || null;
+  }
+
+  /**
    * Update professional profile details
    */
   static async updateProfile(userId, { bio, experience, price, address, longitude = null, latitude = null }) {
     let locationClause = '';
     const values = [userId, bio, experience, price, address];
     if (longitude !== null && latitude !== null && !isNaN(longitude) && !isNaN(latitude)) {
-      locationClause = `, location = ST_SetSRID(ST_MakePoint($6, $7), 4326)::geography`;
+      locationClause = `, location = ST_SetSRID(ST_MakePoint($6, $7), 4326)::geography, location_updated_at = NOW()`;
       values.push(parseFloat(longitude), parseFloat(latitude));
     }
 
@@ -110,7 +147,7 @@ class Professional {
         address = COALESCE($5, address)
         ${locationClause}
       WHERE user_id = $1
-      RETURNING id, user_id, bio, experience, price, address, is_available, is_verified, ST_X(location::geometry) as longitude, ST_Y(location::geometry) as latitude, updated_at;
+      RETURNING id, user_id, bio, experience, price, address, is_available, is_verified, is_online, is_busy, ST_X(location::geometry) as longitude, ST_Y(location::geometry) as latitude, updated_at;
     `;
     const { rows } = await db.query(query, values);
     return rows[0] || null;
@@ -124,9 +161,10 @@ class Professional {
       UPDATE professionals
       SET 
         location = ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography,
+        location_updated_at = NOW(),
         address = COALESCE($4, address)
-      WHERE user_id = $1
-      RETURNING id, user_id, address, ST_X(location::geometry) as longitude, ST_Y(location::geometry) as latitude, updated_at;
+      WHERE user_id = $1 OR id = $1
+      RETURNING id, user_id, address, ST_X(location::geometry) as longitude, ST_Y(location::geometry) as latitude, location_updated_at, updated_at;
     `;
     const { rows } = await db.query(query, [userId, longitude, latitude, address]);
     return rows[0] || null;
@@ -134,6 +172,7 @@ class Professional {
 
   /**
    * Search and rank professionals using PostGIS spatial matching, service filtering, and ranking
+   * Strictly enforces MAX_SERVICE_RADIUS_KM = 10 unless expand=true is explicitly requested
    */
   static async searchNearby({
     service,
@@ -142,16 +181,23 @@ class Professional {
     isAvailable,
     latitude = null,
     longitude = null,
-    radiusKm = 25,
+    radiusKm = null,
+    expand = false,
     sortBy = 'best_match',
   } = {}) {
     const values = [];
     let paramIndex = 1;
-    const whereClauses = ['u.is_active = TRUE'];
+    // Prompt 2 Section 3 & 14: verified, available, online, not busy, and user is active
+    const whereClauses = [
+      'u.is_active = TRUE',
+      'p.is_available = TRUE',
+      'COALESCE(p.is_online, TRUE) = TRUE',
+      'COALESCE(p.is_busy, FALSE) = FALSE',
+      'p.location IS NOT NULL'
+    ];
 
     // Location calculation expressions
     let distanceSelectSql = 'NULL AS distance_km';
-    let distanceOrderBySql = '';
 
     if (longitude !== null && latitude !== null && !isNaN(longitude) && !isNaN(latitude)) {
       const lngParam = paramIndex++;
@@ -166,17 +212,20 @@ class Professional {
         ) AS distance_km
       `;
 
-      if (radiusKm && !isNaN(radiusKm)) {
-        const radiusMetersParam = paramIndex++;
-        values.push(parseFloat(radiusKm) * 1000);
-        whereClauses.push(
-          `ST_DWithin(p.location, ST_SetSRID(ST_MakePoint($${lngParam}, $${latParam}), 4326)::geography, $${radiusMetersParam})`
-        );
-      }
+      // Prompt 2 Section 1 & 15: Strictly limit to 10 KM max unless explicit expand=true
+      const maxRadius = expand === true || expand === 'true'
+        ? (parseFloat(radiusKm) || 50)
+        : MAX_SERVICE_RADIUS_KM;
+
+      const radiusMetersParam = paramIndex++;
+      values.push(maxRadius * 1000);
+      whereClauses.push(
+        `ST_DWithin(p.location, ST_SetSRID(ST_MakePoint($${lngParam}, $${latParam}), 4326)::geography, $${radiusMetersParam})`
+      );
     }
 
-    if (isAvailable === true || isAvailable === 'true') {
-      whereClauses.push('p.is_available = TRUE');
+    if (isAvailable === false || isAvailable === 'false') {
+      // If caller specifically wanted non-available, but default is already filtered
     }
 
     if (serviceId) {
@@ -204,16 +253,14 @@ class Professional {
       whereClauses.push(`(u.name ILIKE $${searchParam} OR p.bio ILIKE $${searchParam} OR p.address ILIKE $${searchParam})`);
     }
 
-    // Determine Sort Order
-    let orderClause = 'ORDER BY p.is_available DESC, p.rating DESC, p.experience DESC';
-    if (sortBy === 'distance' && longitude !== null && latitude !== null) {
-      orderClause = 'ORDER BY distance_km ASC NULLS LAST, p.rating DESC';
-    } else if (sortBy === 'rating') {
-      orderClause = 'ORDER BY p.rating DESC, p.review_count DESC';
+    // Prompt 2 Section 3: Sort results: 1. Distance, 2. Availability, 3. Rating, 4. Experience
+    let orderClause = 'ORDER BY distance_km ASC NULLS LAST, p.is_available DESC, p.rating DESC, p.experience DESC';
+    if (sortBy === 'rating') {
+      orderClause = 'ORDER BY p.rating DESC, distance_km ASC NULLS LAST';
     } else if (sortBy === 'experience') {
-      orderClause = 'ORDER BY p.experience DESC, p.rating DESC';
+      orderClause = 'ORDER BY p.experience DESC, distance_km ASC NULLS LAST';
     } else if (sortBy === 'price_asc') {
-      orderClause = 'ORDER BY p.price ASC, p.rating DESC';
+      orderClause = 'ORDER BY p.price ASC, distance_km ASC NULLS LAST';
     } else if (sortBy === 'price_desc') {
       orderClause = 'ORDER BY p.price DESC';
     }
@@ -236,6 +283,9 @@ class Professional {
         p.visiting_charge,
         p.is_available,
         p.is_verified,
+        COALESCE(p.is_online, TRUE) AS is_online,
+        COALESCE(p.is_busy, FALSE) AS is_busy,
+        p.location_updated_at,
         p.address,
         ST_X(p.location::geometry) AS longitude,
         ST_Y(p.location::geometry) AS latitude,

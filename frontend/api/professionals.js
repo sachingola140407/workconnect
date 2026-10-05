@@ -1,5 +1,5 @@
 // Vercel Serverless Function: GET /api/professionals
-import { matchFallbackProfessionals, FALLBACK_PROFESSIONALS } from '../src/services/mockData.js';
+import { matchFallbackProfessionals, getRegisteredProfessionals } from '../src/services/mockData.js';
 
 export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,9 +12,10 @@ export default function handler(req, res) {
 
   const { id } = req.query;
   if (id) {
-    const pro = FALLBACK_PROFESSIONALS.find((p) => p.id === id) || FALLBACK_PROFESSIONALS[0];
-    return res.status(200).json({
-      success: true,
+    const list = getRegisteredProfessionals();
+    const pro = list.find((p) => p.id === id) || null;
+    return res.status(pro ? 200 : 404).json({
+      success: !!pro,
       data: pro,
     });
   }

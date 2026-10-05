@@ -41,4 +41,11 @@ router.get('/:id/track', bookingController.getTracking);
  */
 router.patch('/:id/track-location', bookingController.updateTrackingLocation);
 
+/**
+ * @route   POST /api/bookings/:id/location
+ * @desc    Prompt 2 Section 18: Live GPS location update endpoint
+ * @access  Private
+ */
+router.post('/:id/location', bookingController.updateTrackingLocation);
+
 module.exports = router;

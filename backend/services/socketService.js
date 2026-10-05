@@ -16,15 +16,18 @@ function initSocket(httpServer, clientUrl) {
   });
 
   io.on('connection', (socket) => {
-    // 1. Join a booking specific room
+    // 1. Join a booking specific room (supports both booking_${id} and booking:${id})
     socket.on('join:booking', ({ bookingId, userId, role }) => {
       if (bookingId) {
         socket.join(`booking_${bookingId}`);
-        console.log(`[Socket] Socket ${socket.id} (${role || 'user'}) joined room booking_${bookingId}`);
+        socket.join(`booking:${bookingId}`);
+        console.log(`[Socket] Socket ${socket.id} (${role || 'user'}) joined room booking:${bookingId}`);
 
-        // If there is an active cached location for this booking, send it immediately to newly joined client
+        // If there is an active cached location for this booking, send it immediately
         if (activeLocations.has(bookingId)) {
-          socket.emit('professional:location-updated', activeLocations.get(bookingId));
+          const loc = activeLocations.get(bookingId);
+          socket.emit('professional:location', loc);
+          socket.emit('professional:location-updated', loc);
         }
       }
     });
@@ -33,15 +36,17 @@ function initSocket(httpServer, clientUrl) {
     socket.on('leave:booking', ({ bookingId }) => {
       if (bookingId) {
         socket.leave(`booking_${bookingId}`);
+        socket.leave(`booking:${bookingId}`);
       }
     });
 
     // 3. Professional real-time GPS location stream
-    socket.on('professional:location', ({ bookingId, latitude, longitude, accuracy, heading, speed, etaMinutes, distanceKm }) => {
+    const handleLocationUpdate = ({ bookingId, professionalId, latitude, longitude, accuracy, heading, speed, etaMinutes, distanceKm, routeCoordinates }) => {
       if (!bookingId || latitude === undefined || longitude === undefined) return;
 
       const locationPayload = {
         bookingId,
+        professionalId: professionalId || null,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         accuracy: accuracy ? parseFloat(accuracy) : null,
@@ -49,18 +54,34 @@ function initSocket(httpServer, clientUrl) {
         speed: speed || null,
         etaMinutes: etaMinutes !== undefined ? etaMinutes : null,
         distanceKm: distanceKm !== undefined ? distanceKm : null,
+        routeCoordinates: routeCoordinates || [],
         timestamp: new Date().toISOString(),
         status: 'live',
       };
 
-      // Cache in memory
+      // Cache in memory for quick retrieval
       activeLocations.set(bookingId, locationPayload);
 
-      // Broadcast to all clients in this booking room (customer & admin)
+      // Broadcast to both room formats (customer, pro, admin)
+      socket.to(`booking_${bookingId}`).emit('professional:location', locationPayload);
       socket.to(`booking_${bookingId}`).emit('professional:location-updated', locationPayload);
+      socket.to(`booking:${bookingId}`).emit('professional:location', locationPayload);
+      socket.to(`booking:${bookingId}`).emit('professional:location-updated', locationPayload);
+    };
+
+    socket.on('professional:location', handleLocationUpdate);
+    socket.on('professional:location:update', handleLocationUpdate);
+
+    // 4. Booking status updates via Socket
+    socket.on('booking:status:change', ({ bookingId, status, professionalId }) => {
+      if (bookingId && status) {
+        const payload = { bookingId, status, professionalId, timestamp: new Date().toISOString() };
+        io.to(`booking_${bookingId}`).emit('booking:status', payload);
+        io.to(`booking:${bookingId}`).emit('booking:status', payload);
+      }
     });
 
-    // 4. Disconnect
+    // 5. Disconnect
     socket.on('disconnect', () => {
       // socket disconnected
     });
@@ -76,7 +97,8 @@ function getIO() {
 function emitToBooking(bookingId, event, data) {
   if (io && bookingId) {
     io.to(`booking_${bookingId}`).emit(event, data);
-    console.log(`[Socket Broadcast] booking_${bookingId} -> ${event}`);
+    io.to(`booking:${bookingId}`).emit(event, data);
+    console.log(`[Socket Broadcast] booking:${bookingId} -> ${event}`);
   }
 }
 

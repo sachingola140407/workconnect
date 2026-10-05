@@ -722,12 +722,85 @@ export default function ProfessionalDashboard() {
               <p>No active service requests right now. Keep your status <strong>Available</strong> to receive nearby customer leads!</p>
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Customer</th>
-                    <th>Service</th>
+            <>
+              {/* Prompt 2 Section 6: Prominent Incoming Service Request Card */}
+              {jobs.filter((j) => j.status === 'pending').map((pj) => {
+                const distKm = pj.distance_km || 2.4;
+                const travelMins = Math.max(5, Math.round(distKm * 3.5 + 2));
+                return (
+                  <div
+                    key={`pending-${pj.id}`}
+                    style={{
+                      background: '#eff6ff',
+                      border: '2px solid #3b82f6',
+                      borderRadius: '16px',
+                      padding: '1.25rem',
+                      marginBottom: '1.5rem',
+                      boxShadow: '0 4px 16px rgba(37,99,235,0.12)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div>
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            background: '#2563eb',
+                            color: 'white',
+                            padding: '3px 10px',
+                            borderRadius: '999px',
+                            fontSize: '0.75rem',
+                            fontWeight: 800,
+                            textTransform: 'uppercase',
+                            marginBottom: '0.5rem',
+                          }}
+                        >
+                          🔔 New Service Request
+                        </div>
+                        <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1e3a8a', margin: '0 0 0.25rem 0' }}>
+                          Customer: {pj.customer_name}
+                        </h4>
+                        <div style={{ fontSize: '0.9rem', color: '#334155', marginBottom: '0.35rem' }}>
+                          <strong>Service:</strong> <span className="badge badge-customer">{pj.service_name}</span>
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '0.35rem' }}>
+                          <strong>Customer Location:</strong> {pj.customer_address}
+                        </div>
+                        <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.85rem', color: '#1e40af', fontWeight: 700 }}>
+                          <span>🚗 Distance: {distKm} KM</span>
+                          <span>⏱️ Estimated Travel Time: {travelMins} minutes</span>
+                          <span>Visiting Fee: ₹{pj.visiting_charge || 99}</span>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => handleAcceptJob(pj.id)}
+                          className="btn btn-success"
+                          style={{ fontWeight: 800, padding: '0.75rem 1.4rem', fontSize: '0.95rem' }}
+                        >
+                          ✓ ACCEPT REQUEST
+                        </button>
+                        <button
+                          onClick={() => handleRejectJob(pj.id)}
+                          className="btn btn-danger"
+                          style={{ fontWeight: 700, padding: '0.75rem 1.1rem', fontSize: '0.95rem' }}
+                        >
+                          ✕ REJECT REQUEST
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              <div className="table-responsive">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Service</th>
                     <th>Fees &amp; Bill</th>
                     <th>Address</th>
                     <th>Status</th>
@@ -906,6 +979,7 @@ export default function ProfessionalDashboard() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
 

@@ -44,6 +44,7 @@ export default function ServicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [availableOnly, setAvailableOnly] = useState(false);
   const [sortBy, setSortBy] = useState('best_match');
+  const [expandRadius, setExpandRadius] = useState(false);
   const [mobileTab, setMobileTab] = useState('map'); // 'map' or 'specialist'
 
   // Global Location Context
@@ -118,7 +119,7 @@ export default function ServicesPage() {
     setSelectedService(cat);
   }, [searchParams]);
 
-  // 2. Fetch professionals matching current service, location & filters
+  // 2. Fetch professionals matching current service, location & filters (Prompt 2 Section 1 & 15)
   const fetchProfessionals = async () => {
     setLoading(true);
     setError(null);
@@ -128,6 +129,7 @@ export default function ServicesPage() {
         search: searchQuery || undefined,
         isAvailable: availableOnly ? true : undefined,
         sortBy,
+        expand: expandRadius ? true : undefined,
       };
 
       if (userLocation?.latitude && userLocation?.longitude) {
@@ -159,7 +161,7 @@ export default function ServicesPage() {
 
   useEffect(() => {
     fetchProfessionals();
-  }, [selectedService, availableOnly, sortBy, userLocation?.latitude, userLocation?.longitude]);
+  }, [selectedService, availableOnly, sortBy, expandRadius, userLocation?.latitude, userLocation?.longitude]);
 
   // Handle service pill click
   const handleServiceSelect = (serviceName) => {
@@ -869,24 +871,48 @@ export default function ServicesPage() {
                 padding: '3rem 1.5rem',
                 borderRadius: '16px',
                 background: '#f8fafc',
+                border: '1px dashed #cbd5e1',
               }}
             >
-              <div style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>📍</div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>No professionals found in this category</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.35rem' }}>
-                Try selecting "All Services" or choose another city from the location dropdown above.
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📍</div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                No professionals available within 10 KM.
+              </h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.35rem', maxWidth: '420px', margin: '0.35rem auto 1.25rem' }}>
+                {expandRadius
+                  ? 'No professionals found even with expanded search. Try another category or register a specialist account.'
+                  : 'We strictly search verified and online professionals within 10 KM of your current coordinates.'}
               </p>
-              <button
-                onClick={() => {
-                  handleServiceSelect('all');
-                  setSearchQuery('');
-                  setAvailableOnly(false);
-                }}
-                className="btn btn-primary btn-sm"
-                style={{ marginTop: '1rem', borderRadius: '999px' }}
-              >
-                View All Services
-              </button>
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {!expandRadius ? (
+                  <button
+                    onClick={() => setExpandRadius(true)}
+                    className="btn btn-primary btn-sm"
+                    style={{ borderRadius: '999px', fontWeight: 700 }}
+                  >
+                    🔍 Expand Search (Up to 50 KM)
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setExpandRadius(false)}
+                    className="btn btn-primary btn-sm"
+                    style={{ borderRadius: '999px', fontWeight: 700 }}
+                  >
+                    ⬅️ Reset to 10 KM Search
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    handleServiceSelect('all');
+                    setSearchQuery('');
+                    setAvailableOnly(false);
+                  }}
+                  className="btn btn-secondary btn-sm"
+                  style={{ borderRadius: '999px' }}
+                >
+                  View All Services
+                </button>
+              </div>
             </div>
           ) : (
             <div

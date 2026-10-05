@@ -53,6 +53,8 @@ export default function LiveTrackingPage() {
   const [liveDistance, setLiveDistance] = useState(0.8);
   const [liveEta, setLiveEta] = useState(3);
   const [gpsStatus, setGpsStatus] = useState('live'); // 'live' | 'updating' | 'offline'
+  const [lastGpsUpdate, setLastGpsUpdate] = useState(Date.now());
+  const [secondsSinceGpsUpdate, setSecondsSinceGpsUpdate] = useState(0);
   const [isSimulating, setIsSimulating] = useState(false);
 
   // Working stopwatch timer
@@ -169,30 +171,41 @@ export default function LiveTrackingPage() {
       });
     });
 
-    // Handle real-time GPS stream from professional device
-    socket.on('professional:location-updated', (loc) => {
+    // Handle real-time GPS stream from professional device (Prompt 2 Section 9, 17)
+    const handleLocationUpdate = (loc) => {
       if (loc && loc.latitude && loc.longitude) {
         setProCoords({ lat: loc.latitude, lng: loc.longitude });
+        setLastGpsUpdate(Date.now());
         if (loc.distanceKm !== null && loc.distanceKm !== undefined) {
           setLiveDistance(loc.distanceKm);
         }
         if (loc.etaMinutes !== null && loc.etaMinutes !== undefined) {
           setLiveEta(loc.etaMinutes);
         }
+        if (loc.routeCoordinates && loc.routeCoordinates.length > 0 && polylineRef.current) {
+          polylineRef.current.setLatLngs(loc.routeCoordinates);
+        }
         setGpsStatus('live');
       }
-    });
+    };
 
-    // Handle real-time status change
-    socket.on('booking:status-change', (data) => {
+    socket.on('professional:location', handleLocationUpdate);
+    socket.on('professional:location-updated', handleLocationUpdate);
+
+    // Handle real-time status change (Prompt 2 Section 10, 17)
+    const handleStatusUpdate = (data) => {
       if (data && data.status) {
-        setBooking((prev) => ({ ...prev, ...data }));
-        setActiveStage(mapStatusToStage(data.status));
-        if (data.status === 'payment_completed' || data.status === 'completed') {
+        const norm = (data.normalizedStatus || data.status).toLowerCase();
+        setBooking((prev) => ({ ...prev, ...data, status: norm }));
+        setActiveStage(mapStatusToStage(norm));
+        if (norm === 'payment_completed' || norm === 'completed') {
           loadInvoice();
         }
       }
-    });
+    };
+
+    socket.on('booking:status', handleStatusUpdate);
+    socket.on('booking:status-change', handleStatusUpdate);
 
     // Handle bill submission
     socket.on('booking:bill-submitted', (data) => {
@@ -226,6 +239,15 @@ export default function LiveTrackingPage() {
       }
     };
   }, [bookingId]);
+
+  // GPS staleness timer (Prompt 2 Section 23)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const diffSecs = Math.floor((Date.now() - lastGpsUpdate) / 1000);
+      setSecondsSinceGpsUpdate(diffSecs);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [lastGpsUpdate]);
 
   // Working stopwatch timer
   useEffect(() => {
@@ -756,6 +778,28 @@ export default function LiveTrackingPage() {
                 <Compass size={17} />
               </div>
             </div>
+
+            {/* Location staleness indicator (Prompt 2 Section 23) */}
+            {secondsSinceGpsUpdate >= 20 && ['confirmed', 'on_the_way'].includes(activeStage) && (
+              <div
+                style={{
+                  background: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  borderRadius: '12px',
+                  padding: '0.65rem 0.85rem',
+                  fontSize: '0.825rem',
+                  color: '#92400e',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
+                <Clock size={16} color="#d97706" />
+                <span>
+                  Professional's location was last updated {secondsSinceGpsUpdate} seconds ago.
+                </span>
+              </div>
+            )}
 
             {/* ---------- STAGE 1: BOOKING CONFIRMED ---------- */}
             {activeStage === 'confirmed' && (

@@ -62,15 +62,15 @@ export default function ServiceExploreMap({
       map.removeLayer(circleRef.current);
     }
 
-    // 2. Add Soft Blue Coverage Circle (matching reference image)
+    // 2. Add Soft Blue 10 KM Coverage Circle (Prompt 2 Section 4)
     const circle = L.circle([userLat, userLng], {
-      radius: 2200, // 2.2 km radius
-      color: '#3b82f6',
-      weight: 1.5,
-      opacity: 0.5,
-      fillColor: '#60a5fa',
-      fillOpacity: 0.12,
-      dashArray: '4, 4',
+      radius: 10000, // 10 KM service boundary
+      color: '#2563eb',
+      weight: 2,
+      opacity: 0.6,
+      fillColor: '#3b82f6',
+      fillOpacity: 0.08,
+      dashArray: '6, 6',
     }).addTo(map);
     circleRef.current = circle;
 
