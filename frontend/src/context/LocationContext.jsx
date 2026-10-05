@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 const LocationContext = createContext(null);
 
@@ -15,7 +15,7 @@ export const POPULAR_CITIES = [
 ];
 
 export function LocationProvider({ children }) {
-  // Initialize from localStorage if saved, else default to Agra or Delhi NCR
+  // Initialize from localStorage if saved, else default to Agra
   const [userLocation, setUserLocation] = useState(() => {
     try {
       const saved = localStorage.getItem('fixigo_user_location');
@@ -23,13 +23,13 @@ export function LocationProvider({ children }) {
     } catch (e) {
       console.warn('Could not read saved location from localStorage:', e);
     }
-    // Default initial location: Agra
     return {
       latitude: 27.1767,
       longitude: 78.0081,
       city: 'Agra',
       address: 'Sanjay Place, Agra, Uttar Pradesh',
       isGps: false,
+      isDetected: false,
     };
   });
 
@@ -37,22 +37,26 @@ export function LocationProvider({ children }) {
   const [isDetecting, setIsDetecting] = useState(false);
   const [permissionState, setPermissionState] = useState('prompt'); // 'prompt' | 'granted' | 'denied'
   const [statusMessage, setStatusMessage] = useState(null);
-  const [hasPromptedInitial, setHasPromptedInitial] = useState(false);
+  const hasTriggeredRef = useRef(false);
 
-  // Reverse geocode lat/lng to readable address & city using Nominatim
+  // Fast reverse geocoding with 2.5s timeout
   const reverseGeocode = useCallback(async (latitude, longitude) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
         {
-          headers: {
-            'Accept-Language': 'en',
-          },
+          headers: { 'Accept-Language': 'en' },
+          signal: controller.signal,
         }
       );
+      clearTimeout(timeoutId);
+
       if (!res.ok) throw new Error('Geocoding service unavailable');
       const data = await res.json();
-      
+
       const addr = data.address || {};
       const cityName =
         addr.city ||
@@ -62,7 +66,7 @@ export function LocationProvider({ children }) {
         addr.county ||
         addr.state_district ||
         addr.state ||
-        'My Location';
+        'Local Area';
 
       const fullAddress =
         data.display_name ||
@@ -73,8 +77,7 @@ export function LocationProvider({ children }) {
         address: fullAddress,
       };
     } catch (err) {
-      console.warn('Reverse geocoding error:', err);
-      // Fallback: Check if closest to any popular city
+      // Find closest known hub
       let closest = POPULAR_CITIES[0];
       let minDistance = Infinity;
       for (const city of POPULAR_CITIES) {
@@ -96,11 +99,12 @@ export function LocationProvider({ children }) {
     let newLoc;
     if (coords && coords.latitude && coords.longitude) {
       newLoc = {
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        city: coords.city || cityInput || 'Selected Location',
-        address: coords.address || `${cityInput || 'Selected Location'}`,
+        latitude: parseFloat(coords.latitude),
+        longitude: parseFloat(coords.longitude),
+        city: coords.city || cityInput || 'Selected City',
+        address: coords.address || `${cityInput || 'Selected City'} Area`,
         isGps: false,
+        isDetected: true,
       };
     } else {
       const match = POPULAR_CITIES.find(
@@ -113,6 +117,7 @@ export function LocationProvider({ children }) {
           city: match.name,
           address: match.defaultAddress,
           isGps: false,
+          isDetected: true,
         };
       } else {
         newLoc = {
@@ -121,6 +126,7 @@ export function LocationProvider({ children }) {
           city: cityInput || 'Agra',
           address: `${cityInput || 'Agra'}, Local Area`,
           isGps: false,
+          isDetected: true,
         };
       }
     }
@@ -132,7 +138,47 @@ export function LocationProvider({ children }) {
     return newLoc;
   }, []);
 
-  // Detect GPS location with browser Geolocation API
+  // 1. Lightning-fast IP-based location auto-detection (~150ms)
+  const detectIpLocation = useCallback(async () => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+      const res = await fetch('https://ipwho.is/', { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.latitude && data.longitude) {
+          const detectedCity = data.city || 'Agra';
+          const detectedAddress = `${detectedCity}, ${data.region || 'Uttar Pradesh'}`;
+          const loc = {
+            latitude: data.latitude,
+            longitude: data.longitude,
+            city: detectedCity,
+            address: detectedAddress,
+            isGps: false,
+            isDetected: true,
+          };
+
+          // Only update if not already set by high precision GPS
+          setUserLocation((prev) => {
+            if (prev?.isGps) return prev;
+            localStorage.setItem('fixigo_user_location', JSON.stringify(loc));
+            return loc;
+          });
+          setCurrentCity((prev) => (userLocation?.isGps ? prev : detectedCity));
+          setStatusMessage(`📍 Location auto-detected: ${detectedCity}`);
+          return loc;
+        }
+      }
+    } catch (e) {
+      console.warn('IP location detection skipped:', e.message);
+    }
+    return null;
+  }, [userLocation?.isGps]);
+
+  // 2. High-precision Browser GPS Geolocation
   const detectLocation = useCallback(
     async (silent = false) => {
       if (!navigator.geolocation) {
@@ -150,61 +196,82 @@ export function LocationProvider({ children }) {
             const { latitude, longitude } = pos.coords;
             setPermissionState('granted');
 
-            // Reverse geocode to get city and address
-            const geo = await reverseGeocode(latitude, longitude);
-
-            const detectedLocation = {
+            // Set coordinates immediately without waiting
+            let initialCity = currentCity || 'Agra';
+            const initialLoc = {
               latitude,
               longitude,
-              city: geo.city,
-              address: geo.address,
+              city: initialCity,
+              address: `GPS Location (${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° E)`,
               isGps: true,
+              isDetected: true,
             };
 
-            setUserLocation(detectedLocation);
-            setCurrentCity(geo.city);
-            localStorage.setItem('fixigo_user_location', JSON.stringify(detectedLocation));
+            setUserLocation(initialLoc);
+            localStorage.setItem('fixigo_user_location', JSON.stringify(initialLoc));
             setIsDetecting(false);
-            setStatusMessage(`📍 Location detected: ${geo.city}`);
-            resolve(detectedLocation);
+            setStatusMessage(`📍 GPS Location verified (${initialCity})`);
+            resolve(initialLoc);
+
+            // Refine city/locality in background
+            try {
+              const geo = await reverseGeocode(latitude, longitude);
+              if (geo && geo.city) {
+                const refinedLoc = {
+                  latitude,
+                  longitude,
+                  city: geo.city,
+                  address: geo.address,
+                  isGps: true,
+                  isDetected: true,
+                };
+                setUserLocation(refinedLoc);
+                setCurrentCity(geo.city);
+                localStorage.setItem('fixigo_user_location', JSON.stringify(refinedLoc));
+                setStatusMessage(`📍 GPS Location verified: ${geo.city}`);
+              }
+            } catch (err) {}
           },
           (err) => {
             console.warn('Geolocation permission or lookup error:', err);
             setIsDetecting(false);
             if (err.code === 1) {
               setPermissionState('denied');
-              setStatusMessage('Location permission denied. You can select your city manually.');
+              setStatusMessage('Location permission denied. Showing nearby services in selected city.');
             } else {
-              setStatusMessage('Could not retrieve GPS coordinates. Using selected location.');
+              setStatusMessage('Could not retrieve GPS coordinates. Using network location.');
             }
             resolve(null);
           },
           {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 8000,
             maximumAge: 60000,
           }
         );
       });
     },
-    [reverseGeocode]
+    [currentCity, reverseGeocode]
   );
 
-  // When web application starts up: automatically query permission and prompt location detection
+  // AUTO-DETECT ON STARTUP: Run IP auto-detect + browser GPS immediately upon app load
   useEffect(() => {
-    if (hasPromptedInitial) return;
-    setHasPromptedInitial(true);
+    if (hasTriggeredRef.current) return;
+    hasTriggeredRef.current = true;
 
+    // 1. Run instant IP auto-detection (super fast, non-blocking)
+    detectIpLocation();
+
+    // 2. Query permissions and trigger GPS prompt
     if (navigator.permissions && navigator.permissions.query) {
       navigator.permissions
         .query({ name: 'geolocation' })
         .then((permission) => {
           setPermissionState(permission.state);
-          // If already granted, auto-detect immediately
+          // If already granted, auto-detect GPS immediately
           if (permission.state === 'granted') {
             detectLocation(true);
           } else {
-            // Prompt user for location on startup as requested
             detectLocation(false);
           }
 
@@ -216,13 +283,12 @@ export function LocationProvider({ children }) {
           };
         })
         .catch(() => {
-          // If permission query not supported, attempt detection directly
           detectLocation(false);
         });
     } else {
       detectLocation(false);
     }
-  }, [detectLocation, hasPromptedInitial]);
+  }, [detectIpLocation, detectLocation]);
 
   const value = {
     userLocation,

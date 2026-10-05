@@ -135,7 +135,7 @@ export default function ServicesPage() {
       }
 
       const res = await professionalsAPI.search(params);
-      const list = res.data.data.professionals || [];
+      const list = res.data?.data?.professionals || res.data?.professionals || [];
       setProfessionals(list);
 
       // Default selected pro to first (or best match) if not selected or current selection no longer exists
