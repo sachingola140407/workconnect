@@ -44,13 +44,15 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
     >
       <div
         style={{
-          background: '#ffffff',
+          background: 'var(--bg-card)',
+          color: 'var(--text-main)',
+          border: '1px solid var(--border)',
           borderRadius: '24px',
           width: '100%',
           maxWidth: '620px',
           maxHeight: '92vh',
           overflowY: 'auto',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          boxShadow: 'var(--shadow-lg)',
           position: 'relative',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -58,7 +60,7 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
         {/* Modal Top Bar */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)',
+            background: 'linear-gradient(135deg, #0b1320 0%, #ff6a00 100%)',
             color: 'white',
             padding: '1.5rem 1.75rem',
             borderTopLeftRadius: '24px',
@@ -84,10 +86,10 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
             </div>
             <div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
-                Getix Official Tax Invoice
+                SabFix Official Tax Invoice
               </h3>
               <span style={{ fontSize: '0.8rem', opacity: 0.85 }}>
-                {invoice.invoice_no || 'GTX-INVOICE'}
+                {invoice.invoice_no || 'SABFIX-INVOICE'}
               </span>
             </div>
           </div>
@@ -221,16 +223,16 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
               </strong>
             </div>
 
-            <div style={{ padding: '0.75rem 1rem', background: '#fafaf9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '0.75rem 1rem', background: 'var(--bg-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  Getix Marketplace Platform Fee (included):
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  SabFix Marketplace Platform Fee (included):
                 </span>
-                <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', opacity: 0.8 }}>
                   Covering 24/7 support, insurance &amp; technology
                 </span>
               </div>
-              <span style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                 ₹{platformFee.toFixed(2)}
               </span>
             </div>
@@ -239,8 +241,8 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
           {/* Grand Total Box */}
           <div
             style={{
-              background: '#f8fafc',
-              border: '1.5px solid #bfdbfe',
+              background: 'var(--bg-main)',
+              border: '1.5px solid rgba(255, 106, 0, 0.35)',
               borderRadius: '16px',
               padding: '1.25rem',
               display: 'flex',
@@ -250,14 +252,14 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
             }}
           >
             <div>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
                 Grand Total Paid
               </span>
               <div style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 700, marginTop: '0.1rem' }}>
                 ✓ Payment Verified &amp; Settled
               </div>
             </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e3a8a' }}>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--primary)' }}>
               ₹{totalAmount.toFixed(2)}
             </div>
           </div>

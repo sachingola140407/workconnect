@@ -1,4 +1,4 @@
-// Resilient Getix Data Engine
+// Resilient SabFix Data Engine
 // Configured strictly for real registered users with 10 KM max service radius per Prompt 2 requirements.
 // Zero fake professionals.
 
@@ -24,7 +24,7 @@ export const FALLBACK_PROFESSIONALS = [];
 export function getRegisteredProfessionals() {
   try {
     if (typeof window === 'undefined' || !window.localStorage) return [];
-    const raw = localStorage.getItem('getix_registered_professionals') || localStorage.getItem('fixigo_registered_professionals');
+    const raw = localStorage.getItem('sabfix_registered_professionals') || localStorage.getItem('getix_registered_professionals');
     return raw ? JSON.parse(raw) : [];
   } catch (e) {
     return [];
@@ -46,7 +46,7 @@ export function saveRegisteredProfessional(pro) {
     } else {
       list.push(pro);
     }
-    localStorage.setItem('getix_registered_professionals', JSON.stringify(list));
+    localStorage.setItem('sabfix_registered_professionals', JSON.stringify(list));
   } catch (e) {}
 }
 

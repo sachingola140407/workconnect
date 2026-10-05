@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { servicesAPI } from '../services/api';
 import LocationPickerMap from '../components/LocationPickerMap';
+import SabFixBrand from '../components/SabFixBrand';
 import {
   UserPlus,
   AlertCircle,
@@ -85,7 +86,7 @@ export default function RegisterPage() {
 
     if (role === 'professional') {
       payload.professionalDetails = {
-        bio: bio || `Certified ${name} delivering top-rated home repairs and services on Getix.`,
+        bio: bio || `Certified ${name} delivering top-rated home repairs and services on SabFix.`,
         experience: parseInt(experience, 10) || 0,
         price: parseFloat(price) || 300,
         address: address || proLocation.address || 'Local Area',
@@ -120,7 +121,7 @@ export default function RegisterPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '3rem 1.25rem',
-        background: 'radial-gradient(ellipse at top, #eff6ff 0%, #f8fafc 60%, #ffffff 100%)',
+        background: 'var(--bg-main)',
       }}
     >
       <div className="animate-fade-in" style={{ width: '100%', maxWidth: '540px' }}>
@@ -129,35 +130,16 @@ export default function RegisterPage() {
           style={{
             padding: '2.5rem 2.25rem',
             borderRadius: '22px',
-            border: '1px solid rgba(226, 232, 240, 0.9)',
-            boxShadow: '0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.9) inset',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-lg)',
+            background: 'var(--bg-card)',
           }}
         >
           {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <div
-              className="animate-pulse-glow"
-              style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '16px',
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                color: 'white',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '1rem',
-                boxShadow: '0 8px 20px rgba(37, 99, 235, 0.3)',
-              }}
-            >
-              <UserPlus size={26} />
-            </div>
-
-            <h1 style={{ fontSize: '1.85rem', fontWeight: 850, color: 'var(--secondary)', letterSpacing: '-0.02em' }}>
-              Join Getix
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-              Create your real account as a customer or service partner
+          <div style={{ textAlign: 'center', marginBottom: '1.85rem' }}>
+            <SabFixBrand size="lg" layout="vertical" />
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.75rem' }}>
+              Create your account as a customer or service partner
             </p>
           </div>
 
@@ -168,7 +150,7 @@ export default function RegisterPage() {
               gridTemplateColumns: '1fr 1fr',
               gap: '0.65rem',
               marginBottom: '1.75rem',
-              background: '#f1f5f9',
+              background: 'var(--bg-subtle)',
               padding: '0.35rem',
               borderRadius: '14px',
             }}
@@ -180,9 +162,9 @@ export default function RegisterPage() {
               style={{
                 padding: '0.75rem',
                 borderRadius: '10px',
-                background: role === 'customer' ? '#ffffff' : 'transparent',
-                color: role === 'customer' ? 'var(--primary)' : '#64748b',
-                boxShadow: role === 'customer' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                background: role === 'customer' ? 'var(--bg-card)' : 'transparent',
+                color: role === 'customer' ? 'var(--primary)' : 'var(--text-muted)',
+                boxShadow: role === 'customer' ? 'var(--shadow-sm)' : 'none',
                 fontWeight: 750,
                 fontSize: '0.9rem',
               }}
@@ -198,9 +180,9 @@ export default function RegisterPage() {
               style={{
                 padding: '0.75rem',
                 borderRadius: '10px',
-                background: role === 'professional' ? '#ffffff' : 'transparent',
-                color: role === 'professional' ? 'var(--primary)' : '#64748b',
-                boxShadow: role === 'professional' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                background: role === 'professional' ? 'var(--bg-card)' : 'transparent',
+                color: role === 'professional' ? 'var(--primary)' : 'var(--text-muted)',
+                boxShadow: role === 'professional' ? 'var(--shadow-sm)' : 'none',
                 fontWeight: 750,
                 fontSize: '0.9rem',
               }}

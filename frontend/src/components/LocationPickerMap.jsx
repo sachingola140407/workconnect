@@ -99,10 +99,10 @@ export default function LocationPickerMap({
         className: 'location-picker-pin',
         html: `
           <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
-            <div style="width: 38px; height: 38px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(37,99,235,0.45); border: 3px solid white; font-size: 18px; cursor: grab;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #ff6a00; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(255,106,0,0.45); border: 3px solid white; font-size: 18px; cursor: grab;">
               📍
             </div>
-            <div style="width: 14px; height: 14px; background: rgba(37,99,235,0.4); border-radius: 50%; margin-top: -6px;"></div>
+            <div style="width: 14px; height: 14px; background: rgba(255,106,0,0.4); border-radius: 50%; margin-top: -6px;"></div>
           </div>
         `,
         iconSize: [38, 46],
@@ -253,7 +253,7 @@ export default function LocationPickerMap({
           onClick={handleDetectGPS}
           disabled={isLocating}
           className="btn btn-secondary btn-sm"
-          style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8' }}
+          style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', background: 'rgba(255, 106, 0, 0.1)', borderColor: 'rgba(255, 106, 0, 0.3)', color: 'var(--primary)' }}
         >
           <Navigation size={13} className={isLocating ? 'spin' : ''} />
           {isLocating ? 'Locating...' : 'Auto-Select My Location (GPS)'}

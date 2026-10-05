@@ -56,10 +56,10 @@ app.use('/api', apiRateLimiter);
 // 5. Root endpoint
 app.get('/', (req, res) => {
   res.status(200).json({
-    message: 'Welcome to Getix API - On-Demand Local Services & Home Repairs',
+    message: 'Welcome to SabFix API - On-Demand Local Services & Home Repairs',
     version: '1.0.0',
     documentation: '/api/health',
-    phase: 'Getix - Professional Profiles, Services & Booking System',
+    phase: 'SabFix - Professional Profiles, Services & Booking System',
   });
 });
 
@@ -81,7 +81,7 @@ app.use(errorHandler);
 if (require.main === module) {
   server.listen(PORT, '0.0.0.0', () => {
     console.log(`====================================================`);
-    console.log(` Getix Backend Server + Socket.IO on port ${PORT}`);
+    console.log(` SabFix Backend Server + Socket.IO on port ${PORT}`);
     console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(` Health check: http://localhost:${PORT}/api/health`);
     console.log(` API Endpoint: http://localhost:${PORT}/api`);

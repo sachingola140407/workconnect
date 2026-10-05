@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: fixigo-backend
+    name: sabfix-backend
     env: node
     plan: free
     region: oregon
@@ -12,7 +12,7 @@ services:
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: fixigo-db
+          name: sabfix-db
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
@@ -25,10 +25,10 @@ services:
       - key: RAZORPAY_KEY_SECRET
         value: s9G7aL7yG5xL8v9K4w1m0o1p
       - key: RAZORPAY_WEBHOOK_SECRET
-        value: fixigo_webhook_secret_2026
+        value: sabfix_webhook_secret_2026
 
 databases:
-  - name: fixigo-db
+  - name: sabfix-db
     plan: free
     region: oregon
     databaseName: workconnect

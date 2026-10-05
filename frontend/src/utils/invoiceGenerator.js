@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 
 /**
- * Generate and download a PDF invoice for a Getix booking
+ * Generate and download a PDF invoice for a SabFix booking
  * @param {Object} invoice - Invoice details object
  */
 export function downloadInvoicePDF(invoice) {
@@ -14,8 +14,8 @@ export function downloadInvoicePDF(invoice) {
   });
 
   const pageWidth = doc.internal.pageSize.getWidth();
-  const primaryColor = [30, 58, 138]; // Deep blue #1e3a8a
-  const secondaryColor = [30, 64, 175]; // #1e40af
+  const primaryColor = [255, 106, 0]; // SabFix Orange #ff6a00
+  const secondaryColor = [11, 25, 44]; // SabFix Dark #0b192c
   const grayColor = [100, 116, 139]; // #64748b
   const darkColor = [15, 23, 42]; // #0f172a
   const greenColor = [16, 185, 129]; // #10b981
@@ -28,11 +28,11 @@ export function downloadInvoicePDF(invoice) {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(22);
-  doc.text('GETIX', 14, 18);
+  doc.text('SABFIX', 14, 18);
 
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('On-Demand Local Services & Repairs', 54, 17);
+  doc.text('Get It Fixed. - On-Demand Services & Repairs', 54, 17);
 
   // Status Badge
   doc.setFillColor(...greenColor);
@@ -173,7 +173,7 @@ export function downloadInvoicePDF(invoice) {
   doc.text('Subtotal:', pageWidth - 84, y + 7);
   doc.text(`₹${parseFloat(invoice.total_amount || 0).toFixed(2)}`, pageWidth - 36, y + 7);
 
-  doc.text('Getix Platform Fee (incl.):', pageWidth - 84, y + 14);
+  doc.text('SabFix Platform Fee (incl.):', pageWidth - 84, y + 14);
   doc.text(`₹${parseFloat(invoice.platform_fee || 50).toFixed(2)}`, pageWidth - 36, y + 14);
 
   doc.setDrawColor(203, 213, 225);
@@ -195,9 +195,9 @@ export function downloadInvoicePDF(invoice) {
   y += 5;
   doc.text('This is a computer-generated tax invoice and does not require a physical signature.', 14, y);
   y += 5;
-  doc.text('Thank you for choosing Getix! For support, contact support@getix.in or call 1800-GETIX.', 14, y);
+  doc.text('Thank you for choosing SabFix! For support, contact support@sabfix.in or call 1800-SABFIX.', 14, y);
 
   // Save the PDF
-  const filename = `${invoice.invoice_no || 'Getix-Invoice'}.pdf`;
+  const filename = `${invoice.invoice_no || 'SabFix-Invoice'}.pdf`;
   doc.save(filename);
 }

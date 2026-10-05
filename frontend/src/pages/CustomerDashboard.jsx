@@ -73,7 +73,7 @@ export default function CustomerDashboard() {
   };
 
   const services = [
-    { name: 'Plumber', category: 'Plumber', icon: <Wrench size={22} color="#2563eb" /> },
+    { name: 'Plumber', category: 'Plumber', icon: <Wrench size={22} color="var(--primary)" /> },
     { name: 'Electrician', category: 'Electrician', icon: <Zap size={22} color="#f59e0b" /> },
     { name: 'AC Repair', category: 'AC Repairer', icon: <Wind size={22} color="#06b6d4" /> },
     { name: 'Carpenter', category: 'Carpenter', icon: <Hammer size={22} color="#d97706" /> },
@@ -146,7 +146,7 @@ export default function CustomerDashboard() {
               <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
                 Welcome back, {user?.name}!
               </h1>
-              <span className="badge badge-customer">Getix Customer</span>
+              <span className="badge badge-customer">SabFix Customer</span>
             </div>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
               Book nearby plumbers, electricians, and technicians or track your active service requests.
@@ -184,10 +184,10 @@ export default function CustomerDashboard() {
           </div>
         )}
 
-        {/* How Getix Works in 3 Easy Steps Guide */}
-        <div style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid #bfdbfe', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '2rem' }}>
+        {/* How SabFix Works in 3 Easy Steps Guide */}
+        <div style={{ background: 'var(--why-choose-bg)', border: '1px solid var(--why-choose-border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-            <Sparkles size={16} /> How Getix Works For You
+            <Sparkles size={16} /> How SabFix Works For You
           </div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.35rem' }}>
             Get Trusted Local Help at Your Doorstep in 3 Simple Steps
@@ -197,8 +197,8 @@ export default function CustomerDashboard() {
           </p>
 
           <div className="grid-3" style={{ gap: '1rem' }}>
-            <div style={{ background: 'white', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#dbeafe', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.75rem' }}>
+            <div style={{ background: 'var(--bg-card)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.75rem' }}>
                 1
               </div>
               <strong style={{ fontSize: '1rem', display: 'block', color: 'var(--secondary)', marginBottom: '0.25rem' }}>
@@ -209,7 +209,7 @@ export default function CustomerDashboard() {
               </p>
             </div>
 
-            <div style={{ background: 'white', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ background: 'var(--bg-card)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.75rem' }}>
                 2
               </div>
@@ -221,7 +221,7 @@ export default function CustomerDashboard() {
               </p>
             </div>
 
-            <div style={{ background: 'white', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ background: 'var(--bg-card)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.75rem' }}>
                 3
               </div>
@@ -236,7 +236,7 @@ export default function CustomerDashboard() {
         </div>
 
         {/* Quick Service Booking Grid */}
-        <div className="card" style={{ marginBottom: '2rem', background: '#ffffff' }}>
+        <div className="card" style={{ marginBottom: '2rem', background: 'var(--bg-card)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <div>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--secondary)' }}>
@@ -264,7 +264,7 @@ export default function CustomerDashboard() {
                   alignItems: 'center',
                   gap: '0.85rem',
                   padding: '1rem',
-                  background: '#f8fafc',
+                  background: 'var(--bg-subtle)',
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-md)',
                   cursor: 'pointer',
@@ -272,14 +272,14 @@ export default function CustomerDashboard() {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = 'var(--primary)';
-                  e.currentTarget.style.background = '#eff6ff';
+                  e.currentTarget.style.background = 'var(--primary-light)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = 'var(--border)';
-                  e.currentTarget.style.background = '#f8fafc';
+                  e.currentTarget.style.background = 'var(--bg-subtle)';
                 }}
               >
-                <div style={{ background: 'white', padding: '0.5rem', borderRadius: 'var(--radius-sm)', display: 'flex', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ background: 'var(--bg-card)', padding: '0.5rem', borderRadius: 'var(--radius-sm)', display: 'flex', boxShadow: 'var(--shadow-sm)' }}>
                   {svc.icon}
                 </div>
                 <div>
@@ -296,12 +296,12 @@ export default function CustomerDashboard() {
           {/* Customer Profile Card */}
           <div className="card">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700 }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--primary-gradient)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700 }}>
                 {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{user?.name}</h3>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Getix Member</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>SabFix Member</span>
               </div>
             </div>
 

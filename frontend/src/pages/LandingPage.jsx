@@ -192,7 +192,7 @@ export default function LandingPage() {
                 }}
               >
                 Find Skilled Professionals <br />
-                <span style={{ color: '#2563eb' }}>Near You, Instantly</span>
+                <span style={{ color: 'var(--primary)' }}>Near You, Instantly</span>
               </h1>
 
               {/* Subtitle */}
@@ -212,9 +212,9 @@ export default function LandingPage() {
               <form onSubmit={handleSearch} className="hero-search-form">
                 {/* Location Input */}
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <MapPin size={22} color="#2563eb" style={{ flexShrink: 0 }} />
+                  <MapPin size={22} color="var(--primary)" style={{ flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
-                    <span style={{ display: 'block', fontSize: '0.725rem', color: '#94a3b8', fontWeight: 600 }}>
+                    <span style={{ display: 'block', fontSize: '0.725rem', color: 'var(--text-light)', fontWeight: 600 }}>
                       Enter your location
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -229,7 +229,7 @@ export default function LandingPage() {
                           width: '100%',
                           fontSize: '0.925rem',
                           fontWeight: 700,
-                          color: '#0f172a',
+                          color: 'var(--text-main)',
                           padding: 0,
                           background: 'transparent',
                         }}
@@ -242,7 +242,7 @@ export default function LandingPage() {
                           background: 'none',
                           border: 'none',
                           cursor: 'pointer',
-                          color: isDetecting ? '#2563eb' : '#94a3b8',
+                          color: isDetecting ? 'var(--primary)' : 'var(--text-light)',
                           display: 'flex',
                           padding: '2px',
                         }}
@@ -254,13 +254,13 @@ export default function LandingPage() {
                 </div>
 
                 {/* Vertical Divider */}
-                <div className="form-divider" style={{ width: '1px', height: '36px', background: '#e2e8f0' }} />
+                <div className="form-divider" style={{ width: '1px', height: '36px', background: 'var(--border)' }} />
 
                 {/* Service Select */}
                 <div style={{ flex: 1.2, display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <Wrench size={22} color="#2563eb" style={{ flexShrink: 0 }} />
+                  <Wrench size={22} color="var(--primary)" style={{ flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
-                    <span style={{ display: 'block', fontSize: '0.725rem', color: '#94a3b8', fontWeight: 600 }}>
+                    <span style={{ display: 'block', fontSize: '0.725rem', color: 'var(--text-light)', fontWeight: 600 }}>
                       Select service
                     </span>
                     <select
@@ -272,7 +272,7 @@ export default function LandingPage() {
                         width: '100%',
                         fontSize: '0.925rem',
                         fontWeight: 700,
-                        color: selectedService ? '#0f172a' : '#64748b',
+                        color: selectedService ? 'var(--text-main)' : 'var(--text-muted)',
                         padding: 0,
                         background: 'transparent',
                         cursor: 'pointer',
@@ -296,7 +296,7 @@ export default function LandingPage() {
                   type="submit"
                   className="btn"
                   style={{
-                    background: '#2563eb',
+                    background: 'var(--primary)',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: '16px',
@@ -307,7 +307,7 @@ export default function LandingPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
+                    boxShadow: '0 4px 14px rgba(255, 106, 0, 0.35)',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
@@ -327,7 +327,7 @@ export default function LandingPage() {
                   marginTop: '1.75rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#334155',
+                  color: 'var(--text-main)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
@@ -335,7 +335,7 @@ export default function LandingPage() {
                   <span>Verified Professionals</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  <Tag size={17} color="#2563eb" />
+                  <Tag size={17} color="var(--primary)" />
                   <span>Affordable Rates (Visiting ₹99)</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
@@ -411,7 +411,7 @@ export default function LandingPage() {
             <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <img
                 src="/hero-technician.png"
-                alt="Getix Verified Professionals and Map Tracking"
+                alt="SabFix Verified Professionals and Map Tracking"
                 style={{
                   width: '100%',
                   maxWidth: '640px',
@@ -516,7 +516,7 @@ export default function LandingPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.4rem',
-                color: '#2563eb',
+                color: 'var(--primary)',
                 fontWeight: 700,
                 fontSize: '0.95rem',
                 textDecoration: 'none',
@@ -618,12 +618,12 @@ export default function LandingPage() {
                     marginBottom: '0.35rem',
                   }}
                 >
-                  WHY CHOOSE GETIX
+                  WHY CHOOSE SABFIX
                 </span>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '0.5rem' }}>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
                   Fast. Reliable. Local.
                 </h3>
-                <p style={{ fontSize: '0.875rem', color: '#64748b', lineHeight: 1.55, marginBottom: '1.25rem' }}>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '1.25rem' }}>
                   We make it easy to find trusted professionals near you, with real reviews, transparent pricing and secure payments.
                 </p>
 
@@ -633,14 +633,14 @@ export default function LandingPage() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.4rem',
-                    background: '#2563eb',
+                    background: 'var(--primary)',
                     color: '#ffffff',
                     padding: '0.65rem 1.25rem',
                     borderRadius: '12px',
                     fontWeight: 700,
                     fontSize: '0.875rem',
                     textDecoration: 'none',
-                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                    boxShadow: '0 4px 12px rgba(255, 106, 0, 0.25)',
                   }}
                 >
                   Learn More <ArrowRight size={15} />
@@ -687,8 +687,8 @@ export default function LandingPage() {
                       width: '38px',
                       height: '38px',
                       borderRadius: '50%',
-                      background: '#dbeafe',
-                      color: '#2563eb',
+                      background: 'var(--primary-light)',
+                      color: 'var(--primary)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -833,8 +833,8 @@ export default function LandingPage() {
                 to="/services"
                 className="btn"
                 style={{
-                  background: '#f59e0b',
-                  color: '#0f172a',
+                  background: 'var(--primary)',
+                  color: '#ffffff',
                   fontWeight: 800,
                   padding: '0.9rem 1.75rem',
                   fontSize: '1rem',
@@ -843,9 +843,10 @@ export default function LandingPage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
+                  boxShadow: '0 4px 14px rgba(255, 106, 0, 0.4)',
                 }}
               >
-                Explore Getix Services <ArrowRight size={18} />
+                Explore SabFix Services <ArrowRight size={18} />
               </Link>
             </div>
           </div>

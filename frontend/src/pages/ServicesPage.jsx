@@ -82,7 +82,7 @@ export default function ServicesPage() {
       case 'Zap':
         return <Zap size={18} color="#f59e0b" />;
       case 'Wrench':
-        return <Wrench size={18} color="#2563eb" />;
+        return <Wrench size={18} color="var(--primary)" />;
       case 'Wind':
         return <Wind size={18} color="#06b6d4" />;
       case 'Hammer':
@@ -254,7 +254,7 @@ export default function ServicesPage() {
               marginBottom: '0.35rem',
             }}
           >
-            <Wrench size={16} /> Getix Service Network
+            <Wrench size={16} /> SabFix Service Network
           </div>
           <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--secondary)', letterSpacing: '-0.02em' }}>
             Find Skilled Professionals Near You
@@ -269,8 +269,8 @@ export default function ServicesPage() {
           className="card"
           style={{
             marginBottom: '1.75rem',
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
             borderRadius: '16px',
             padding: '1rem 1.35rem',
           }}
@@ -290,18 +290,18 @@ export default function ServicesPage() {
                   width: '40px',
                   height: '40px',
                   borderRadius: '50%',
-                  background: '#dbeafe',
+                  background: 'var(--primary-light)',
                   color: 'var(--primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 2px 6px rgba(37,99,235,0.15)',
+                  boxShadow: '0 2px 6px rgba(255,106,0,0.15)',
                 }}
               >
                 <Navigation size={19} className={isDetecting ? 'spin' : ''} />
               </div>
               <div>
-                <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block' }}>
+                <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)', display: 'block' }}>
                   {statusMessage ||
                     `Location Active: ${currentCity} (High-precision PostGIS distance matching)`}
                 </strong>
@@ -514,8 +514,8 @@ export default function ServicesPage() {
         {/* MAIN SPLIT VIEW: SELECTED SPECIALIST CARD (LEFT) & INTERACTIVE MAP (RIGHT) (EXACT LAYOUT FROM REFERENCE IMAGE) */}
         {loading ? (
           <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-muted)' }}>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b' }}>
-              Finding skilled Getix professionals near {currentCity}...
+            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)' }}>
+              Finding skilled SabFix professionals near {currentCity}...
             </div>
             <p style={{ fontSize: '0.875rem', marginTop: '0.35rem' }}>
               Querying PostGIS geospatial database for nearest verified specialists
@@ -551,11 +551,11 @@ export default function ServicesPage() {
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
-                  border: '2px solid #2563eb',
+                  border: '2px solid var(--primary)',
                   borderRadius: '18px',
                   padding: '1.5rem',
-                  boxShadow: '0 12px 30px rgba(37,99,235,0.08)',
-                  background: '#ffffff',
+                  boxShadow: 'var(--shadow-md)',
+                  background: 'var(--bg-card)',
                 }}
               >
                 {/* BEST MATCH Top Right Badge */}
@@ -565,7 +565,7 @@ export default function ServicesPage() {
                       position: 'absolute',
                       top: '-12px',
                       right: '18px',
-                      background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                      background: 'var(--primary-gradient)',
                       color: 'white',
                       padding: '0.25rem 0.85rem',
                       borderRadius: '9999px',
@@ -575,7 +575,7 @@ export default function ServicesPage() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.35rem',
-                      boxShadow: '0 4px 10px rgba(37,99,235,0.3)',
+                      boxShadow: '0 4px 10px rgba(255,106,0,0.3)',
                     }}
                   >
                     <Star size={12} fill="white" /> BEST MATCH
@@ -589,7 +589,7 @@ export default function ServicesPage() {
                       width: '64px',
                       height: '64px',
                       borderRadius: '16px',
-                      background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                      background: 'var(--primary-gradient)',
                       color: 'white',
                       display: 'flex',
                       alignItems: 'center',
@@ -597,7 +597,7 @@ export default function ServicesPage() {
                       fontSize: '1.75rem',
                       fontWeight: 850,
                       flexShrink: 0,
-                      boxShadow: '0 4px 14px rgba(37,99,235,0.25)',
+                      boxShadow: '0 4px 14px rgba(255,106,0,0.25)',
                     }}
                   >
                     {selectedPro.name.charAt(0).toUpperCase()}
@@ -633,8 +633,8 @@ export default function ServicesPage() {
                         style={{
                           fontSize: '0.8rem',
                           fontWeight: 700,
-                          background: '#eff6ff',
-                          color: '#2563eb',
+                          background: 'var(--primary-light)',
+                          color: 'var(--primary)',
                           padding: '0.2rem 0.65rem',
                           borderRadius: '6px',
                           display: 'inline-block',
@@ -684,17 +684,17 @@ export default function ServicesPage() {
 
                   <div
                     style={{
-                      background: '#eff6ff',
+                      background: 'var(--primary-light)',
                       padding: '0.25rem 0.35rem',
                       borderRadius: '6px',
-                      border: '1px solid #bfdbfe',
+                      border: '1px solid var(--border)',
                       textAlign: 'center',
                     }}
                   >
-                    <span style={{ color: '#1d4ed8', fontSize: '0.7rem', display: 'block', fontWeight: 700 }}>
+                    <span style={{ color: 'var(--primary)', fontSize: '0.7rem', display: 'block', fontWeight: 750 }}>
                       Hourly Rate
                     </span>
-                    <strong style={{ color: '#2563eb', fontSize: '0.95rem' }}>
+                    <strong style={{ color: 'var(--primary)', fontSize: '0.95rem' }}>
                       ₹{selectedPro.price}/hr
                     </strong>
                   </div>
@@ -934,13 +934,13 @@ export default function ServicesPage() {
                       flexDirection: 'column',
                       borderRadius: '16px',
                       padding: '1.25rem',
-                      border: isSelected ? '2px solid #2563eb' : '1px solid #e2e8f0',
+                      border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border)',
                       boxShadow: isSelected
-                        ? '0 8px 24px rgba(37,99,235,0.12)'
-                        : '0 2px 8px rgba(0,0,0,0.04)',
+                        ? '0 8px 24px rgba(255,106,0,0.18)'
+                        : 'var(--shadow-sm)',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      background: isSelected ? '#fafcff' : '#ffffff',
+                      background: isSelected ? 'var(--primary-light)' : 'var(--bg-card)',
                     }}
                   >
                     {/* Header */}
@@ -951,9 +951,9 @@ export default function ServicesPage() {
                           height: '46px',
                           borderRadius: '12px',
                           background: isSelected
-                            ? 'linear-gradient(135deg, #2563eb, #1d4ed8)'
-                            : '#eff6ff',
-                          color: isSelected ? 'white' : '#2563eb',
+                            ? 'var(--primary-gradient)'
+                            : 'var(--primary-light)',
+                          color: isSelected ? 'white' : 'var(--primary)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -991,7 +991,7 @@ export default function ServicesPage() {
                           style={{
                             fontSize: '0.75rem',
                             fontWeight: 700,
-                            color: '#2563eb',
+                            color: 'var(--primary)',
                             display: 'inline-block',
                             marginTop: '0.15rem',
                           }}
@@ -1010,20 +1010,20 @@ export default function ServicesPage() {
                         fontSize: '0.825rem',
                         marginBottom: '0.85rem',
                         padding: '0.5rem 0.65rem',
-                        background: '#f8fafc',
+                        background: 'var(--bg-subtle)',
                         borderRadius: '8px',
                       }}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontWeight: 700 }}>
                         <Star size={13} fill="#f59e0b" color="#f59e0b" />
-                        {pro.rating.toFixed(1)} <span style={{ color: '#94a3b8', fontWeight: 400 }}>({pro.review_count})</span>
+                        {pro.rating.toFixed(1)} <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>({pro.review_count})</span>
                       </span>
 
-                      <span style={{ color: '#475569', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>
                         {pro.distance_km !== null ? `📍 ${pro.distance_km} km` : '📍 Nearby'}
                       </span>
 
-                      <span style={{ color: '#2563eb', fontWeight: 750 }}>
+                      <span style={{ color: 'var(--primary)', fontWeight: 750 }}>
                         ₹{pro.price}/hr
                       </span>
                     </div>
@@ -1103,7 +1103,7 @@ export default function ServicesPage() {
               }}
             >
               <div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 800 }}>Request Service from Getix Partner</h3>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800 }}>Request Service from SabFix Partner</h3>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   Professional: <strong>{selectedProForBooking.name}</strong> &bull; Rate: ₹{selectedProForBooking.price}/hr
                 </span>
@@ -1284,7 +1284,7 @@ export default function ServicesPage() {
 
                   {/* Interactive Map Location Picker for Customer */}
                   {showBookingMapPicker && (
-                    <div style={{ marginTop: '0.75rem', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '0.85rem', background: '#eff6ff' }}>
+                    <div style={{ marginTop: '0.75rem', border: '1px solid var(--border)', borderRadius: '12px', padding: '0.85rem', background: 'var(--primary-light)' }}>
                       <LocationPickerMap
                         initialLat={bookingLocation?.latitude || userLocation?.latitude}
                         initialLng={bookingLocation?.longitude || userLocation?.longitude}
@@ -1383,7 +1383,7 @@ export default function ServicesPage() {
                     width: '56px',
                     height: '56px',
                     borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                    background: 'var(--primary-gradient)',
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',

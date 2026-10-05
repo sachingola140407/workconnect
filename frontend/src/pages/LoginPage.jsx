@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, AlertCircle, Eye, EyeOff, Shield, Mail, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Mail, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import SabFixBrand from '../components/SabFixBrand';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -48,7 +49,7 @@ export default function LoginPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '3rem 1.25rem',
-        background: 'radial-gradient(ellipse at top, #eff6ff 0%, #f8fafc 60%, #ffffff 100%)',
+        background: 'var(--bg-main)',
       }}
     >
       <div className="animate-fade-in" style={{ width: '100%', maxWidth: '440px' }}>
@@ -57,35 +58,16 @@ export default function LoginPage() {
           style={{
             padding: '2.5rem 2rem',
             borderRadius: '20px',
-            border: '1px solid rgba(226, 232, 240, 0.9)',
-            boxShadow: '0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.9) inset',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-lg)',
+            background: 'var(--bg-card)',
           }}
         >
-          {/* Brand Icon & Heading */}
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <div
-              className="animate-pulse-glow"
-              style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '16px',
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                color: 'white',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '1rem',
-                boxShadow: '0 8px 20px rgba(37, 99, 235, 0.3)',
-              }}
-            >
-              <Shield size={28} />
-            </div>
-
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 855, color: 'var(--secondary)', letterSpacing: '-0.02em' }}>
-              Welcome to Getix
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-              Sign in with your real account credentials
+          {/* SabFix Brand Icon, Styled Name & Tagline */}
+          <div style={{ textAlign: 'center', marginBottom: '1.85rem' }}>
+            <SabFixBrand size="lg" layout="vertical" />
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.75rem' }}>
+              Sign in to your account
             </p>
           </div>
 
@@ -101,7 +83,7 @@ export default function LoginPage() {
               <label
                 className="form-label"
                 htmlFor="email"
-                style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155' }}
+                style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}
               >
                 Email Address
               </label>
@@ -112,7 +94,7 @@ export default function LoginPage() {
                     left: '14px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    color: '#94a3b8',
+                    color: 'var(--text-light)',
                     display: 'flex',
                   }}
                 >
@@ -142,7 +124,7 @@ export default function LoginPage() {
                 <label
                   className="form-label"
                   htmlFor="password"
-                  style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', margin: 0 }}
+                  style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', margin: 0 }}
                 >
                   Password
                 </label>
@@ -152,7 +134,7 @@ export default function LoginPage() {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#64748b',
+                    color: 'var(--text-muted)',
                     fontSize: '0.8rem',
                     cursor: 'pointer',
                     display: 'flex',
@@ -173,7 +155,7 @@ export default function LoginPage() {
                     left: '14px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    color: '#94a3b8',
+                    color: 'var(--text-light)',
                     display: 'flex',
                   }}
                 >
@@ -227,12 +209,12 @@ export default function LoginPage() {
             style={{
               marginTop: '2rem',
               paddingTop: '1.5rem',
-              borderTop: '1px solid #f1f5f9',
+              borderTop: '1px solid var(--border)',
               display: 'flex',
               justifyContent: 'center',
               gap: '1.25rem',
               fontSize: '0.8rem',
-              color: '#64748b',
+              color: 'var(--text-muted)',
             }}
           >
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -251,7 +233,7 @@ export default function LoginPage() {
               color: 'var(--text-muted)',
             }}
           >
-            New to Getix?{' '}
+            New to SabFix?{' '}
             <Link
               to="/register"
               style={{

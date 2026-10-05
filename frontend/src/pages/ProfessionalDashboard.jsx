@@ -111,7 +111,7 @@ export default function ProfessionalDashboard() {
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('[Pro Socket] Connected to Getix gateway');
+      console.log('[Pro Socket] Connected to SabFix gateway');
     });
 
     socket.on('payment:cash-customer-paid', ({ bookingId }) => {
@@ -287,7 +287,7 @@ export default function ProfessionalDashboard() {
         },
       });
       setIsEditing(false);
-      setMessage('Professional profile updated successfully on Getix!');
+      setMessage('Professional profile updated successfully on SabFix!');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update professional profile');
     } finally {
@@ -403,7 +403,7 @@ export default function ProfessionalDashboard() {
     setIsConfirmingCash(true);
     try {
       const res = await paymentsAPI.confirmCashReceived({ bookingId: jobId });
-      setMessage('Cash payment confirmed and invoice generated! Getix ₹50 platform fee recorded as due.');
+      setMessage('Cash payment confirmed and invoice generated! SabFix ₹50 platform fee recorded as due.');
       setSelectedJobForPayment(null);
       fetchJobs();
       fetchEarnings();
@@ -424,8 +424,8 @@ export default function ProfessionalDashboard() {
           key: 'rzp_test_1DP5mmOlF5G5ag',
           amount: Math.round(amount * 100), // ₹50.00 = 5000 paise
           currency: 'INR',
-          name: 'Getix Partner Settlement',
-          description: 'Payment of ₹50 Getix Platform Fee',
+          name: 'SabFix Partner Settlement',
+          description: 'Payment of ₹50 SabFix Platform Fee',
           handler: async function (response) {
             await paymentsAPI.settlePlatformFee({
               paymentId,
@@ -437,10 +437,10 @@ export default function ProfessionalDashboard() {
           },
           prefill: {
             name: user?.name || 'Professional Partner',
-            email: user?.email || 'partner@getix.in',
+            email: user?.email || 'partner@sabfix.in',
             contact: user?.phone || '9876543210',
           },
-          theme: { color: '#1e3a8a' },
+          theme: { color: '#ff6a00' },
           modal: {
             ondismiss: function () {
               setSettlingFeeId(null);
@@ -486,14 +486,14 @@ export default function ProfessionalDashboard() {
   const previewNet = Math.max(0, previewTotal - 50.0);
 
   return (
-    <div style={{ padding: '2.5rem 0', background: '#f8fafc', minHeight: 'calc(100vh - 76px)' }}>
+    <div style={{ padding: '2.5rem 0', background: 'var(--bg-main)', minHeight: 'calc(100vh - 76px)' }}>
       <div className="container">
         {/* Header */}
         <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
-                Getix Partner Operations
+                SabFix Partner Operations
               </h1>
               <span className="badge badge-professional">Verified Partner</span>
             </div>
@@ -624,11 +624,11 @@ export default function ProfessionalDashboard() {
             </div>
 
             {/* 5. Net Earnings */}
-            <div style={{ background: '#eff6ff', padding: '1.1rem', borderRadius: '16px', border: '1.5px solid #bfdbfe', textAlign: 'center' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase' }}>
+            <div style={{ background: 'var(--primary-light)', padding: '1.1rem', borderRadius: '16px', border: '1.5px solid var(--border)', textAlign: 'center' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 750, color: 'var(--primary)', textTransform: 'uppercase' }}>
                 Net Partner Take-Home
               </span>
-              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#1e3a8a', marginTop: '0.35rem' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--primary)', marginTop: '0.35rem' }}>
                 ₹{earnings.netEarnings.toFixed(2)}
               </div>
             </div>
@@ -731,12 +731,12 @@ export default function ProfessionalDashboard() {
                   <div
                     key={`pending-${pj.id}`}
                     style={{
-                      background: '#eff6ff',
-                      border: '2px solid #3b82f6',
+                      background: 'var(--primary-light)',
+                      border: '2px solid var(--primary)',
                       borderRadius: '16px',
                       padding: '1.25rem',
                       marginBottom: '1.5rem',
-                      boxShadow: '0 4px 16px rgba(37,99,235,0.12)',
+                      boxShadow: '0 4px 16px rgba(255, 106, 0, 0.15)',
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -746,7 +746,7 @@ export default function ProfessionalDashboard() {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '0.4rem',
-                            background: '#2563eb',
+                            background: 'var(--primary)',
                             color: 'white',
                             padding: '3px 10px',
                             borderRadius: '999px',
@@ -758,16 +758,16 @@ export default function ProfessionalDashboard() {
                         >
                           🔔 New Service Request
                         </div>
-                        <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1e3a8a', margin: '0 0 0.25rem 0' }}>
+                        <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 0.25rem 0' }}>
                           Customer: {pj.customer_name}
                         </h4>
-                        <div style={{ fontSize: '0.9rem', color: '#334155', marginBottom: '0.35rem' }}>
+                        <div style={{ fontSize: '0.9rem', color: 'var(--text-main)', marginBottom: '0.35rem' }}>
                           <strong>Service:</strong> <span className="badge badge-customer">{pj.service_name}</span>
                         </div>
-                        <div style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '0.35rem' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
                           <strong>Customer Location:</strong> {pj.customer_address}
                         </div>
-                        <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.85rem', color: '#1e40af', fontWeight: 700 }}>
+                        <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 700 }}>
                           <span>🚗 Distance: {distKm} KM</span>
                           <span>⏱️ Estimated Travel Time: {travelMins} minutes</span>
                           <span>Visiting Fee: ₹{pj.visiting_charge || 99}</span>
@@ -1063,19 +1063,19 @@ export default function ProfessionalDashboard() {
                 </div>
 
                 {/* Platform Fee Readonly Indicator (Section 10) */}
-                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: 'var(--bg-subtle)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid var(--border)', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Getix Platform Fee:</span>
-                    <span style={{ fontSize: '0.7rem', color: '#2563eb', display: 'block', fontWeight: 700 }}>ENFORCED BY BACKEND</span>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-main)', fontWeight: 600 }}>SabFix Platform Fee:</span>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--primary)', display: 'block', fontWeight: 700 }}>ENFORCED BY BACKEND</span>
                   </div>
-                  <strong style={{ fontSize: '1rem', color: '#0f172a' }}>₹50.00</strong>
+                  <strong style={{ fontSize: '1rem', color: 'var(--text-main)' }}>₹50.00</strong>
                 </div>
 
                 {/* Calculation Breakdown Box */}
-                <div style={{ background: '#eff6ff', borderRadius: '14px', border: '1.5px solid #bfdbfe', padding: '1rem', marginBottom: '1.5rem' }}>
+                <div style={{ background: 'var(--primary-light)', borderRadius: '14px', border: '1.5px solid var(--border)', padding: '1rem', marginBottom: '1.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.9rem' }}>
-                    <span style={{ color: '#1e3a8a', fontWeight: 700 }}>Customer Payable Total:</span>
-                    <strong style={{ color: '#1e3a8a', fontSize: '1.1rem' }}>₹{previewTotal.toFixed(2)}</strong>
+                    <span style={{ color: 'var(--text-main)', fontWeight: 700 }}>Customer Payable Total:</span>
+                    <strong style={{ color: 'var(--primary)', fontSize: '1.1rem' }}>₹{previewTotal.toFixed(2)}</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#16a34a' }}>
                     <span>Your Net Take-Home (Total - ₹50):</span>

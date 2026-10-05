@@ -22,7 +22,7 @@ router.get('/health', async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      service: 'Getix API',
+      service: 'SabFix API',
       status: 'operational',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
@@ -37,7 +37,7 @@ router.get('/health', async (req, res) => {
   } catch (error) {
     return res.status(503).json({
       success: false,
-      service: 'Getix API',
+      service: 'SabFix API',
       status: 'degraded',
       error: error.message,
       uptime: process.uptime(),

@@ -198,7 +198,7 @@ export default function AdminDashboard() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
-                Getix Admin Control Center
+                SabFix Admin Control Center
               </h1>
               <span className="badge badge-admin">
                 <Shield size={12} /> System Admin
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
         {/* Global Platform Metric Cards */}
         <div className="grid-4" style={{ marginBottom: '2rem' }}>
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: '#eff6ff', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Users size={24} />
             </div>
             <div>
@@ -382,11 +382,11 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div style={{ background: '#eff6ff', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #bfdbfe' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#1e40af', fontWeight: 700, textTransform: 'uppercase' }}>
+                <div style={{ background: 'var(--primary-light)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 750, textTransform: 'uppercase' }}>
                     Jobs Completed
                   </span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2563eb', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)', marginTop: '0.2rem' }}>
                     {activityData.summary.total_completed} ({activityData.summary.platform_completion_rate}%)
                   </div>
                 </div>
@@ -445,14 +445,14 @@ export default function AdminDashboard() {
                         <tr key={pro.id}>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.9rem' }}>
+                              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary-gradient)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.9rem' }}>
                                 {pro.name.charAt(0).toUpperCase()}
                               </div>
                               <div>
                                 <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                                   {pro.name}
                                   {pro.is_verified && (
-                                    <ShieldCheck size={14} color="#16a34a" title="Verified Getix Partner" />
+                                    <ShieldCheck size={14} color="#16a34a" title="Verified SabFix Partner" />
                                   )}
                                 </div>
                                 <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>
@@ -506,7 +506,7 @@ export default function AdminDashboard() {
                           </td>
                           <td style={{ textAlign: 'center' }}>
                             <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
-                              <span style={{ fontWeight: 800, color: '#2563eb' }}>
+                              <span style={{ fontWeight: 800, color: 'var(--primary)' }}>
                                 {pro.completed_requests}
                               </span>
                               <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>
@@ -687,7 +687,7 @@ export default function AdminDashboard() {
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#16a34a', marginTop: '0.35rem' }}>
                   ₹{(financialData?.stats?.totalPlatformFees || 0).toFixed(2)}
                 </div>
-                <span style={{ fontSize: '0.75rem', color: '#15803d' }}>Getix marketplace margin</span>
+                <span style={{ fontSize: '0.75rem', color: '#15803d' }}>SabFix marketplace margin</span>
               </div>
 
               <div className="card" style={{ background: '#fffbeb', textAlign: 'center', border: '1.5px solid #fde68a' }}>
@@ -700,11 +700,11 @@ export default function AdminDashboard() {
                 <span style={{ fontSize: '0.75rem', color: '#b45309' }}>From cash payments</span>
               </div>
 
-              <div className="card" style={{ background: '#f8fafc', textAlign: 'center', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
+              <div className="card" style={{ background: 'var(--bg-card)', textAlign: 'center', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                   Razorpay Online Volume
                 </span>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#2563eb', marginTop: '0.35rem' }}>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--primary)', marginTop: '0.35rem' }}>
                   ₹{(financialData?.stats?.onlinePaymentsVolume || 0).toFixed(2)}
                 </div>
                 <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
@@ -868,9 +868,9 @@ export default function AdminDashboard() {
                       {proJobHistory.stats?.accepted_requests || 0} ({proJobHistory.stats?.acceptance_rate || 0}%)
                     </strong>
                   </div>
-                  <div style={{ background: '#eff6ff', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid #bfdbfe', textAlign: 'center' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#1e40af', display: 'block' }}>Completed</span>
-                    <strong style={{ fontSize: '1.25rem', color: '#2563eb' }}>
+                  <div style={{ background: 'var(--primary-light)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', textAlign: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--primary)', display: 'block', fontWeight: 700 }}>Completed</span>
+                    <strong style={{ fontSize: '1.25rem', color: 'var(--primary)' }}>
                       {proJobHistory.stats?.completed_requests || 0} ({proJobHistory.stats?.completion_rate || 0}%)
                     </strong>
                   </div>

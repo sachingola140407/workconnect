@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { bookingsAPI, paymentsAPI, getSocketUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import InvoiceModal from '../components/InvoiceModal';
+import SabFixBrand from '../components/SabFixBrand';
 import { downloadInvoicePDF } from '../utils/invoiceGenerator';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -163,7 +164,7 @@ export default function LiveTrackingPage() {
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('[Socket.IO] Connected to Getix live gateway');
+      console.log('[Socket.IO] Connected to SabFix live gateway');
       socket.emit('join:booking', {
         bookingId,
         userId: user?.id,
@@ -290,10 +291,10 @@ export default function LiveTrackingPage() {
         className: 'custom-customer-pin',
         html: `
           <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-            <div style="background: #2563eb; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(37,99,235,0.45); border: 3px solid white; font-size: 20px; z-index: 10;">
+            <div style="background: #ff6a00; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(255,106,0,0.45); border: 3px solid white; font-size: 20px; z-index: 10;">
               🏠
             </div>
-            <div style="position: absolute; width: 62px; height: 62px; border-radius: 50%; background: rgba(37,99,235,0.22); animation: pulse 2s infinite;"></div>
+            <div style="position: absolute; width: 62px; height: 62px; border-radius: 50%; background: rgba(255,106,0,0.22); animation: pulse 2s infinite;"></div>
           </div>
         `,
         iconSize: [44, 44],
@@ -305,7 +306,7 @@ export default function LiveTrackingPage() {
         className: 'custom-pro-pin',
         html: `
           <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
-            <div style="background: white; border: 1.5px solid #2563eb; padding: 4px 10px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 800; font-size: 11px; color: #0f172a; white-space: nowrap; margin-bottom: 4px;">
+            <div style="background: white; border: 1.5px solid #ff6a00; padding: 4px 10px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 800; font-size: 11px; color: #0f172a; white-space: nowrap; margin-bottom: 4px;">
               ${booking?.professional_name || 'Specialist'} &bull; ${liveEta} mins away
             </div>
             <div style="position: relative;">
@@ -332,7 +333,7 @@ export default function LiveTrackingPage() {
           [proCoords.lat, proCoords.lng],
           [custCoords.lat, custCoords.lng],
         ],
-        { color: '#2563eb', weight: 4.5, opacity: 0.85, dashArray: '6, 6' }
+        { color: '#ff6a00', weight: 4.5, opacity: 0.85, dashArray: '6, 6' }
       ).addTo(map);
       polylineRef.current = line;
 
@@ -353,7 +354,7 @@ export default function LiveTrackingPage() {
         className: 'custom-pro-pin',
         html: `
           <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
-            <div style="background: white; border: 1.5px solid #2563eb; padding: 4px 10px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 800; font-size: 11px; color: #0f172a; white-space: nowrap; margin-bottom: 4px;">
+            <div style="background: white; border: 1.5px solid #ff6a00; padding: 4px 10px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 800; font-size: 11px; color: #0f172a; white-space: nowrap; margin-bottom: 4px;">
               ${booking?.professional_name || 'Specialist'} &bull; ${liveEta} mins away
             </div>
             <div style="position: relative;">
@@ -490,9 +491,9 @@ export default function LiveTrackingPage() {
         key: orderData.keyId,
         amount: orderData.amount, // in paise
         currency: orderData.currency || 'INR',
-        name: 'Getix Marketplace',
+        name: 'SabFix Marketplace',
         description: `Payment for ${booking?.service_name || 'Home Repair'}`,
-        image: 'https://cdn-icons-png.flaticon.com/512/9448/9448496.png',
+        image: '/Logo_Sabfix.png',
         order_id: orderData.orderId,
         handler: async function (response) {
           try {
@@ -522,11 +523,11 @@ export default function LiveTrackingPage() {
         },
         prefill: {
           name: user?.name || booking?.customer_name || 'Customer',
-          email: user?.email || 'customer@getix.in',
+          email: user?.email || 'customer@sabfix.in',
           contact: user?.phone || booking?.customer_phone || '9876543210',
         },
         theme: {
-          color: '#1e3a8a',
+          color: '#ff6a00',
         },
         modal: {
           ondismiss: function () {
@@ -589,7 +590,7 @@ export default function LiveTrackingPage() {
     return (
       <div style={{ textAlign: 'center', padding: '6rem 1rem' }}>
         <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '0.5rem' }}>
-          Connecting to Getix Live Tracking...
+          Connecting to SabFix Live Tracking...
         </div>
         <p style={{ color: 'var(--text-muted)' }}>Fetching GPS coordinates &amp; real-time specialist location</p>
       </div>
@@ -629,7 +630,7 @@ export default function LiveTrackingPage() {
   const totalAmount = parseFloat(booking.total_amount || (serviceFee + visitingCharge).toFixed(2));
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: 'calc(100vh - 76px)', padding: '1.5rem 0 3rem' }}>
+    <div style={{ background: 'var(--bg-main)', color: 'var(--text-main)', minHeight: 'calc(100vh - 76px)', padding: '1.5rem 0 3rem' }}>
       <div className="container">
         {/* ===================== TOP BRANDING & CALLIGRAPHY HEADER ===================== */}
         <div
@@ -643,28 +644,11 @@ export default function LiveTrackingPage() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-              <div
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  background: '#2563eb',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  boxShadow: '0 4px 10px rgba(37, 99, 235, 0.3)',
-                }}
-              >
-                <MapPin size={20} fill="white" color="white" />
-              </div>
-              <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em' }}>
-                Getix
-              </span>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <SabFixBrand size="md" showTagline={false} />
             </Link>
-            <div style={{ width: '1px', height: '22px', background: '#cbd5e1' }} />
-            <span style={{ fontSize: '0.925rem', color: '#64748b', fontWeight: 600 }}>
+            <div style={{ width: '1px', height: '22px', background: 'var(--border)' }} />
+            <span style={{ fontSize: '0.925rem', color: 'var(--text-muted)', fontWeight: 600 }}>
               Live Service Tracking &amp; Payment
             </span>
           </div>
@@ -681,14 +665,14 @@ export default function LiveTrackingPage() {
         {/* ===================== INTERACTIVE STAGE SWITCHER TABS ===================== */}
         <div
           style={{
-            background: '#ffffff',
+            background: 'var(--bg-card)',
             borderRadius: '16px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid var(--border)',
             padding: '0.5rem',
             display: 'flex',
             gap: '0.5rem',
             marginBottom: '1.5rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+            boxShadow: 'var(--shadow-sm)',
             overflowX: 'auto',
           }}
         >
@@ -709,8 +693,8 @@ export default function LiveTrackingPage() {
                 padding: '0.65rem 0.85rem',
                 borderRadius: '12px',
                 border: 'none',
-                background: activeStage === tab.id ? '#2563eb' : 'transparent',
-                color: activeStage === tab.id ? '#ffffff' : '#64748b',
+                background: activeStage === tab.id ? 'var(--primary)' : 'transparent',
+                color: activeStage === tab.id ? '#ffffff' : 'var(--text-muted)',
                 fontWeight: 700,
                 fontSize: '0.85rem',
                 cursor: 'pointer',
@@ -728,11 +712,11 @@ export default function LiveTrackingPage() {
           {/* ===================== LEFT COLUMN: THE STATE CARD ===================== */}
           <div
             style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
               borderRadius: '24px',
               padding: '1.75rem',
-              boxShadow: '0 10px 30px -5px rgba(15, 23, 42, 0.08)',
+              boxShadow: 'var(--shadow-md)',
               display: 'flex',
               flexDirection: 'column',
               gap: '1.25rem',
@@ -768,8 +752,8 @@ export default function LiveTrackingPage() {
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  background: '#eff6ff',
-                  color: '#2563eb',
+                  background: 'rgba(255, 106, 0, 0.12)',
+                  color: 'var(--primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -806,8 +790,8 @@ export default function LiveTrackingPage() {
               <>
                 <div
                   style={{
-                    background: '#f0fdf4',
-                    border: '1px solid #bbf7d0',
+                    background: 'rgba(16, 185, 129, 0.08)',
+                    border: '1px solid rgba(16, 185, 129, 0.25)',
                     borderRadius: '16px',
                     padding: '1.25rem',
                     textAlign: 'center',
@@ -842,9 +826,9 @@ export default function LiveTrackingPage() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '1rem',
-                    background: '#f8fafc',
+                    background: 'var(--bg-main)',
                     borderRadius: '16px',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--border)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -855,15 +839,15 @@ export default function LiveTrackingPage() {
                     />
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{proName}</strong>
+                        <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>{proName}</strong>
                         <ShieldCheck size={16} color="#16a34a" fill="#16a34a" />
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: '#64748b' }}>{serviceName}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: '#0f172a', fontWeight: 600, marginTop: '0.2rem' }}>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{serviceName}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--text-main)', fontWeight: 600, marginTop: '0.2rem' }}>
                         <Star size={13} color="#f59e0b" fill="#f59e0b" />
                         <span>{proRating} ({proReviews} reviews)</span>
-                        <span style={{ color: '#94a3b8' }}>&bull;</span>
-                        <span style={{ color: '#64748b' }}>{proExp}+ yrs exp.</span>
+                        <span style={{ color: 'var(--text-muted)' }}>&bull;</span>
+                        <span style={{ color: 'var(--text-muted)' }}>{proExp}+ yrs exp.</span>
                       </div>
                     </div>
                   </div>
@@ -874,13 +858,13 @@ export default function LiveTrackingPage() {
                       width: '42px',
                       height: '42px',
                       borderRadius: '50%',
-                      background: '#eff6ff',
-                      color: '#2563eb',
+                      background: 'rgba(255, 106, 0, 0.1)',
+                      color: 'var(--primary)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       textDecoration: 'none',
-                      border: '1px solid #bfdbfe',
+                      border: '1px solid rgba(255, 106, 0, 0.25)',
                     }}
                   >
                     <Phone size={18} />
@@ -889,25 +873,25 @@ export default function LiveTrackingPage() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', padding: '0.5rem 0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <Wrench size={18} color="#2563eb" />
+                    <Wrench size={18} color="var(--primary)" />
                     <div>
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block' }}>Service Category</span>
-                      <strong style={{ fontSize: '0.925rem', color: '#0f172a' }}>{serviceName}</strong>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Service Category</span>
+                      <strong style={{ fontSize: '0.925rem', color: 'var(--text-main)' }}>{serviceName}</strong>
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <Clock size={18} color="#2563eb" />
+                    <Clock size={18} color="var(--primary)" />
                     <div>
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block' }}>Expected Arrival</span>
-                      <strong style={{ fontSize: '0.925rem', color: '#0f172a' }}>In ~{liveEta} mins</strong>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Expected Arrival</span>
+                      <strong style={{ fontSize: '0.925rem', color: 'var(--text-main)' }}>In ~{liveEta} mins</strong>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'var(--bg-main)', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid var(--border)' }}>
                     <span style={{ fontSize: '1.2rem' }}>🛵</span>
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Doorstep Visiting Charge:</span>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Doorstep Visiting Charge:</span>
                       <strong style={{ color: '#16a34a', fontSize: '1rem' }}>₹{booking.visiting_charge || 99}</strong>
                     </div>
                   </div>
@@ -932,10 +916,10 @@ export default function LiveTrackingPage() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '1rem',
-                    background: '#ffffff',
+                    background: 'var(--bg-card)',
                     borderRadius: '16px',
-                    border: '1px solid #e2e8f0',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                    border: '1px solid var(--border)',
+                    boxShadow: 'var(--shadow-sm)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -946,13 +930,13 @@ export default function LiveTrackingPage() {
                     />
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{proName}</strong>
+                        <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>{proName}</strong>
                         <ShieldCheck size={16} color="#16a34a" fill="#16a34a" />
                       </div>
-                      <div style={{ fontSize: '0.825rem', color: '#64748b' }}>
+                      <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
                         {serviceName} &bull; {proExp}+ yrs exp.
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: '#0f172a', fontWeight: 600, marginTop: '0.15rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--text-main)', fontWeight: 600, marginTop: '0.15rem' }}>
                         <Star size={13} color="#f59e0b" fill="#f59e0b" />
                         <span>{proRating} ({proReviews})</span>
                       </div>
@@ -965,13 +949,13 @@ export default function LiveTrackingPage() {
                       width: '42px',
                       height: '42px',
                       borderRadius: '50%',
-                      background: '#eff6ff',
-                      color: '#2563eb',
+                      background: 'rgba(255, 106, 0, 0.1)',
+                      color: 'var(--primary)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       textDecoration: 'none',
-                      border: '1px solid #bfdbfe',
+                      border: '1px solid rgba(255, 106, 0, 0.25)',
                     }}
                   >
                     <Phone size={18} />
@@ -980,11 +964,11 @@ export default function LiveTrackingPage() {
 
                 <div
                   style={{
-                    background: '#ffffff',
-                    border: '1.5px solid #bfdbfe',
+                    background: 'var(--bg-card)',
+                    border: '1.5px solid rgba(255, 106, 0, 0.3)',
                     borderRadius: '16px',
                     padding: '1.25rem',
-                    boxShadow: '0 4px 15px -2px rgba(37, 99, 235, 0.08)',
+                    boxShadow: '0 4px 15px -2px rgba(255, 106, 0, 0.12)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
@@ -993,8 +977,8 @@ export default function LiveTrackingPage() {
                         width: '38px',
                         height: '38px',
                         borderRadius: '50%',
-                        background: '#dbeafe',
-                        color: '#2563eb',
+                        background: 'rgba(255, 106, 0, 0.12)',
+                        color: 'var(--primary)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1004,21 +988,21 @@ export default function LiveTrackingPage() {
                       🛵
                     </div>
                     <div>
-                      <strong style={{ fontSize: '1rem', color: '#2563eb', display: 'block' }}>
+                      <strong style={{ fontSize: '1rem', color: 'var(--primary)', display: 'block' }}>
                         On the way to your door
                       </strong>
-                      <span style={{ fontSize: '0.9rem', color: '#0f172a', fontWeight: 700 }}>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: 750 }}>
                         {liveEta > 0 ? `Arriving in ${liveEta} mins` : 'Arrived at your location'} &bull; {liveDistance} km
                       </span>
                     </div>
                   </div>
 
-                  <div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+                  <div style={{ width: '100%', height: '6px', background: 'var(--border)', borderRadius: '999px', overflow: 'hidden' }}>
                     <div
                       style={{
                         width: `${Math.min(95, Math.max(15, 100 - (liveDistance / 1.2) * 100))}%`,
                         height: '100%',
-                        background: '#2563eb',
+                        background: 'var(--primary)',
                         borderRadius: '999px',
                         transition: 'width 0.8s ease',
                       }}
@@ -1026,12 +1010,12 @@ export default function LiveTrackingPage() {
                   </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: 'var(--bg-main)', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
-                    <MapPin size={18} color="#2563eb" style={{ marginTop: '2px', flexShrink: 0 }} />
+                    <MapPin size={18} color="var(--primary)" style={{ marginTop: '2px', flexShrink: 0 }} />
                     <div style={{ fontSize: '0.85rem' }}>
-                      <span style={{ color: '#94a3b8', display: 'block', fontSize: '0.75rem' }}>Delivery Address</span>
-                      <strong style={{ color: '#0f172a' }}>{customerAddress}</strong>
+                      <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.75rem' }}>Delivery Address</span>
+                      <strong style={{ color: 'var(--text-main)' }}>{customerAddress}</strong>
                     </div>
                   </div>
                 </div>
@@ -1047,10 +1031,10 @@ export default function LiveTrackingPage() {
                     alt={proName}
                     style={{ width: '110px', height: '110px', objectFit: 'contain', margin: '0 auto 1.25rem' }}
                   />
-                  <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#0f172a', marginBottom: '0.35rem' }}>
+                  <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
                     {proName} has arrived at your location!
                   </h3>
-                  <p style={{ fontSize: '0.925rem', color: '#64748b', maxWidth: '320px', margin: '0 auto', lineHeight: 1.5 }}>
+                  <p style={{ fontSize: '0.925rem', color: 'var(--text-muted)', maxWidth: '320px', margin: '0 auto', lineHeight: 1.5 }}>
                     Please meet the specialist to explain the problem and start the repair.
                   </p>
                 </div>
@@ -1060,7 +1044,7 @@ export default function LiveTrackingPage() {
                     href={`tel:${proPhone}`}
                     className="btn"
                     style={{
-                      background: '#2563eb',
+                      background: 'var(--primary)',
                       color: '#ffffff',
                       borderRadius: '14px',
                       padding: '0.95rem',
@@ -1071,7 +1055,7 @@ export default function LiveTrackingPage() {
                       justifyContent: 'center',
                       gap: '0.5rem',
                       textDecoration: 'none',
-                      boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
+                      boxShadow: '0 4px 14px rgba(255, 106, 0, 0.35)',
                     }}
                   >
                     <Phone size={18} /> Call Professional ({proPhone})
@@ -1081,9 +1065,9 @@ export default function LiveTrackingPage() {
                     onClick={() => handleSetStage('working')}
                     className="btn"
                     style={{
-                      background: '#ffffff',
-                      color: '#2563eb',
-                      border: '1.5px solid #2563eb',
+                      background: 'transparent',
+                      color: 'var(--primary)',
+                      border: '1.5px solid var(--primary)',
                       borderRadius: '14px',
                       padding: '0.85rem',
                       fontSize: '0.95rem',
@@ -1148,61 +1132,61 @@ export default function LiveTrackingPage() {
             {/* ---------- STAGE 5: FINAL SERVICE BILL & PAYMENT (SECTIONS 10-15) ---------- */}
             {activeStage === 'payment_pending' && (
               <>
-                <div style={{ textAlign: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+                <div style={{ textAlign: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
                   <span className="badge badge-verified" style={{ marginBottom: '0.35rem' }}>
                     ✓ Work Completed
                   </span>
-                  <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', margin: '0.2rem 0' }}>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-main)', margin: '0.2rem 0' }}>
                     Final Service Bill
                   </h3>
-                  <p style={{ color: '#64748b', fontSize: '0.85rem', margin: 0 }}>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
                     Review charges entered by {proName} and select your payment mode.
                   </p>
                 </div>
 
                 {/* Itemized charges table */}
-                <div style={{ border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden' }}>
-                  <div style={{ padding: '0.85rem 1rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden' }}>
+                  <div style={{ padding: '0.85rem 1rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block' }}>
+                      <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
                         Professional Service Fee
                       </strong>
-                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Actual repair &amp; labor charges</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Actual repair &amp; labor charges</span>
                     </div>
-                    <strong style={{ fontSize: '1rem', color: '#0f172a' }}>
+                    <strong style={{ fontSize: '1rem', color: 'var(--text-main)' }}>
                       ₹{serviceFee.toFixed(2)}
                     </strong>
                   </div>
 
-                  <div style={{ padding: '0.85rem 1rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ padding: '0.85rem 1rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block' }}>
+                      <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
                         Visiting Charge
                       </strong>
-                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Doorstep inspection &amp; travel</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Doorstep inspection &amp; travel</span>
                     </div>
-                    <strong style={{ fontSize: '1rem', color: '#0f172a' }}>
+                    <strong style={{ fontSize: '1rem', color: 'var(--text-main)' }}>
                       ₹{visitingCharge.toFixed(2)}
                     </strong>
                   </div>
 
-                  <div style={{ padding: '0.65rem 1rem', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ padding: '0.65rem 1rem', background: 'var(--bg-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <span style={{ fontSize: '0.825rem', color: '#64748b' }}>
-                        Getix Platform Fee (included):
+                      <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                        SabFix Platform Fee (included):
                       </span>
                     </div>
-                    <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                       ₹{platformFee.toFixed(2)}
                     </span>
                   </div>
 
-                  <div style={{ padding: '1rem', background: '#eff6ff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ padding: '1rem', background: 'rgba(255, 106, 0, 0.08)', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <strong style={{ fontSize: '1rem', color: '#1e3a8a' }}>Total Amount Payable</strong>
-                      <span style={{ fontSize: '0.75rem', color: '#3b82f6', display: 'block' }}>Verified by backend</span>
+                      <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>Total Amount Payable</strong>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--primary)', opacity: 0.85, display: 'block' }}>Verified by SabFix backend</span>
                     </div>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1e3a8a' }}>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary)' }}>
                       ₹{totalAmount.toFixed(2)}
                     </div>
                   </div>
@@ -1210,7 +1194,7 @@ export default function LiveTrackingPage() {
 
                 {/* Payment Method Selector Tabs */}
                 <div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
                     Select Payment Method:
                   </div>
 
@@ -1220,9 +1204,9 @@ export default function LiveTrackingPage() {
                       style={{
                         padding: '0.65rem 0.5rem',
                         borderRadius: '12px',
-                        border: paymentMethodTab === 'online' ? '2px solid #2563eb' : '1px solid #e2e8f0',
-                        background: paymentMethodTab === 'online' ? '#eff6ff' : '#ffffff',
-                        color: paymentMethodTab === 'online' ? '#1e3a8a' : '#64748b',
+                        border: paymentMethodTab === 'online' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                        background: paymentMethodTab === 'online' ? 'rgba(255, 106, 0, 0.12)' : 'var(--bg-main)',
+                        color: paymentMethodTab === 'online' ? 'var(--primary)' : 'var(--text-muted)',
                         fontWeight: 700,
                         fontSize: '0.825rem',
                         display: 'flex',
@@ -1232,7 +1216,7 @@ export default function LiveTrackingPage() {
                         cursor: 'pointer',
                       }}
                     >
-                      <CreditCard size={18} color={paymentMethodTab === 'online' ? '#2563eb' : '#64748b'} />
+                      <CreditCard size={18} color={paymentMethodTab === 'online' ? 'var(--primary)' : 'var(--text-muted)'} />
                       Razorpay Online
                     </button>
 
@@ -1241,9 +1225,9 @@ export default function LiveTrackingPage() {
                       style={{
                         padding: '0.65rem 0.5rem',
                         borderRadius: '12px',
-                        border: paymentMethodTab === 'qr' ? '2px solid #2563eb' : '1px solid #e2e8f0',
-                        background: paymentMethodTab === 'qr' ? '#eff6ff' : '#ffffff',
-                        color: paymentMethodTab === 'qr' ? '#1e3a8a' : '#64748b',
+                        border: paymentMethodTab === 'qr' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                        background: paymentMethodTab === 'qr' ? 'rgba(255, 106, 0, 0.12)' : 'var(--bg-main)',
+                        color: paymentMethodTab === 'qr' ? 'var(--primary)' : 'var(--text-muted)',
                         fontWeight: 700,
                         fontSize: '0.825rem',
                         display: 'flex',
@@ -1253,7 +1237,7 @@ export default function LiveTrackingPage() {
                         cursor: 'pointer',
                       }}
                     >
-                      <QrCode size={18} color={paymentMethodTab === 'qr' ? '#2563eb' : '#64748b'} />
+                      <QrCode size={18} color={paymentMethodTab === 'qr' ? 'var(--primary)' : 'var(--text-muted)'} />
                       Scan UPI QR
                     </button>
 
@@ -1262,9 +1246,9 @@ export default function LiveTrackingPage() {
                       style={{
                         padding: '0.65rem 0.5rem',
                         borderRadius: '12px',
-                        border: paymentMethodTab === 'cash' ? '2px solid #2563eb' : '1px solid #e2e8f0',
-                        background: paymentMethodTab === 'cash' ? '#eff6ff' : '#ffffff',
-                        color: paymentMethodTab === 'cash' ? '#1e3a8a' : '#64748b',
+                        border: paymentMethodTab === 'cash' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                        background: paymentMethodTab === 'cash' ? 'rgba(255, 106, 0, 0.12)' : 'var(--bg-main)',
+                        color: paymentMethodTab === 'cash' ? 'var(--primary)' : 'var(--text-muted)',
                         fontWeight: 700,
                         fontSize: '0.825rem',
                         display: 'flex',
@@ -1274,7 +1258,7 @@ export default function LiveTrackingPage() {
                         cursor: 'pointer',
                       }}
                     >
-                      <Banknote size={18} color={paymentMethodTab === 'cash' ? '#2563eb' : '#64748b'} />
+                      <Banknote size={18} color={paymentMethodTab === 'cash' ? 'var(--primary)' : 'var(--text-muted)'} />
                       Pay Cash
                     </button>
                   </div>
@@ -1282,7 +1266,7 @@ export default function LiveTrackingPage() {
                   {/* Mode 1: Razorpay Online */}
                   {paymentMethodTab === 'online' && (
                     <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
-                      <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1rem' }}>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
                         Pay safely via UPI, Credit/Debit Card, or Netbanking using Razorpay test mode.
                       </p>
 
@@ -1296,7 +1280,7 @@ export default function LiveTrackingPage() {
                           padding: '0.95rem',
                           fontSize: '1.05rem',
                           fontWeight: 800,
-                          boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
+                          boxShadow: '0 4px 14px rgba(255, 106, 0, 0.35)',
                         }}
                       >
                         {isProcessingPayment ? 'Connecting Razorpay...' : `Pay ₹${totalAmount.toFixed(2)} Online`}
@@ -1308,20 +1292,20 @@ export default function LiveTrackingPage() {
                   {paymentMethodTab === 'qr' && (
                     <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
                       {loadingQR ? (
-                        <div style={{ padding: '2rem 0', color: '#64748b' }}>Generating payment QR...</div>
+                        <div style={{ padding: '2rem 0', color: 'var(--text-muted)' }}>Generating payment QR...</div>
                       ) : qrCodeData ? (
                         <div>
-                          <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'inline-block', marginBottom: '0.75rem' }}>
+                          <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border)', display: 'inline-block', marginBottom: '0.75rem' }}>
                             <img
                               src={qrCodeData.qrCodeDataUrl}
                               alt="Payment QR"
                               style={{ width: '180px', height: '180px', display: 'block' }}
                             />
-                            <strong style={{ fontSize: '1.1rem', color: '#1e3a8a', display: 'block', marginTop: '0.5rem' }}>
+                            <strong style={{ fontSize: '1.1rem', color: 'var(--primary)', display: 'block', marginTop: '0.5rem' }}>
                               ₹{totalAmount.toFixed(2)}
                             </strong>
                           </div>
-                          <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
+                          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
                             Scan using Google Pay, PhonePe, Paytm or any UPI app.
                           </p>
                         </div>
@@ -1496,14 +1480,14 @@ export default function LiveTrackingPage() {
                           width: '28px',
                           height: '28px',
                           borderRadius: '50%',
-                          background: isDone ? '#10b981' : isCurrent ? '#2563eb' : '#e2e8f0',
-                          color: isDone || isCurrent ? '#ffffff' : '#64748b',
+                          background: isDone ? '#10b981' : isCurrent ? 'var(--primary)' : 'var(--border)',
+                          color: isDone || isCurrent ? '#ffffff' : 'var(--text-muted)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontSize: '12px',
                           fontWeight: 800,
-                          boxShadow: isCurrent ? '0 0 0 4px rgba(37, 99, 235, 0.2)' : 'none',
+                          boxShadow: isCurrent ? '0 0 0 4px rgba(255, 106, 0, 0.25)' : 'none',
                         }}
                       >
                         {isDone ? '✓' : s.icon}
@@ -1512,7 +1496,7 @@ export default function LiveTrackingPage() {
                         style={{
                           fontSize: '0.7rem',
                           fontWeight: isCurrent ? 800 : 600,
-                          color: isCurrent ? '#2563eb' : isDone ? '#10b981' : '#94a3b8',
+                          color: isCurrent ? 'var(--primary)' : isDone ? '#10b981' : 'var(--text-muted)',
                         }}
                       >
                         {s.label}
@@ -1527,11 +1511,11 @@ export default function LiveTrackingPage() {
           {/* ===================== RIGHT COLUMN: THE INTERACTIVE LIVE MAP ===================== */}
           <div
             style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
               borderRadius: '24px',
               padding: '1.25rem',
-              boxShadow: '0 10px 30px -5px rgba(15, 23, 42, 0.08)',
+              boxShadow: 'var(--shadow-md)',
               display: 'flex',
               flexDirection: 'column',
               gap: '1rem',
@@ -1540,10 +1524,10 @@ export default function LiveTrackingPage() {
             {/* Map Header & Simulator Controls */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   REAL-TIME GPS &bull; SOCKET.IO STREAM
                 </span>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', margin: '0.1rem 0 0' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-main)', margin: '0.1rem 0 0' }}>
                   Live OpenStreetMap Tracking
                 </h3>
               </div>
@@ -1554,7 +1538,7 @@ export default function LiveTrackingPage() {
                   onClick={handleStartSimulation}
                   className="btn btn-sm"
                   style={{
-                    background: isSimulating ? '#ef4444' : '#2563eb',
+                    background: isSimulating ? '#ef4444' : 'var(--primary)',
                     color: 'white',
                     borderRadius: '10px',
                     fontWeight: 700,
@@ -1593,7 +1577,7 @@ export default function LiveTrackingPage() {
                 height: '540px',
                 borderRadius: '18px',
                 overflow: 'hidden',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--border)',
               }}
             >
               {/* Floating "• Live location" pill badge */}
@@ -1643,19 +1627,19 @@ export default function LiveTrackingPage() {
                 flexWrap: 'wrap',
                 gap: '1rem',
                 padding: '0.75rem 1rem',
-                background: '#f8fafc',
+                background: 'var(--bg-main)',
                 borderRadius: '14px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--border)',
                 fontSize: '0.85rem',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ color: '#16a34a', fontWeight: 800 }}>✓ Zero Paid APIs:</span>
-                <span style={{ color: '#64748b' }}>PostgreSQL PostGIS GPS + OpenStreetMap &amp; Leaflet</span>
+                <span style={{ color: 'var(--text-muted)' }}>PostgreSQL PostGIS GPS + OpenStreetMap &amp; Leaflet</span>
               </div>
               <div>
-                <span style={{ color: '#64748b' }}>Doorstep Visiting Fee:</span>{' '}
-                <strong style={{ color: '#2563eb' }}>₹{booking.visiting_charge || 99}</strong>
+                <span style={{ color: 'var(--text-muted)' }}>Doorstep Visiting Fee:</span>{' '}
+                <strong style={{ color: 'var(--primary)' }}>₹{booking.visiting_charge || 99}</strong>
               </div>
             </div>
           </div>
@@ -1668,7 +1652,7 @@ export default function LiveTrackingPage() {
         onClose={() => setIsInvoiceModalOpen(false)}
         invoice={
           invoice || {
-            invoice_no: booking.invoice_id || 'FXG-20261004-98124',
+            invoice_no: booking.invoice_id || 'SABFIX-20261004-98124',
             booking_id: booking.id,
             customer_name: booking.customer_name || user?.name || 'Customer',
             customer_phone: booking.customer_phone || user?.phone || '9876543210',

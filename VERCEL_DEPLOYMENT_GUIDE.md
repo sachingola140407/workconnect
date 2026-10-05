@@ -1,6 +1,6 @@
-# 🚀 Fixigo Vercel Deployment Guide
+# 🚀 SabFix Vercel Deployment Guide
 
-Fixigo is pre-configured and 100% turnkey ready for deployment to **Vercel**.
+SabFix is pre-configured and 100% turnkey ready for deployment to **Vercel**.
 
 ---
 
@@ -22,7 +22,7 @@ Fixigo is pre-configured and 100% turnkey ready for deployment to **Vercel**.
 1. **Push your code to GitHub**:
    ```bash
    git add .
-   git commit -m "feat: Fixigo UI redesign, guest ID removal & Vercel readiness"
+   git commit -m "feat: SabFix rebranding, Black & Orange theme & Vercel readiness"
    git push origin main
    ```
 
@@ -36,11 +36,11 @@ Fixigo is pre-configured and 100% turnkey ready for deployment to **Vercel**.
    In your Vercel Project Settings, add:
    | Key | Value | Description |
    |---|---|---|
-   | `VITE_API_URL` | `https://your-fixigo-backend.onrender.com` | Your deployed backend URL |
-   | `VITE_SOCKET_URL` | `https://your-fixigo-backend.onrender.com` | Socket.IO gateway URL |
+   | `VITE_API_URL` | `https://sabfix-backend.onrender.com` | Your deployed backend URL |
+   | `VITE_SOCKET_URL` | `https://sabfix-backend.onrender.com` | Socket.IO gateway URL |
 
 4. **Click "Deploy"**:
-   - Vercel will build and assign you a production URL (e.g. `https://fixigo.vercel.app`).
+   - Vercel will build and assign you a production URL (e.g. `https://sabfix.vercel.app`).
 
 ---
 

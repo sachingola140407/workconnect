@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { LocationProvider } from './context/LocationContext';
 import LocationModal from './components/LocationModal';
@@ -20,8 +21,9 @@ import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <LocationProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <LocationProvider>
         <BrowserRouter>
           <div className="app-container">
             <LocationModal />
@@ -71,7 +73,8 @@ export default function App() {
           <Footer />
         </div>
       </BrowserRouter>
-    </LocationProvider>
-  </AuthProvider>
-);
+      </LocationProvider>
+    </AuthProvider>
+  </ThemeProvider>
+  );
 }

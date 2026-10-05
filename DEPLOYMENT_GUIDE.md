@@ -1,4 +1,4 @@
-# 🌐 Fixigo Full Production Deployment Guide
+# 🌐 SabFix Full Production Deployment Guide
 ### Backend + Database on Render & Frontend on Vercel
 
 This repository is pre-configured and turnkey ready for automated cloud deployment:
@@ -47,15 +47,15 @@ This repository contains a [`render.yaml`](./render.yaml) file that automaticall
 2. Click the **"New +"** button in the top navigation bar and select **"Blueprint"**.
 3. Connect your GitHub repository (`workconnect`).
 4. Render will inspect `render.yaml` and display the resources to be created:
-   - **`fixigo-db`**: PostgreSQL Database (Oregon region, free plan)
-   - **`fixigo-backend`**: Node.js Web Service with automatic migrations & seeds
+   - **`sabfix-db`**: PostgreSQL Database (Oregon region, free plan)
+   - **`sabfix-backend`**: Node.js Web Service with automatic migrations & seeds
 5. Click **"Apply"**.
 6. Render will:
    - Provision the PostgreSQL database.
    - Install dependencies (`npm install`).
    - Run database migrations & seeds (`npm run db:deploy`).
    - Start the server (`npm start`).
-7. Once deployed, copy your backend URL from Render (e.g., `https://fixigo-backend.onrender.com`).
+7. Once deployed, copy your backend URL from Render (e.g., `https://sabfix-backend.onrender.com`).
 
 ---
 
@@ -64,7 +64,7 @@ If you prefer configuring resources manually in the Render dashboard:
 
 #### 1. Create PostgreSQL Database:
 1. Click **"New +"** -> **"PostgreSQL"**.
-2. **Name**: `fixigo-db`
+2. **Name**: `sabfix-db`
 3. **Database**: `workconnect`
 4. **User**: `postgres`
 5. **Region**: `Oregon (US West)` (or closest to you)
@@ -76,7 +76,7 @@ If you prefer configuring resources manually in the Render dashboard:
 1. Click **"New +"** -> **"Web Service"**.
 2. Connect your GitHub repository (`workconnect`).
 3. Set configuration:
-   - **Name**: `fixigo-backend`
+   - **Name**: `sabfix-backend`
    - **Region**: Same as database (e.g. `Oregon`)
    - **Branch**: `main`
    - **Root Directory**: `backend`
@@ -93,7 +93,7 @@ If you prefer configuring resources manually in the Render dashboard:
    | `CLIENT_URL` | `*` (or your Vercel URL once deployed) | Dynamic CORS |
    | `RAZORPAY_KEY_ID` | `rzp_test_1DP5mmOlF5G5ag` | Test key |
    | `RAZORPAY_KEY_SECRET` | `s9G7aL7yG5xL8v9K4w1m0o1p` | Test secret |
-   | `RAZORPAY_WEBHOOK_SECRET` | `fixigo_webhook_secret_2026` | Webhook verification |
+   | `RAZORPAY_WEBHOOK_SECRET` | `sabfix_webhook_secret_2026` | Webhook verification |
 5. Click **"Create Web Service"**.
 
 ---
@@ -107,7 +107,7 @@ Expected response:
 ```json
 {
   "success": true,
-  "service": "Fixigo API",
+  "service": "SabFix API",
   "status": "operational",
   "database": {
     "status": "connected",
@@ -139,7 +139,7 @@ Vercel provides blazing-fast global edge hosting for the React + Vite frontend.
    | `VITE_API_URL` | `https://<YOUR-RENDER-BACKEND-URL>.onrender.com` | Live backend API URL |
    | `VITE_SOCKET_URL` | `https://<YOUR-RENDER-BACKEND-URL>.onrender.com` | Live WebSocket URL |
 6. Click **"Deploy"**.
-7. Vercel will build the frontend and assign a live production URL (e.g. `https://fixigo.vercel.app`).
+7. Vercel will build the frontend and assign a live production URL (e.g. `https://sabfix.vercel.app`).
 
 ---
 
@@ -163,9 +163,9 @@ npx vercel --prod --build-env VITE_API_URL="https://<YOUR-RENDER-BACKEND-URL>.on
 
 ## 🔗 Step 4: Link CORS on Render (Optional Polish)
 
-Once your Vercel deployment URL is live (e.g., `https://fixigo-xxx.vercel.app`):
+Once your Vercel deployment URL is live (e.g., `https://sabfix-xxx.vercel.app`):
 1. Go to your Render Web Service -> **Environment**.
-2. Update `CLIENT_URL` to `https://fixigo-xxx.vercel.app` (or keep `*` as backend uses dynamic origin reflection).
+2. Update `CLIENT_URL` to `https://sabfix-xxx.vercel.app` (or keep `*` as backend uses dynamic origin reflection).
 3. Save changes.
 
 ---

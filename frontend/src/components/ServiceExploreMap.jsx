@@ -62,13 +62,13 @@ export default function ServiceExploreMap({
       map.removeLayer(circleRef.current);
     }
 
-    // 2. Add Soft Blue 10 KM Coverage Circle (Prompt 2 Section 4)
+    // 2. Add Soft Orange 10 KM Coverage Circle
     const circle = L.circle([userLat, userLng], {
       radius: 10000, // 10 KM service boundary
-      color: '#2563eb',
+      color: '#ff6a00',
       weight: 2,
       opacity: 0.6,
-      fillColor: '#3b82f6',
+      fillColor: '#ff7a00',
       fillOpacity: 0.08,
       dashArray: '6, 6',
     }).addTo(map);
@@ -79,13 +79,13 @@ export default function ServiceExploreMap({
       className: 'custom-user-map-pin',
       html: `
         <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
-          <div style="background: #2563eb; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(37,99,235,0.45); border: 3px solid #ffffff; font-size: 20px; z-index: 20;">
+          <div style="background: #ff6a00; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(255,106,0,0.45); border: 3px solid #ffffff; font-size: 20px; z-index: 20;">
             🏠
           </div>
-          <div style="background: #1e40af; color: white; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.25); white-space: nowrap; margin-top: 4px; border: 1.5px solid white;">
+          <div style="background: #0b1320; color: white; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.25); white-space: nowrap; margin-top: 4px; border: 1.5px solid white;">
             Your Location
           </div>
-          <div style="position: absolute; top: -6px; left: -6px; width: 56px; height: 56px; border-radius: 50%; background: rgba(37,99,235,0.25); animation: pulse 2.2s infinite; z-index: 10;"></div>
+          <div style="position: absolute; top: -6px; left: -6px; width: 56px; height: 56px; border-radius: 50%; background: rgba(255,106,0,0.25); animation: pulse 2.2s infinite; z-index: 10;"></div>
         </div>
       `,
       iconSize: [85, 75],
@@ -115,7 +115,7 @@ export default function ServiceExploreMap({
       const serviceName = pro.services?.[0]?.name || 'Specialist';
       const distanceText = pro.distance_km !== null ? `${pro.distance_km} km` : 'Nearby';
 
-      // Custom marker matching Getix reference layout
+      // Custom marker matching SabFix reference layout
       const proIcon = L.divIcon({
         className: `pro-map-pin ${isSelected ? 'selected' : ''}`,
         html: `
@@ -123,7 +123,7 @@ export default function ServiceExploreMap({
             <!-- Avatar Pin -->
             <div style="position: relative; z-index: 2;">
               <div style="width: 38px; height: 38px; border-radius: 50%; background: ${
-                isSelected ? '#2563eb' : '#0284c7'
+                isSelected ? '#ff6a00' : '#0b192c'
               }; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; border: 2.5px solid #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                 ${pro.name.charAt(0).toUpperCase()}
               </div>
@@ -132,12 +132,12 @@ export default function ServiceExploreMap({
 
             <!-- Attached Pill Label -->
             <div style="background: white; border: 1.5px solid ${
-              isSelected ? '#2563eb' : '#cbd5e1'
+              isSelected ? '#ff6a00' : '#cbd5e1'
             }; padding: 3px 8px 3px 12px; margin-left: -8px; border-radius: 0 999px 999px 0; display: flex; flex-direction: column; justify-content: center; min-width: 80px; z-index: 1;">
               <div style="font-size: 11px; font-weight: 800; color: #0f172a; white-space: nowrap; line-height: 1.1;">
                 ${pro.name}
               </div>
-              <div style="font-size: 9.5px; color: #2563eb; font-weight: 700; line-height: 1.1;">
+              <div style="font-size: 9.5px; color: #ff6a00; font-weight: 700; line-height: 1.1;">
                 ${serviceName}
               </div>
               <div style="font-size: 9px; color: #64748b; font-weight: 600; line-height: 1.1;">
@@ -162,16 +162,16 @@ export default function ServiceExploreMap({
             <strong style="font-size: 13px; color: #0f172a;">${pro.name}</strong>
             ${pro.is_verified ? '<span style="color: #16a34a; font-size: 11px; font-weight: 700;">✓ Verified</span>' : ''}
           </div>
-          <div style="font-size: 11px; color: #2563eb; font-weight: 700; margin-bottom: 6px;">
+          <div style="font-size: 11px; color: #ff6a00; font-weight: 700; margin-bottom: 6px;">
             ${serviceName} &bull; ★ ${pro.rating.toFixed(1)} (${pro.review_count})
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 11px; background: #f8fafc; padding: 4px 6px; border-radius: 4px; margin-bottom: 8px;">
-            <span>Hourly: <strong style="color: #2563eb;">₹${pro.price}/hr</strong></span>
+            <span>Hourly: <strong style="color: #ff6a00;">₹${pro.price}/hr</strong></span>
             <span>Fee: <strong style="color: #059669;">₹${pro.visiting_charge || 99}</strong></span>
           </div>
           <button 
             id="book-pro-${pro.id}" 
-            style="width: 100%; background: #2563eb; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;"
+            style="width: 100%; background: #ff6a00; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;"
           >
             Request Service
           </button>
@@ -258,11 +258,11 @@ export default function ServiceExploreMap({
           boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
           fontSize: '0.825rem',
           fontWeight: 700,
-          color: '#1e40af',
+          color: 'var(--primary)',
           pointerEvents: 'none',
         }}
       >
-        <MapPin size={15} color="#2563eb" />
+        <MapPin size={15} color="var(--primary)" />
         <span>Show on Map</span>
       </div>
 
@@ -344,7 +344,7 @@ export default function ServiceExploreMap({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#2563eb',
+            color: 'var(--primary)',
           }}
         >
           <Navigation size={16} />

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLocationContext } from '../context/LocationContext';
-import { MapPin, ChevronDown, User, LogOut, Shield, Briefcase, Layers, Navigation, Search, Check, Menu, X } from 'lucide-react';
+import { MapPin, ChevronDown, User, LogOut, Shield, Briefcase, Layers, Navigation, Check, Menu, X } from 'lucide-react';
+import SabFixBrand from './SabFixBrand';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -20,7 +22,6 @@ export default function Navbar() {
 
   const [showLocationMenu, setShowLocationMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [citySearchInput, setCitySearchInput] = useState('');
 
   // Close mobile drawer when route changes
   useEffect(() => {
@@ -57,34 +58,11 @@ export default function Navbar() {
     }
   };
 
-  const handleSelectCity = (city) => {
-    setCurrentCity(city);
-    setShowLocationMenu(false);
-  };
-
   return (
-    <nav className="navbar" style={{ background: '#ffffff', borderBottom: '1px solid #eef2f6', position: 'sticky', top: 0, zIndex: 100 }}>
-      <div className="container nav-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '76px' }}>
-        {/* Brand Logo - EXACT FIXORA / FIXIGO CIRCULAR PIN STYLE */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
-          <div
-            style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '50%',
-              background: '#2563eb',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
-            }}
-          >
-            <MapPin size={22} color="#ffffff" fill="#ffffff" />
-          </div>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>
-            Getix
-          </span>
-        </Link>
+    <nav className="navbar">
+      <div className="container nav-container">
+        {/* Brand Logo - SabFix with Logo Mark and Styled Text */}
+        <SabFixBrand size="md" layout="horizontal" />
 
         {/* Center Navigation Links with Underline Indicator */}
         <ul className="nav-links-desktop" style={{ alignItems: 'center', gap: '2rem', listStyle: 'none', margin: 0, padding: 0 }}>
@@ -94,10 +72,10 @@ export default function Navbar() {
               style={{
                 textDecoration: 'none',
                 fontSize: '0.95rem',
-                fontWeight: location.pathname === '/' ? 700 : 600,
-                color: location.pathname === '/' ? '#2563eb' : '#475569',
+                fontWeight: location.pathname === '/' ? 800 : 600,
+                color: location.pathname === '/' ? 'var(--primary)' : 'var(--text-muted)',
                 paddingBottom: '6px',
-                borderBottom: location.pathname === '/' ? '2.5px solid #2563eb' : '2.5px solid transparent',
+                borderBottom: location.pathname === '/' ? '2.5px solid var(--primary)' : '2.5px solid transparent',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -111,10 +89,10 @@ export default function Navbar() {
               style={{
                 textDecoration: 'none',
                 fontSize: '0.95rem',
-                fontWeight: location.pathname.startsWith('/services') ? 700 : 600,
-                color: location.pathname.startsWith('/services') ? '#2563eb' : '#475569',
+                fontWeight: location.pathname.startsWith('/services') ? 800 : 600,
+                color: location.pathname.startsWith('/services') ? 'var(--primary)' : 'var(--text-muted)',
                 paddingBottom: '6px',
-                borderBottom: location.pathname.startsWith('/services') ? '2.5px solid #2563eb' : '2.5px solid transparent',
+                borderBottom: location.pathname.startsWith('/services') ? '2.5px solid var(--primary)' : '2.5px solid transparent',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -129,7 +107,7 @@ export default function Navbar() {
                 textDecoration: 'none',
                 fontSize: '0.95rem',
                 fontWeight: 600,
-                color: '#475569',
+                color: 'var(--text-muted)',
                 paddingBottom: '6px',
                 transition: 'all 0.15s ease',
               }}
@@ -145,7 +123,7 @@ export default function Navbar() {
                 textDecoration: 'none',
                 fontSize: '0.95rem',
                 fontWeight: 600,
-                color: '#475569',
+                color: 'var(--text-muted)',
                 paddingBottom: '6px',
                 transition: 'all 0.15s ease',
               }}
@@ -161,8 +139,8 @@ export default function Navbar() {
                 style={{
                   textDecoration: 'none',
                   fontSize: '0.95rem',
-                  fontWeight: 700,
-                  color: '#2563eb',
+                  fontWeight: 750,
+                  color: 'var(--primary)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.35rem',
@@ -174,8 +152,11 @@ export default function Navbar() {
           )}
         </ul>
 
-        {/* Right Actions: Location Dropdown + Login & Sign Up Pills (Desktop) */}
-        <div className="nav-actions-desktop" style={{ alignItems: 'center', gap: '1.25rem' }}>
+        {/* Right Actions: Theme Toggle + Location Dropdown + Login & Sign Up Pills (Desktop) */}
+        <div className="nav-actions-desktop" style={{ alignItems: 'center', gap: '1rem' }}>
+          {/* Theme Mode Toggle (Light / Dark / System) */}
+          <ThemeToggle variant="segmented" size="sm" />
+
           {/* Location Selector Pill */}
           <div style={{ position: 'relative' }}>
             <div
@@ -190,16 +171,16 @@ export default function Navbar() {
                 transition: 'background 0.15s',
               }}
             >
-              <div style={{ color: '#2563eb', display: 'flex' }}>
+              <div style={{ color: 'var(--primary)', display: 'flex' }}>
                 <MapPin size={20} />
               </div>
               <div style={{ textAlign: 'left', lineHeight: 1.2 }}>
-                <span style={{ display: 'block', fontSize: '0.725rem', color: '#94a3b8', fontWeight: 600 }}>
-                  Current Location
+                <span style={{ display: 'block', fontSize: '0.725rem', color: 'var(--text-light)', fontWeight: 600 }}>
+                  Location
                 </span>
-                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                   {currentCity}
-                  <ChevronDown size={14} color="#64748b" />
+                  <ChevronDown size={14} color="var(--text-muted)" />
                 </span>
               </div>
             </div>
@@ -211,25 +192,25 @@ export default function Navbar() {
                   top: '115%',
                   right: 0,
                   width: '270px',
-                  background: 'white',
+                  background: 'var(--bg-card)',
                   borderRadius: '16px',
-                  boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
-                  border: '1px solid #e2e8f0',
+                  boxShadow: 'var(--shadow-lg)',
+                  border: '1px solid var(--border)',
                   padding: '0.85rem',
                   zIndex: 200,
                 }}
               >
                 {/* Current Active Location Info */}
-                <div style={{ paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.65rem' }}>
-                  <span style={{ fontSize: '0.725rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ paddingBottom: '0.65rem', borderBottom: '1px solid var(--border)', marginBottom: '0.65rem' }}>
+                  <span style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Active Location
                   </span>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.2rem' }}>
-                    <MapPin size={14} color="#2563eb" />
+                  <div style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.2rem' }}>
+                    <MapPin size={14} color="var(--primary)" />
                     <span>{currentCity}</span>
                   </div>
                   {userLocation?.address && (
-                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {userLocation.address}
                     </div>
                   )}
@@ -245,10 +226,10 @@ export default function Navbar() {
                   style={{
                     width: '100%',
                     padding: '0.65rem 0.85rem',
-                    background: '#eff6ff',
-                    border: '1px solid #bfdbfe',
+                    background: 'var(--primary-light)',
+                    border: '1px solid var(--primary)',
                     borderRadius: '10px',
-                    color: '#1d4ed8',
+                    color: 'var(--primary)',
                     fontSize: '0.825rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -264,7 +245,7 @@ export default function Navbar() {
                 </button>
 
                 {/* Popular Cities Header */}
-                <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.45rem' }}>
+                <div style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', marginBottom: '0.45rem' }}>
                   Popular Cities
                 </div>
 
@@ -284,18 +265,18 @@ export default function Navbar() {
                       style={{
                         padding: '0.5rem 0.75rem',
                         fontSize: '0.85rem',
-                        fontWeight: currentCity === c.name ? 700 : 500,
-                        color: currentCity === c.name ? '#2563eb' : '#334155',
+                        fontWeight: currentCity === c.name ? 750 : 500,
+                        color: currentCity === c.name ? 'var(--primary)' : 'var(--text-main)',
                         borderRadius: '8px',
                         cursor: 'pointer',
-                        background: currentCity === c.name ? '#eff6ff' : 'transparent',
+                        background: currentCity === c.name ? 'var(--primary-light)' : 'transparent',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                       }}
                     >
                       <span>{c.name}</span>
-                      {currentCity === c.name && <Check size={14} color="#2563eb" />}
+                      {currentCity === c.name && <Check size={14} color="var(--primary)" />}
                     </div>
                   ))}
                 </div>
@@ -313,7 +294,7 @@ export default function Navbar() {
                 {user.role}
               </span>
 
-              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a' }}>
+              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-main)' }}>
                 {user.name}
               </span>
 
@@ -327,18 +308,18 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <Link
                 to="/login"
                 style={{
                   textDecoration: 'none',
-                  padding: '0.55rem 1.4rem',
+                  padding: '0.55rem 1.35rem',
                   borderRadius: '9999px',
-                  border: '1.5px solid #cbd5e1',
-                  color: '#0f172a',
-                  fontWeight: 600,
+                  border: '1.5px solid var(--border)',
+                  color: 'var(--text-main)',
+                  fontWeight: 650,
                   fontSize: '0.9rem',
-                  background: 'white',
+                  background: 'var(--bg-card)',
                   transition: 'all 0.15s ease',
                   display: 'inline-block',
                 }}
@@ -348,16 +329,13 @@ export default function Navbar() {
 
               <Link
                 to="/register"
+                className="btn btn-primary"
                 style={{
                   textDecoration: 'none',
-                  padding: '0.55rem 1.5rem',
+                  padding: '0.55rem 1.45rem',
                   borderRadius: '9999px',
-                  background: '#2563eb',
-                  color: '#ffffff',
-                  fontWeight: 700,
+                  fontWeight: 750,
                   fontSize: '0.9rem',
-                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
-                  transition: 'all 0.15s ease',
                   display: 'inline-block',
                 }}
               >
@@ -369,7 +347,7 @@ export default function Navbar() {
 
         {/* Mobile Hamburger Toggle Wrapper */}
         <div className="nav-mobile-toggle-wrapper">
-          {/* Compact City Indicator on Mobile */}
+          {/* Mobile City Indicator */}
           <div
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             style={{
@@ -378,8 +356,8 @@ export default function Navbar() {
               gap: '0.25rem',
               padding: '0.35rem 0.6rem',
               borderRadius: '999px',
-              background: '#eff6ff',
-              color: '#2563eb',
+              background: 'var(--primary-light)',
+              color: 'var(--primary)',
               fontSize: '0.785rem',
               fontWeight: 750,
               cursor: 'pointer',
@@ -395,8 +373,16 @@ export default function Navbar() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="nav-mobile-toggle"
             aria-label="Toggle navigation menu"
+            style={{
+              border: 'none',
+              background: 'transparent',
+              color: 'var(--text-main)',
+              cursor: 'pointer',
+              display: 'flex',
+              padding: '4px',
+            }}
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
@@ -404,15 +390,21 @@ export default function Navbar() {
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
         <div className="mobile-nav-drawer">
+          {/* Theme Mode Selector in Mobile Drawer */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', background: 'var(--bg-subtle)', borderRadius: '12px', marginBottom: '0.85rem' }}>
+            <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-muted)' }}>Appearance</span>
+            <ThemeToggle variant="segmented" size="sm" />
+          </div>
+
           {/* Location Bar with GPS Button */}
-          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '0.85rem', marginBottom: '1rem' }}>
+          <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border)', borderRadius: '14px', padding: '0.85rem', marginBottom: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
               <div>
-                <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-light)', fontWeight: 700, textTransform: 'uppercase' }}>
                   Your Location
                 </span>
-                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <MapPin size={15} color="#2563eb" />
+                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <MapPin size={15} color="var(--primary)" />
                   <span>{currentCity}</span>
                 </div>
               </div>
@@ -424,10 +416,10 @@ export default function Navbar() {
                 disabled={isDetecting}
                 style={{
                   padding: '0.45rem 0.85rem',
-                  background: '#eff6ff',
-                  border: '1px solid #bfdbfe',
+                  background: 'var(--primary-light)',
+                  border: '1px solid var(--primary)',
                   borderRadius: '999px',
-                  color: '#1d4ed8',
+                  color: 'var(--primary)',
                   fontSize: '0.785rem',
                   fontWeight: 750,
                   cursor: 'pointer',
@@ -455,10 +447,10 @@ export default function Navbar() {
                     });
                   }}
                   style={{
-                    background: currentCity === c.name ? '#2563eb' : '#ffffff',
-                    color: currentCity === c.name ? '#ffffff' : '#475569',
+                    background: currentCity === c.name ? 'var(--primary)' : 'var(--bg-card)',
+                    color: currentCity === c.name ? '#ffffff' : 'var(--text-muted)',
                     border: '1px solid',
-                    borderColor: currentCity === c.name ? '#2563eb' : '#cbd5e1',
+                    borderColor: currentCity === c.name ? 'var(--primary)' : 'var(--border)',
                     borderRadius: '999px',
                     padding: '0.3rem 0.75rem',
                     fontSize: '0.75rem',
@@ -486,8 +478,8 @@ export default function Navbar() {
                 borderRadius: '10px',
                 textDecoration: 'none',
                 fontWeight: location.pathname === '/' ? 800 : 650,
-                color: location.pathname === '/' ? '#2563eb' : '#1e293b',
-                background: location.pathname === '/' ? '#eff6ff' : 'transparent',
+                color: location.pathname === '/' ? 'var(--primary)' : 'var(--text-main)',
+                background: location.pathname === '/' ? 'var(--primary-light)' : 'transparent',
                 fontSize: '0.95rem',
               }}
             >
@@ -505,8 +497,8 @@ export default function Navbar() {
                 borderRadius: '10px',
                 textDecoration: 'none',
                 fontWeight: location.pathname.startsWith('/services') ? 800 : 650,
-                color: location.pathname.startsWith('/services') ? '#2563eb' : '#1e293b',
-                background: location.pathname.startsWith('/services') ? '#eff6ff' : 'transparent',
+                color: location.pathname.startsWith('/services') ? 'var(--primary)' : 'var(--text-main)',
+                background: location.pathname.startsWith('/services') ? 'var(--primary-light)' : 'transparent',
                 fontSize: '0.95rem',
               }}
             >
@@ -523,7 +515,7 @@ export default function Navbar() {
                 borderRadius: '10px',
                 textDecoration: 'none',
                 fontWeight: 650,
-                color: '#1e293b',
+                color: 'var(--text-main)',
                 fontSize: '0.95rem',
               }}
             >
@@ -540,7 +532,7 @@ export default function Navbar() {
                 borderRadius: '10px',
                 textDecoration: 'none',
                 fontWeight: 650,
-                color: '#1e293b',
+                color: 'var(--text-main)',
                 fontSize: '0.95rem',
               }}
             >
@@ -559,8 +551,8 @@ export default function Navbar() {
                   borderRadius: '10px',
                   textDecoration: 'none',
                   fontWeight: 800,
-                  color: '#2563eb',
-                  background: '#eff6ff',
+                  color: 'var(--primary)',
+                  background: 'var(--primary-light)',
                   fontSize: '0.95rem',
                 }}
               >
@@ -570,14 +562,14 @@ export default function Navbar() {
           </div>
 
           {/* Auth Action Buttons */}
-          <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #f1f5f9' }}>
+          <div style={{ paddingTop: '0.85rem', borderTop: '1px solid var(--border)' }}>
             {isAuthenticated ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <span className={`badge ${getRoleBadgeClass(user.role)}`}>
                     {user.role}
                   </span>
-                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{user.name}</strong>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>{user.name}</strong>
                 </div>
 
                 <button
@@ -598,11 +590,11 @@ export default function Navbar() {
                     textAlign: 'center',
                     padding: '0.65rem 1rem',
                     borderRadius: '999px',
-                    border: '1.5px solid #cbd5e1',
-                    color: '#0f172a',
+                    border: '1.5px solid var(--border)',
+                    color: 'var(--text-main)',
                     fontWeight: 700,
                     fontSize: '0.9rem',
-                    background: 'white',
+                    background: 'var(--bg-card)',
                   }}
                 >
                   Login
@@ -611,16 +603,14 @@ export default function Navbar() {
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
+                  className="btn btn-primary"
                   style={{
                     textDecoration: 'none',
                     textAlign: 'center',
                     padding: '0.65rem 1rem',
                     borderRadius: '999px',
-                    background: '#2563eb',
-                    color: '#ffffff',
                     fontWeight: 750,
                     fontSize: '0.9rem',
-                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
                   }}
                 >
                   Sign Up
