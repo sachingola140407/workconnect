@@ -702,14 +702,7 @@ export default function LiveTrackingPage() {
         </div>
 
         {/* ===================== RESPONSIVE MAIN WORKFLOW CONTAINER ===================== */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(340px, 460px) minmax(0, 1fr)',
-            gap: '1.5rem',
-            alignItems: 'start',
-          }}
-        >
+        <div className="tracking-grid">
           {/* ===================== LEFT COLUMN: THE STATE CARD ===================== */}
           <div
             style={{

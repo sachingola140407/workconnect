@@ -53,7 +53,7 @@ export default function LoginPage() {
     >
       <div className="animate-fade-in" style={{ width: '100%', maxWidth: '440px' }}>
         <div
-          className="glass-card"
+          className="glass-card auth-card"
           style={{
             padding: '2.5rem 2rem',
             borderRadius: '20px',

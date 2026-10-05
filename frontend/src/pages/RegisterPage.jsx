@@ -125,7 +125,7 @@ export default function RegisterPage() {
     >
       <div className="animate-fade-in" style={{ width: '100%', maxWidth: '540px' }}>
         <div
-          className="glass-card"
+          className="glass-card auth-card"
           style={{
             padding: '2.5rem 2.25rem',
             borderRadius: '22px',

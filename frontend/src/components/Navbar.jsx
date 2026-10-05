@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLocationContext } from '../context/LocationContext';
-import { MapPin, ChevronDown, User, LogOut, Shield, Briefcase, Layers, Navigation, Search, Check } from 'lucide-react';
+import { MapPin, ChevronDown, User, LogOut, Shield, Briefcase, Layers, Navigation, Search, Check, Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -19,10 +19,18 @@ export default function Navbar() {
   const location = useLocation();
 
   const [showLocationMenu, setShowLocationMenu] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [citySearchInput, setCitySearchInput] = useState('');
+
+  // Close mobile drawer when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setShowLocationMenu(false);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     await logout();
+    setMobileMenuOpen(false);
     navigate('/login');
   };
 
@@ -79,7 +87,7 @@ export default function Navbar() {
         </Link>
 
         {/* Center Navigation Links with Underline Indicator */}
-        <ul style={{ display: 'flex', alignItems: 'center', gap: '2rem', listStyle: 'none', margin: 0, padding: 0 }}>
+        <ul className="nav-links-desktop" style={{ alignItems: 'center', gap: '2rem', listStyle: 'none', margin: 0, padding: 0 }}>
           <li>
             <Link
               to="/"
@@ -166,8 +174,8 @@ export default function Navbar() {
           )}
         </ul>
 
-        {/* Right Actions: Location Dropdown + Login & Sign Up Pills */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+        {/* Right Actions: Location Dropdown + Login & Sign Up Pills (Desktop) */}
+        <div className="nav-actions-desktop" style={{ alignItems: 'center', gap: '1.25rem' }}>
           {/* Location Selector Pill */}
           <div style={{ position: 'relative' }}>
             <div
@@ -358,7 +366,270 @@ export default function Navbar() {
             </div>
           )}
         </div>
+
+        {/* Mobile Hamburger Toggle Wrapper */}
+        <div className="nav-mobile-toggle-wrapper">
+          {/* Compact City Indicator on Mobile */}
+          <div
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              padding: '0.35rem 0.6rem',
+              borderRadius: '999px',
+              background: '#eff6ff',
+              color: '#2563eb',
+              fontSize: '0.785rem',
+              fontWeight: 750,
+              cursor: 'pointer',
+            }}
+          >
+            <MapPin size={13} />
+            <span style={{ maxWidth: '85px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {currentCity}
+            </span>
+          </div>
+
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="nav-mobile-toggle"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div className="mobile-nav-drawer">
+          {/* Location Bar with GPS Button */}
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '0.85rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+              <div>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
+                  Your Location
+                </span>
+                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <MapPin size={15} color="#2563eb" />
+                  <span>{currentCity}</span>
+                </div>
+              </div>
+
+              <button
+                onClick={async () => {
+                  await detectLocation(false);
+                }}
+                disabled={isDetecting}
+                style={{
+                  padding: '0.45rem 0.85rem',
+                  background: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '999px',
+                  color: '#1d4ed8',
+                  fontSize: '0.785rem',
+                  fontWeight: 750,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
+              >
+                <Navigation size={13} className={isDetecting ? 'spin' : ''} />
+                <span>{isDetecting ? 'Detecting...' : 'Detect GPS'}</span>
+              </button>
+            </div>
+
+            {/* Quick City Switcher Pills */}
+            <div style={{ display: 'flex', gap: '0.4rem', overflowX: 'auto', paddingBottom: '0.2rem' }}>
+              {popularCities.map((c) => (
+                <button
+                  key={c.name}
+                  onClick={() => {
+                    setManualLocation(c.name, {
+                      latitude: c.latitude,
+                      longitude: c.longitude,
+                      city: c.name,
+                      address: c.defaultAddress,
+                    });
+                  }}
+                  style={{
+                    background: currentCity === c.name ? '#2563eb' : '#ffffff',
+                    color: currentCity === c.name ? '#ffffff' : '#475569',
+                    border: '1px solid',
+                    borderColor: currentCity === c.name ? '#2563eb' : '#cbd5e1',
+                    borderRadius: '999px',
+                    padding: '0.3rem 0.75rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
+            <Link
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.7rem 0.85rem',
+                borderRadius: '10px',
+                textDecoration: 'none',
+                fontWeight: location.pathname === '/' ? 800 : 650,
+                color: location.pathname === '/' ? '#2563eb' : '#1e293b',
+                background: location.pathname === '/' ? '#eff6ff' : 'transparent',
+                fontSize: '0.95rem',
+              }}
+            >
+              <span>Home</span>
+            </Link>
+
+            <Link
+              to="/services"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.7rem 0.85rem',
+                borderRadius: '10px',
+                textDecoration: 'none',
+                fontWeight: location.pathname.startsWith('/services') ? 800 : 650,
+                color: location.pathname.startsWith('/services') ? '#2563eb' : '#1e293b',
+                background: location.pathname.startsWith('/services') ? '#eff6ff' : 'transparent',
+                fontSize: '0.95rem',
+              }}
+            >
+              <span>Services (Map &amp; Specialists)</span>
+            </Link>
+
+            <a
+              href="/#how-it-works"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0.7rem 0.85rem',
+                borderRadius: '10px',
+                textDecoration: 'none',
+                fontWeight: 650,
+                color: '#1e293b',
+                fontSize: '0.95rem',
+              }}
+            >
+              How It Works
+            </a>
+
+            <a
+              href="/#about"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0.7rem 0.85rem',
+                borderRadius: '10px',
+                textDecoration: 'none',
+                fontWeight: 650,
+                color: '#1e293b',
+                fontSize: '0.95rem',
+              }}
+            >
+              About
+            </a>
+
+            {isAuthenticated && (
+              <Link
+                to={getDashboardPath()}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.7rem 0.85rem',
+                  borderRadius: '10px',
+                  textDecoration: 'none',
+                  fontWeight: 800,
+                  color: '#2563eb',
+                  background: '#eff6ff',
+                  fontSize: '0.95rem',
+                }}
+              >
+                <Layers size={17} /> Dashboard
+              </Link>
+            )}
+          </div>
+
+          {/* Auth Action Buttons */}
+          <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #f1f5f9' }}>
+            {isAuthenticated ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className={`badge ${getRoleBadgeClass(user.role)}`}>
+                    {user.role}
+                  </span>
+                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{user.name}</strong>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-secondary btn-sm"
+                  style={{ borderRadius: '999px', padding: '0.45rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}
+                >
+                  <LogOut size={14} /> Log Out
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    padding: '0.65rem 1rem',
+                    borderRadius: '999px',
+                    border: '1.5px solid #cbd5e1',
+                    color: '#0f172a',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    background: 'white',
+                  }}
+                >
+                  Login
+                </Link>
+
+                <Link
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    padding: '0.65rem 1rem',
+                    borderRadius: '999px',
+                    background: '#2563eb',
+                    color: '#ffffff',
+                    fontWeight: 750,
+                    fontSize: '0.9rem',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

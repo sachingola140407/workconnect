@@ -44,6 +44,7 @@ export default function ServicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [availableOnly, setAvailableOnly] = useState(false);
   const [sortBy, setSortBy] = useState('best_match');
+  const [mobileTab, setMobileTab] = useState('map'); // 'map' or 'specialist'
 
   // Global Location Context
   const {
@@ -519,18 +520,29 @@ export default function ServicesPage() {
             </p>
           </div>
         ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(340px, 410px) 1fr',
-              gap: '1.5rem',
-              marginBottom: '3rem',
-              alignItems: 'stretch',
-            }}
-            className="split-map-view"
-          >
-            {/* Left Column: Selected / Best Match Specialist Card */}
-            {selectedPro ? (
+          <>
+            {/* Mobile View Toggle Tabs (Visible only on mobile devices) */}
+            <div className="mobile-view-tabs">
+              <button
+                type="button"
+                className={`mobile-view-tab ${mobileTab === 'map' ? 'active' : 'inactive'}`}
+                onClick={() => setMobileTab('map')}
+              >
+                🗺️ Explore Map ({professionals.length})
+              </button>
+              <button
+                type="button"
+                className={`mobile-view-tab ${mobileTab === 'specialist' ? 'active' : 'inactive'}`}
+                onClick={() => setMobileTab('specialist')}
+              >
+                👤 Specialist {selectedPro ? `(${selectedPro.name.split(' ')[0]})` : ''}
+              </button>
+            </div>
+
+            <div className="split-map-view">
+              {/* Left Column: Selected / Best Match Specialist Card */}
+              <div className={`split-col-specialist ${mobileTab !== 'specialist' ? 'mobile-hidden' : ''}`} style={{ height: '100%' }}>
+                {selectedPro ? (
               <div
                 className="card"
                 style={{
@@ -633,18 +645,7 @@ export default function ServicesPage() {
                 </div>
 
                 {/* Highlights Metrics Grid (Rating, Experience, Visiting Fee, Hourly Rate, Distance) */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
-                    gap: '0.45rem',
-                    background: '#f8fafc',
-                    padding: '0.85rem 0.65rem',
-                    borderRadius: '12px',
-                    marginBottom: '1rem',
-                    border: '1px solid #e2e8f0',
-                  }}
-                >
+                <div className="pro-metrics-grid">
                   <div style={{ textAlign: 'center' }}>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.725rem', display: 'block', fontWeight: 600 }}>
                       Rating
@@ -804,19 +805,24 @@ export default function ServicesPage() {
                 </p>
               </div>
             )}
+            </div>
 
             {/* Right Column: Interactive Map (Matching reference image) */}
-            <div style={{ minHeight: '420px', width: '100%' }}>
+            <div className={`split-col-map ${mobileTab !== 'map' ? 'mobile-hidden' : ''}`} style={{ minHeight: '380px', width: '100%' }}>
               <ServiceExploreMap
                 userLocation={userLocation}
                 professionals={professionals}
                 selectedProId={selectedPro?.id}
-                onSelectProfessional={(pro) => setSelectedPro(pro)}
+                onSelectProfessional={(pro) => {
+                  setSelectedPro(pro);
+                  setMobileTab('specialist');
+                }}
                 onRequestBooking={(pro) => handleOpenBooking(pro)}
                 onRecenter={() => detectLocation(false)}
               />
             </div>
           </div>
+        </>
         )}
 
         {/* BOTTOM SECTION: NEARBY PROFESSIONALS LIST (CARDS) (MATCHING REFERENCE IMAGE) */}

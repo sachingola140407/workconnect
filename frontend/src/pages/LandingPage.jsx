@@ -149,14 +149,7 @@ export default function LandingPage() {
         }}
       >
         <div className="container">
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1fr)',
-              alignItems: 'center',
-              gap: '2.5rem',
-            }}
-          >
+          <div className="hero-grid">
             {/* Left Column: Headlines, Search Pill & Trust Badges */}
             <div>
               {/* Pill Badge with Green Dot */}
@@ -189,11 +182,11 @@ export default function LandingPage() {
 
               {/* Main Headline */}
               <h1
+                className="hero-title"
                 style={{
-                  fontSize: '3.4rem',
                   fontWeight: 900,
                   color: '#0f172a',
-                  lineHeight: '1.12',
+                  lineHeight: '1.15',
                   letterSpacing: '-0.03em',
                   marginBottom: '1.25rem',
                 }}
@@ -204,8 +197,8 @@ export default function LandingPage() {
 
               {/* Subtitle */}
               <p
+                className="hero-subtitle"
                 style={{
-                  fontSize: '1.1rem',
                   color: '#64748b',
                   lineHeight: 1.6,
                   maxWidth: '560px',
@@ -216,20 +209,7 @@ export default function LandingPage() {
               </p>
 
               {/* Floating Search / Booking Capsule Card */}
-              <form
-                onSubmit={handleSearch}
-                style={{
-                  background: '#ffffff',
-                  border: '1.5px solid #e2e8f0',
-                  borderRadius: '22px',
-                  boxShadow: '0 12px 35px -5px rgba(15, 23, 42, 0.08)',
-                  padding: '0.65rem 0.85rem 0.65rem 1.25rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  maxWidth: '630px',
-                }}
-              >
+              <form onSubmit={handleSearch} className="hero-search-form">
                 {/* Location Input */}
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                   <MapPin size={22} color="#2563eb" style={{ flexShrink: 0 }} />
@@ -274,7 +254,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Vertical Divider */}
-                <div style={{ width: '1px', height: '36px', background: '#e2e8f0' }} />
+                <div className="form-divider" style={{ width: '1px', height: '36px', background: '#e2e8f0' }} />
 
                 {/* Service Select */}
                 <div style={{ flex: 1.2, display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
@@ -325,6 +305,7 @@ export default function LandingPage() {
                     fontSize: '0.95rem',
                     display: 'flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: '0.5rem',
                     boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
                     cursor: 'pointer',
@@ -605,26 +586,9 @@ export default function LandingPage() {
       {/* ===================== DUAL FEATURE CARDS (WHY CHOOSE & HOW IT WORKS) ===================== */}
       <section style={{ padding: '1rem 0 3.5rem', background: '#ffffff' }}>
         <div className="container">
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(0, 0.9fr) minmax(0, 1.25fr)',
-              gap: '1.5rem',
-              alignItems: 'stretch',
-            }}
-          >
+          <div className="dual-feature-grid">
             {/* Left Card: WHY CHOOSE FIXIGO */}
-            <div
-              style={{
-                background: '#f0f7ff',
-                border: '1.5px solid #dbeafe',
-                borderRadius: '22px',
-                padding: '2rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1.5rem',
-              }}
-            >
+            <div className="why-choose-card">
               {/* Mini Map Graphic */}
               <div style={{ flexShrink: 0 }}>
                 <img
@@ -632,6 +596,7 @@ export default function LandingPage() {
                   alt="Nearby Specialists GPS Map"
                   style={{
                     width: '170px',
+                    maxWidth: '100%',
                     height: 'auto',
                     borderRadius: '14px',
                     boxShadow: '0 8px 20px rgba(37, 99, 235, 0.12)',
@@ -714,14 +679,7 @@ export default function LandingPage() {
               </h3>
 
               {/* 4 Steps Row */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
-                  gap: '0.85rem',
-                  position: 'relative',
-                }}
-              >
+              <div className="how-it-works-grid">
                 {/* Step 1 */}
                 <div>
                   <div
