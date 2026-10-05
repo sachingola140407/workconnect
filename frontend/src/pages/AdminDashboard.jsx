@@ -281,7 +281,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: '#fef3c7', color: '#92400e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Activity size={24} />
             </div>
             <div>
@@ -364,7 +364,7 @@ export default function AdminDashboard() {
             {/* Activity Summary Sub-Cards */}
             {activityData?.summary && (
               <div className="grid-4" style={{ marginBottom: '1.5rem' }}>
-                <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: 'var(--bg-main)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
                     Total Requests Received
                   </span>
@@ -373,8 +373,8 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #bbf7d0' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>
+                <div style={{ background: 'rgba(16, 185, 129, 0.12)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 700, textTransform: 'uppercase' }}>
                     Requests Accepted
                   </span>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#15803d', marginTop: '0.2rem' }}>
@@ -391,11 +391,11 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div style={{ background: '#fefce8', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #fef08a' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#854d0e', fontWeight: 700, textTransform: 'uppercase' }}>
+                <div style={{ background: 'rgba(245, 158, 11, 0.12)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#d97706', fontWeight: 700, textTransform: 'uppercase' }}>
                     Total Pro Earnings
                   </span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#b45309', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#d97706', marginTop: '0.2rem' }}>
                     ₹{activityData.summary.total_platform_earnings.toLocaleString()}
                   </div>
                 </div>
@@ -668,11 +668,11 @@ export default function AdminDashboard() {
         {activeTab === 'financials' && (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
-              <div className="card" style={{ background: '#f8fafc', textAlign: 'center', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
+              <div className="card" style={{ background: 'var(--bg-card)', textAlign: 'center', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                   Total Platform Revenue
                 </span>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e3a8a', marginTop: '0.35rem' }}>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--primary)', marginTop: '0.35rem' }}>
                   ₹{(financialData?.stats?.totalRevenue || 0).toFixed(2)}
                 </div>
                 <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>
@@ -680,8 +680,8 @@ export default function AdminDashboard() {
                 </span>
               </div>
 
-              <div className="card" style={{ background: '#f0fdf4', textAlign: 'center', border: '1.5px solid #bbf7d0' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>
+              <div className="card" style={{ background: 'rgba(16, 185, 129, 0.12)', textAlign: 'center', border: '1.5px solid rgba(16, 185, 129, 0.3)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase' }}>
                   Platform Fees Collected (₹50/job)
                 </span>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#16a34a', marginTop: '0.35rem' }}>
@@ -690,8 +690,8 @@ export default function AdminDashboard() {
                 <span style={{ fontSize: '0.75rem', color: '#15803d' }}>SabFix marketplace margin</span>
               </div>
 
-              <div className="card" style={{ background: '#fffbeb', textAlign: 'center', border: '1.5px solid #fde68a' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b45309', textTransform: 'uppercase' }}>
+              <div className="card" style={{ background: 'rgba(245, 158, 11, 0.12)', textAlign: 'center', border: '1.5px solid rgba(245, 158, 11, 0.3)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#d97706', textTransform: 'uppercase' }}>
                   Pending Platform Fees Due
                 </span>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#d97706', marginTop: '0.35rem' }}>
@@ -707,19 +707,19 @@ export default function AdminDashboard() {
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--primary)', marginTop: '0.35rem' }}>
                   ₹{(financialData?.stats?.onlinePaymentsVolume || 0).toFixed(2)}
                 </div>
-                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   {financialData?.stats?.onlinePaymentsCount || 0} online payments
                 </span>
               </div>
 
-              <div className="card" style={{ background: '#f8fafc', textAlign: 'center', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
+              <div className="card" style={{ background: 'var(--bg-card)', textAlign: 'center', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                   Cash On Delivery Volume
                 </span>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: '0.35rem' }}>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '0.35rem' }}>
                   ₹{(financialData?.stats?.cashPaymentsVolume || 0).toFixed(2)}
                 </div>
-                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   {financialData?.stats?.cashPaymentsCount || 0} cash orders
                 </span>
               </div>
@@ -858,12 +858,12 @@ export default function AdminDashboard() {
               <div>
                 {/* Modal Performance Metrics */}
                 <div className="grid-4" style={{ gap: '0.75rem', marginBottom: '1.5rem' }}>
-                  <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                  <div style={{ background: 'var(--bg-main)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', textAlign: 'center' }}>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Total Requests</span>
                     <strong style={{ fontSize: '1.25rem' }}>{proJobHistory.stats?.total_requests || 0}</strong>
                   </div>
-                  <div style={{ background: '#f0fdf4', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid #bbf7d0', textAlign: 'center' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#166534', display: 'block' }}>Accepted</span>
+                  <div style={{ background: 'rgba(16, 185, 129, 0.12)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#16a34a', display: 'block' }}>Accepted</span>
                     <strong style={{ fontSize: '1.25rem', color: '#15803d' }}>
                       {proJobHistory.stats?.accepted_requests || 0} ({proJobHistory.stats?.acceptance_rate || 0}%)
                     </strong>
@@ -874,9 +874,9 @@ export default function AdminDashboard() {
                       {proJobHistory.stats?.completed_requests || 0} ({proJobHistory.stats?.completion_rate || 0}%)
                     </strong>
                   </div>
-                  <div style={{ background: '#fefce8', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid #fef08a', textAlign: 'center' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#854d0e', display: 'block' }}>Total Earnings</span>
-                    <strong style={{ fontSize: '1.25rem', color: '#b45309' }}>
+                  <div style={{ background: 'rgba(245, 158, 11, 0.12)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(245, 158, 11, 0.3)', textAlign: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#d97706', display: 'block' }}>Total Earnings</span>
+                    <strong style={{ fontSize: '1.25rem', color: '#d97706' }}>
                       ₹{proJobHistory.stats?.total_earnings?.toLocaleString() || 0}
                     </strong>
                   </div>
@@ -887,7 +887,7 @@ export default function AdminDashboard() {
                 </h4>
 
                 {!proJobHistory.jobs?.length ? (
-                  <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-muted)', background: '#f8fafc', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-muted)', background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
                     No bookings logged for this specialist yet.
                   </div>
                 ) : (

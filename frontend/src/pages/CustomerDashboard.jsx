@@ -222,7 +222,7 @@ export default function CustomerDashboard() {
             </div>
 
             <div style={{ background: 'var(--bg-card)', padding: '1.1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.75rem' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.75rem' }}>
                 3
               </div>
               <strong style={{ fontSize: '1rem', display: 'block', color: 'var(--secondary)', marginBottom: '0.25rem' }}>
@@ -391,7 +391,7 @@ export default function CustomerDashboard() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', maxHeight: '440px', overflowY: 'auto' }}>
                 {bookings.map((b) => (
-                  <div key={b.id} style={{ padding: '1rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                  <div key={b.id} style={{ padding: '1rem', background: 'var(--bg-main)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                       <div>
                         <strong style={{ fontSize: '1.05rem', color: 'var(--secondary)' }}>{b.service_name}</strong>
@@ -403,7 +403,7 @@ export default function CustomerDashboard() {
                     </div>
 
                     {/* Visiting Charge & Price Summary */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', background: '#ffffff', padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid #e2e8f0', margin: '0.6rem 0', fontSize: '0.825rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', background: 'var(--bg-card)', padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', margin: '0.6rem 0', fontSize: '0.825rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                         <span style={{ color: 'var(--text-muted)' }}>🛵 Visiting Fee:</span>
                         <strong style={{ color: '#16a34a', fontWeight: 700 }}>₹{b.visiting_charge || 99}</strong>

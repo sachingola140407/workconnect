@@ -139,11 +139,11 @@ export default function LandingPage() {
   ];
 
   return (
-    <div style={{ background: '#ffffff', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div style={{ background: 'var(--bg-main)', color: 'var(--text-main)', minHeight: '100vh', overflowX: 'hidden' }}>
       {/* ===================== HERO SECTION ===================== */}
       <section
         style={{
-          background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)',
+          background: 'var(--hero-bg)',
           padding: '3rem 0 3.5rem',
           position: 'relative',
         }}
@@ -158,12 +158,12 @@ export default function LandingPage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  background: '#f1f5f9',
-                  border: '1px solid #e2e8f0',
+                  background: 'var(--bg-subtle)',
+                  border: '1px solid var(--border)',
                   borderRadius: '9999px',
                   padding: '0.4rem 1rem',
                   fontSize: '0.85rem',
-                  color: '#0f172a',
+                  color: 'var(--text-main)',
                   fontWeight: 700,
                   marginBottom: '1.25rem',
                 }}
@@ -185,7 +185,7 @@ export default function LandingPage() {
                 className="hero-title"
                 style={{
                   fontWeight: 900,
-                  color: '#0f172a',
+                  color: 'var(--text-main)',
                   lineHeight: '1.15',
                   letterSpacing: '-0.03em',
                   marginBottom: '1.25rem',
@@ -199,7 +199,7 @@ export default function LandingPage() {
               <p
                 className="hero-subtitle"
                 style={{
-                  color: '#64748b',
+                  color: 'var(--text-muted)',
                   lineHeight: 1.6,
                   maxWidth: '560px',
                   marginBottom: '2rem',
@@ -353,12 +353,12 @@ export default function LandingPage() {
                 className="animate-fade-in"
                 style={{
                   marginTop: '1.75rem',
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e2e8f0',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
                   borderRadius: '16px',
                   padding: '1rem 1.25rem',
                   maxWidth: '630px',
-                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.03)',
+                  boxShadow: 'var(--shadow-sm)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -375,7 +375,7 @@ export default function LandingPage() {
                     />
                     Specialists Online Now in {searchLocation}
                   </div>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                     ⚡ Instant Booking
                   </span>
                 </div>
@@ -435,16 +435,16 @@ export default function LandingPage() {
                   gap: '0.5rem',
                   fontSize: '0.825rem',
                   fontWeight: 750,
-                  color: '#0f172a',
+                  color: 'var(--text-main)',
                   zIndex: 2,
                 }}
               >
-                <div style={{ background: '#fef3c7', padding: '0.3rem', borderRadius: '8px', display: 'flex' }}>
+                <div style={{ background: 'var(--warning-light)', padding: '0.3rem', borderRadius: '8px', display: 'flex' }}>
                   <Star size={16} color="#d97706" fill="#d97706" />
                 </div>
                 <div>
                   <div>4.9 / 5 Rating</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 500 }}>12,500+ Homes Served</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>12,500+ Homes Served</div>
                 </div>
               </div>
 
@@ -462,12 +462,12 @@ export default function LandingPage() {
                   gap: '0.5rem',
                   fontSize: '0.825rem',
                   fontWeight: 750,
-                  color: '#0f172a',
+                  color: 'var(--text-main)',
                   animationDelay: '1.5s',
                   zIndex: 2,
                 }}
               >
-                <div style={{ background: '#ecfdf5', padding: '0.35rem', borderRadius: '8px', display: 'flex' }}>
+                <div style={{ background: 'var(--success-light)', padding: '0.35rem', borderRadius: '8px', display: 'flex' }}>
                   <Navigation size={16} color="#059669" />
                 </div>
                 <div>
@@ -475,7 +475,7 @@ export default function LandingPage() {
                     <span>Live GPS Map</span>
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 500 }}>Turn-by-turn Navigation</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Turn-by-turn Navigation</div>
                 </div>
               </div>
             </div>
@@ -484,7 +484,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===================== POPULAR SERVICE CATEGORIES ===================== */}
-      <section style={{ padding: '3.5rem 0', background: '#ffffff' }}>
+      <section style={{ padding: '3.5rem 0', background: 'var(--bg-main)' }}>
         <div className="container">
           {/* Section Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
@@ -494,7 +494,7 @@ export default function LandingPage() {
                   display: 'block',
                   fontSize: '0.8rem',
                   fontWeight: 800,
-                  color: '#64748b',
+                  color: 'var(--text-muted)',
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   marginBottom: '0.25rem',
@@ -502,10 +502,10 @@ export default function LandingPage() {
               >
                 OUR SERVICES
               </span>
-              <h2 style={{ fontSize: '2.1rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>
+              <h2 style={{ fontSize: '2.1rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
                 Popular Service Categories
               </h2>
-              <p style={{ color: '#64748b', fontSize: '0.95rem', marginTop: '0.35rem', margin: 0 }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.35rem', margin: 0 }}>
                 Choose from a wide range of services and find the right professional near you.
               </p>
             </div>
@@ -526,7 +526,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          {/* 9 Pastel Category Cards */}
+          {/* 9 Category Cards */}
           <div
             style={{
               display: 'grid',
@@ -538,6 +538,7 @@ export default function LandingPage() {
               <div
                 key={i}
                 onClick={() => handleCategoryClick(cat.category)}
+                className="category-pill-card"
                 style={{
                   background: cat.bg,
                   border: `1px solid ${cat.border}`,
@@ -562,6 +563,7 @@ export default function LandingPage() {
                 }}
               >
                 <div
+                  className="category-icon-box"
                   style={{
                     width: '46px',
                     height: '46px',
@@ -574,7 +576,7 @@ export default function LandingPage() {
                 >
                   {cat.icon}
                 </div>
-                <strong style={{ fontSize: '0.925rem', color: '#0f172a', fontWeight: 700 }}>
+                <strong style={{ fontSize: '0.925rem', color: 'var(--text-main)', fontWeight: 700 }}>
                   {cat.name}
                 </strong>
               </div>
@@ -584,10 +586,10 @@ export default function LandingPage() {
       </section>
 
       {/* ===================== DUAL FEATURE CARDS (WHY CHOOSE & HOW IT WORKS) ===================== */}
-      <section style={{ padding: '1rem 0 3.5rem', background: '#ffffff' }}>
+      <section style={{ padding: '1rem 0 3.5rem', background: 'var(--bg-main)' }}>
         <div className="container">
           <div className="dual-feature-grid">
-            {/* Left Card: WHY CHOOSE FIXIGO */}
+            {/* Left Card: WHY CHOOSE SABFIX */}
             <div className="why-choose-card">
               {/* Mini Map Graphic */}
               <div style={{ flexShrink: 0 }}>
@@ -611,7 +613,7 @@ export default function LandingPage() {
                   style={{
                     fontSize: '0.75rem',
                     fontWeight: 800,
-                    color: '#64748b',
+                    color: 'var(--text-muted)',
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
                     display: 'block',
@@ -652,8 +654,8 @@ export default function LandingPage() {
             <div
               id="how-it-works"
               style={{
-                background: '#ffffff',
-                border: '1.5px solid #e2e8f0',
+                background: 'var(--bg-card)',
+                border: '1.5px solid var(--border)',
                 borderRadius: '22px',
                 padding: '2rem',
                 display: 'flex',
@@ -665,7 +667,7 @@ export default function LandingPage() {
                 style={{
                   fontSize: '0.75rem',
                   fontWeight: 800,
-                  color: '#64748b',
+                  color: 'var(--text-muted)',
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   display: 'block',
@@ -674,7 +676,7 @@ export default function LandingPage() {
               >
                 HOW IT WORKS
               </span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '1.5rem' }}>
                 Get Your Work Done in 4 Simple Steps
               </h3>
 
@@ -683,6 +685,7 @@ export default function LandingPage() {
                 {/* Step 1 */}
                 <div>
                   <div
+                    className="step-icon-badge"
                     style={{
                       width: '38px',
                       height: '38px',
@@ -697,10 +700,10 @@ export default function LandingPage() {
                   >
                     <MapPin size={18} />
                   </div>
-                  <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block', marginBottom: '0.25rem' }}>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
                     1. Share Your Location
                   </strong>
-                  <p style={{ fontSize: '0.775rem', color: '#64748b', margin: 0, lineHeight: 1.45 }}>
+                  <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
                     Allow location access or enter your area.
                   </p>
                 </div>
@@ -708,6 +711,7 @@ export default function LandingPage() {
                 {/* Step 2 */}
                 <div>
                   <div
+                    className="step-icon-badge"
                     style={{
                       width: '38px',
                       height: '38px',
@@ -722,10 +726,10 @@ export default function LandingPage() {
                   >
                     <List size={18} />
                   </div>
-                  <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block', marginBottom: '0.25rem' }}>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
                     2. Choose a Service
                   </strong>
-                  <p style={{ fontSize: '0.775rem', color: '#64748b', margin: 0, lineHeight: 1.45 }}>
+                  <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
                     Select the service you need from our categories.
                   </p>
                 </div>
@@ -733,6 +737,7 @@ export default function LandingPage() {
                 {/* Step 3 */}
                 <div>
                   <div
+                    className="step-icon-badge"
                     style={{
                       width: '38px',
                       height: '38px',
@@ -747,10 +752,10 @@ export default function LandingPage() {
                   >
                     <Users size={18} />
                   </div>
-                  <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block', marginBottom: '0.25rem' }}>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
                     3. Find &amp; Connect
                   </strong>
-                  <p style={{ fontSize: '0.775rem', color: '#64748b', margin: 0, lineHeight: 1.45 }}>
+                  <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
                     View nearby professionals, compare ratings and prices.
                   </p>
                 </div>
@@ -758,6 +763,7 @@ export default function LandingPage() {
                 {/* Step 4 */}
                 <div>
                   <div
+                    className="step-icon-badge"
                     style={{
                       width: '38px',
                       height: '38px',
@@ -772,10 +778,10 @@ export default function LandingPage() {
                   >
                     <CheckCircle size={18} />
                   </div>
-                  <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block', marginBottom: '0.25rem' }}>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
                     4. Get It Done
                   </strong>
-                  <p style={{ fontSize: '0.775rem', color: '#64748b', margin: 0, lineHeight: 1.45 }}>
+                  <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
                     Book, track, pay and rate the professional.
                   </p>
                 </div>
@@ -786,7 +792,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===================== LIVE GPS MAP HIGHLIGHT ===================== */}
-      <section id="about" style={{ padding: '0 0 3.5rem', background: '#ffffff' }}>
+      <section id="about" style={{ padding: '0 0 3.5rem', background: 'var(--bg-main)' }}>
         <div className="container">
           <div
             style={{
@@ -856,11 +862,11 @@ export default function LandingPage() {
       {/* ===================== BOTTOM SOCIAL PROOF TRUST BAR ===================== */}
       <footer
         style={{
-          background: '#0f172a',
-          color: '#ffffff',
+          background: 'var(--footer-bg)',
+          color: 'var(--text-main)',
           padding: '1.15rem 0',
           textAlign: 'center',
-          borderTop: '1px solid #1e293b',
+          borderTop: '1px solid var(--border)',
         }}
       >
         <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.9rem', fontWeight: 600 }}>

@@ -19,7 +19,7 @@ export default function UnauthorizedPage() {
     <div style={{ padding: '5rem 0', display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
       <div className="container" style={{ maxWidth: '520px' }}>
         <div className="card">
-          <div style={{ display: 'inline-flex', padding: '1rem', background: '#fee2e2', color: '#dc2626', borderRadius: '50%', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'inline-flex', padding: '1rem', background: 'var(--danger-light)', color: 'var(--danger)', borderRadius: '50%', marginBottom: '1.25rem' }}>
             <ShieldAlert size={40} />
           </div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.75rem' }}>

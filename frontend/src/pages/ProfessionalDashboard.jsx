@@ -558,21 +558,21 @@ export default function ProfessionalDashboard() {
         </div>
 
         {/* ===================== FINANCIAL EARNINGS & PLATFORM FEES DASHBOARD (SECTION 24 & 16) ===================== */}
-        <div className="card" style={{ marginBottom: '2rem', background: '#ffffff' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+        <div className="card" style={{ marginBottom: '2rem', background: 'var(--bg-card)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <TrendingUp size={22} color="#1e3a8a" />
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+              <TrendingUp size={22} color="var(--primary)" />
+              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
                 Partner Earnings &amp; Platform Fee Balance
               </h2>
             </div>
-            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Updated Live</span>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Updated Live</span>
           </div>
 
           <div className="grid-5" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
             {/* 1. Today's Earnings */}
-            <div style={{ background: '#f8fafc', padding: '1.1rem', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
+            <div style={{ background: 'var(--bg-main)', padding: '1.1rem', borderRadius: '16px', border: '1px solid var(--border)', textAlign: 'center' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                 Today's Earnings
               </span>
               <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#10b981', marginTop: '0.35rem' }}>
@@ -581,28 +581,28 @@ export default function ProfessionalDashboard() {
             </div>
 
             {/* 2. Completed Jobs */}
-            <div style={{ background: '#f8fafc', padding: '1.1rem', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
+            <div style={{ background: 'var(--bg-main)', padding: '1.1rem', borderRadius: '16px', border: '1px solid var(--border)', textAlign: 'center' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                 Completed Jobs
               </span>
-              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#1e3a8a', marginTop: '0.35rem' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--primary)', marginTop: '0.35rem' }}>
                 {earnings.completedJobs}
               </div>
             </div>
 
             {/* 3. Platform Fees Paid */}
-            <div style={{ background: '#f8fafc', padding: '1.1rem', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
+            <div style={{ background: 'var(--bg-main)', padding: '1.1rem', borderRadius: '16px', border: '1px solid var(--border)', textAlign: 'center' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                 Platform Fees Paid
               </span>
-              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#64748b', marginTop: '0.35rem' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--text-muted)', marginTop: '0.35rem' }}>
                 ₹{earnings.platformFees.toFixed(2)}
               </div>
             </div>
 
             {/* 4. Pending Platform Fees (Section 16) */}
-            <div style={{ background: earnings.pendingPlatformFees > 0 ? '#fffbeb' : '#f0fdf4', padding: '1.1rem', borderRadius: '16px', border: `1.5px solid ${earnings.pendingPlatformFees > 0 ? '#fde68a' : '#bbf7d0'}`, textAlign: 'center' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: earnings.pendingPlatformFees > 0 ? '#b45309' : '#15803d', textTransform: 'uppercase' }}>
+            <div style={{ background: earnings.pendingPlatformFees > 0 ? 'rgba(245, 158, 11, 0.12)' : 'rgba(16, 185, 129, 0.12)', padding: '1.1rem', borderRadius: '16px', border: `1.5px solid ${earnings.pendingPlatformFees > 0 ? 'rgba(245, 158, 11, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`, textAlign: 'center' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: earnings.pendingPlatformFees > 0 ? '#d97706' : '#16a34a', textTransform: 'uppercase' }}>
                 Platform Fee Due
               </span>
               <div style={{ fontSize: '1.6rem', fontWeight: 900, color: earnings.pendingPlatformFees > 0 ? '#d97706' : '#16a34a', marginTop: '0.35rem' }}>
@@ -635,8 +635,8 @@ export default function ProfessionalDashboard() {
           </div>
 
           {/* Transaction History Table (Section 24) */}
-          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.85rem' }}>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.85rem' }}>
               Recent Completed Transactions
             </h3>
 
@@ -1001,16 +1001,18 @@ export default function ProfessionalDashboard() {
           >
             <div
               style={{
-                background: '#ffffff',
+                background: 'var(--bg-card)',
+                color: 'var(--text-main)',
+                border: '1px solid var(--border)',
                 borderRadius: '24px',
                 width: '100%',
                 maxWidth: '520px',
                 overflow: 'hidden',
-                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                boxShadow: 'var(--shadow-lg)',
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div style={{ background: '#1e3a8a', color: 'white', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ background: 'linear-gradient(135deg, #0b1320 0%, #ff6a00 100%)', color: 'white', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0 }}>
                     Final Service Bill Submission
@@ -1114,16 +1116,18 @@ export default function ProfessionalDashboard() {
           >
             <div
               style={{
-                background: '#ffffff',
+                background: 'var(--bg-card)',
+                color: 'var(--text-main)',
+                border: '1px solid var(--border)',
                 borderRadius: '24px',
                 width: '100%',
                 maxWidth: '460px',
                 overflow: 'hidden',
-                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                boxShadow: 'var(--shadow-lg)',
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div style={{ background: '#1e3a8a', color: 'white', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ background: 'linear-gradient(135deg, #0b1320 0%, #ff6a00 100%)', color: 'white', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0 }}>
                     Collect Customer Payment
@@ -1141,12 +1145,12 @@ export default function ProfessionalDashboard() {
               </div>
 
               <div style={{ padding: '1.5rem', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.85rem', color: '#64748b', display: 'block', marginBottom: '1rem' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '1rem' }}>
                   Present this QR code to the customer or collect cash below:
                 </span>
 
                 {/* QR Code Container */}
-                <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'inline-block', marginBottom: '1.25rem' }}>
+                <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border)', display: 'inline-block', marginBottom: '1.25rem' }}>
                   {loadingQR ? (
                     <div style={{ padding: '3rem 2rem', color: '#64748b' }}>Generating QR Code...</div>
                   ) : qrCodeData ? (
@@ -1156,7 +1160,7 @@ export default function ProfessionalDashboard() {
                         alt="Collect Payment QR"
                         style={{ width: '200px', height: '200px', display: 'block' }}
                       />
-                      <strong style={{ fontSize: '1.25rem', color: '#1e3a8a', display: 'block', marginTop: '0.5rem' }}>
+                      <strong style={{ fontSize: '1.25rem', color: 'var(--primary)', display: 'block', marginTop: '0.5rem' }}>
                         ₹{selectedJobForPayment.total_amount || 950}
                       </strong>
                     </div>
@@ -1166,7 +1170,7 @@ export default function ProfessionalDashboard() {
                 </div>
 
                 {/* Cash Received Button (Section 15) */}
-                <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.25rem' }}>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
                   <button
                     onClick={() => handleConfirmCashReceived(selectedJobForPayment.id)}
                     disabled={isConfirmingCash}
@@ -1258,7 +1262,7 @@ export default function ProfessionalDashboard() {
                 />
 
                 {showEditMapPicker && (
-                  <div style={{ marginTop: '0.75rem', padding: '0.85rem', background: '#f8fafc', borderRadius: '14px', border: '1px solid #bfdbfe' }}>
+                  <div style={{ marginTop: '0.75rem', padding: '0.85rem', background: 'var(--bg-main)', borderRadius: '14px', border: '1px solid var(--border)' }}>
                     <LocationPickerMap
                       initialLat={proCoords.lat}
                       initialLng={proCoords.lng}

@@ -294,7 +294,7 @@ export default function LocationPickerMap({
       </form>
 
       {searchError && (
-        <div style={{ fontSize: '0.775rem', color: '#dc2626', background: '#fef2f2', padding: '0.35rem 0.65rem', borderRadius: '6px' }}>
+        <div style={{ fontSize: '0.775rem', color: 'var(--danger)', background: 'var(--danger-light)', padding: '0.35rem 0.65rem', borderRadius: '6px' }}>
           {searchError}
         </div>
       )}
@@ -306,23 +306,23 @@ export default function LocationPickerMap({
           width: '100%',
           borderRadius: '12px',
           overflow: 'hidden',
-          border: '1.5px solid #cbd5e1',
+          border: '1.5px solid var(--border)',
           position: 'relative',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
         <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
       </div>
 
       {/* Selected Address & Lat/Lng Feedback */}
-      <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.8rem' }}>
+      <div style={{ background: 'var(--bg-main)', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '0.8rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', marginBottom: '0.25rem' }}>
-          <strong style={{ color: '#0f172a', whiteSpace: 'nowrap' }}>Selected Address:</strong>
-          <span style={{ color: '#475569', wordBreak: 'break-word' }}>
+          <strong style={{ color: 'var(--text-main)', whiteSpace: 'nowrap' }}>Selected Address:</strong>
+          <span style={{ color: 'var(--text-muted)', wordBreak: 'break-word' }}>
             {address || 'Move marker on map to select your address'}
           </span>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', color: '#64748b', fontSize: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
           <span>Lat: <strong>{coords.lat.toFixed(5)}</strong></span>
           <span>Lng: <strong>{coords.lng.toFixed(5)}</strong></span>
         </div>

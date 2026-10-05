@@ -280,10 +280,10 @@ export default function ServiceExploreMap({
       >
         <div
           style={{
-            background: 'white',
+            background: 'var(--bg-card)',
             borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
+            border: '1px solid var(--border)',
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
@@ -295,14 +295,14 @@ export default function ServiceExploreMap({
             style={{
               width: '34px',
               height: '34px',
-              background: 'white',
+              background: 'var(--bg-card)',
               border: 'none',
-              borderBottom: '1px solid #f1f5f9',
+              borderBottom: '1px solid var(--border)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#334155',
+              color: 'var(--text-main)',
               fontWeight: 700,
               fontSize: '16px',
             }}
@@ -315,13 +315,13 @@ export default function ServiceExploreMap({
             style={{
               width: '34px',
               height: '34px',
-              background: 'white',
+              background: 'var(--bg-card)',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#334155',
+              color: 'var(--text-main)',
               fontWeight: 700,
               fontSize: '16px',
             }}
@@ -336,10 +336,10 @@ export default function ServiceExploreMap({
           style={{
             width: '34px',
             height: '34px',
-            background: 'white',
+            background: 'var(--bg-card)',
             borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
+            border: '1px solid var(--border)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',

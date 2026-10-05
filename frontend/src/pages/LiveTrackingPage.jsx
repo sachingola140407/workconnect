@@ -767,12 +767,12 @@ export default function LiveTrackingPage() {
             {secondsSinceGpsUpdate >= 20 && ['confirmed', 'on_the_way'].includes(activeStage) && (
               <div
                 style={{
-                  background: '#fffbeb',
-                  border: '1px solid #fde68a',
+                  background: 'var(--warning-light)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
                   borderRadius: '12px',
                   padding: '0.65rem 0.85rem',
                   fontSize: '0.825rem',
-                  color: '#92400e',
+                  color: '#d97706',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
@@ -1087,7 +1087,7 @@ export default function LiveTrackingPage() {
             {/* ---------- STAGE 4: SERVICE IN PROGRESS ---------- */}
             {activeStage === 'working' && (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.85rem', background: '#f8fafc', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.85rem', background: 'var(--bg-main)', borderRadius: '14px', border: '1px solid var(--border)' }}>
                   <img
                     src="/pro-arrived-avatar.png"
                     alt={proName}
@@ -1095,22 +1095,22 @@ export default function LiveTrackingPage() {
                   />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <strong style={{ fontSize: '1rem', color: '#0f172a' }}>{proName}</strong>
+                      <strong style={{ fontSize: '1rem', color: 'var(--text-main)' }}>{proName}</strong>
                       <ShieldCheck size={15} color="#16a34a" fill="#16a34a" />
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       {serviceName} &bull; {proExp}+ yrs exp.
                     </div>
                   </div>
                 </div>
 
-                <div style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: '16px', padding: '1.25rem' }}>
+                <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1.5px solid rgba(16, 185, 129, 0.3)', borderRadius: '16px', padding: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#16a34a', fontWeight: 800, fontSize: '0.95rem' }}>
                       <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#16a34a', animation: 'pulse 1.5s infinite' }} />
                       Service In Progress
                     </div>
-                    <strong style={{ fontSize: '1.15rem', color: '#0f172a', fontFamily: 'monospace' }}>
+                    <strong style={{ fontSize: '1.15rem', color: 'var(--text-main)', fontFamily: 'monospace' }}>
                       {formatTimer(workingSeconds)}
                     </strong>
                   </div>
@@ -1320,16 +1320,16 @@ export default function LiveTrackingPage() {
                   {/* Mode 3: Cash Payment Two-Way Confirmation */}
                   {paymentMethodTab === 'cash' && (
                     <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
-                      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '14px', border: '1px solid #e2e8f0', marginBottom: '1rem' }}>
-                        <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Cash Amount to Hand Over:</span>
+                      <div style={{ background: 'var(--bg-main)', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)', marginBottom: '1rem' }}>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Cash Amount to Hand Over:</span>
                         <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#16a34a' }}>
                           ₹{totalAmount.toFixed(2)}
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Please hand cash directly to {proName}</span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Please hand cash directly to {proName}</span>
                       </div>
 
                       {cashPaidMarked ? (
-                        <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '14px', padding: '1rem', color: '#b45309', fontSize: '0.85rem' }}>
+                        <div style={{ background: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '14px', padding: '1rem', color: '#d97706', fontSize: '0.85rem' }}>
                           <Clock size={18} style={{ margin: '0 auto 0.4rem', display: 'block' }} />
                           <strong>Cash Marked Paid!</strong>
                           <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem' }}>
@@ -1361,31 +1361,31 @@ export default function LiveTrackingPage() {
             {/* ---------- STAGE 6: COMPLETED & INVOICE GENERATED (SECTIONS 18-22) ---------- */}
             {activeStage === 'completed' && (
               <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
-                <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                   <Check size={36} strokeWidth={3} />
                 </div>
-                <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#0f172a', marginBottom: '0.25rem' }}>
+                <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '0.25rem' }}>
                   Payment Successful! ✓
                 </h3>
-                <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
                   ₹{totalAmount.toFixed(2)} paid via {booking.payment_method || 'Online'}
                 </p>
 
                 {/* Receipt Card */}
-                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.25rem', textAlign: 'left', marginBottom: '1.25rem' }}>
+                <div style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', textAlign: 'left', marginBottom: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#64748b' }}>Invoice No:</span>
-                    <strong style={{ color: '#0f172a' }}>{invoice?.invoice_no || booking.invoice_id || 'FXG-2026-INV'}</strong>
+                    <span style={{ color: 'var(--text-muted)' }}>Invoice No:</span>
+                    <strong style={{ color: 'var(--text-main)' }}>{invoice?.invoice_no || booking.invoice_id || 'FXG-2026-INV'}</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#64748b' }}>Labor &amp; Service Fee:</span>
+                    <span style={{ color: 'var(--text-muted)' }}>Labor &amp; Service Fee:</span>
                     <strong>₹{serviceFee.toFixed(2)}</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#64748b' }}>Visiting Charge:</span>
+                    <span style={{ color: 'var(--text-muted)' }}>Visiting Charge:</span>
                     <strong>₹{visitingCharge.toFixed(2)}</strong>
                   </div>
-                  <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', fontSize: '1.05rem', fontWeight: 800 }}>
+                  <div style={{ borderTop: '1px dashed var(--border)', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', fontSize: '1.05rem', fontWeight: 800 }}>
                     <span>Total Paid:</span>
                     <span style={{ color: '#16a34a' }}>₹{totalAmount.toFixed(2)}</span>
                   </div>

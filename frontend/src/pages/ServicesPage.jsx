@@ -319,8 +319,9 @@ export default function ServicesPage() {
               disabled={isDetecting}
               className="btn btn-secondary btn-sm"
               style={{
-                background: 'white',
-                border: '1.5px solid #cbd5e1',
+                background: 'var(--bg-card)',
+                border: '1.5px solid var(--border)',
+                color: 'var(--text-main)',
                 padding: '0.55rem 1.1rem',
                 borderRadius: '999px',
                 fontWeight: 700,
@@ -328,7 +329,7 @@ export default function ServicesPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.45rem',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                boxShadow: 'var(--shadow-sm)',
               }}
             >
               <MapPin size={16} color="var(--primary)" />
@@ -719,11 +720,11 @@ export default function ServicesPage() {
                       <span
                         style={{
                           marginLeft: 'auto',
-                          background: '#f1f5f9',
+                          background: 'var(--bg-subtle)',
                           padding: '0.15rem 0.5rem',
                           borderRadius: '4px',
                           fontSize: '0.75rem',
-                          color: '#334155',
+                          color: 'var(--text-main)',
                           fontWeight: 700,
                         }}
                       >
@@ -870,12 +871,12 @@ export default function ServicesPage() {
                 textAlign: 'center',
                 padding: '3rem 1.5rem',
                 borderRadius: '16px',
-                background: '#f8fafc',
-                border: '1px dashed #cbd5e1',
+                background: 'var(--bg-card)',
+                border: '1px dashed var(--border)',
               }}
             >
               <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📍</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
                 No professionals available within 10 KM.
               </h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.35rem', maxWidth: '420px', margin: '0.35rem auto 1.25rem' }}>
@@ -1143,7 +1144,7 @@ export default function ServicesPage() {
 
                 <div
                   style={{
-                    background: '#f8fafc',
+                    background: 'var(--bg-main)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-md)',
                     padding: '1rem',
@@ -1214,22 +1215,22 @@ export default function ServicesPage() {
                 {/* Price Callout */}
                 <div
                   style={{
-                    background: '#f0fdf4',
-                    border: '1px solid #bbf7d0',
+                    background: 'var(--success-light)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
                     borderRadius: 'var(--radius-md)',
                     padding: '0.85rem 1rem',
                     marginBottom: '1.25rem',
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                    <span style={{ fontSize: '0.85rem', color: '#166534', fontWeight: 600 }}>🛵 Doorstep Visiting / Inspection Fee:</span>
+                    <span style={{ fontSize: '0.85rem', color: '#16a34a', fontWeight: 600 }}>🛵 Doorstep Visiting / Inspection Fee:</span>
                     <strong style={{ color: '#15803d', fontSize: '1rem' }}>₹{selectedProForBooking.visiting_charge || 99}</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.85rem', color: '#166534', fontWeight: 600 }}>⏱️ Standard Hourly Rate:</span>
+                    <span style={{ fontSize: '0.85rem', color: '#16a34a', fontWeight: 600 }}>⏱️ Standard Hourly Rate:</span>
                     <strong style={{ color: '#15803d', fontSize: '1rem' }}>₹{selectedProForBooking.price}/hr</strong>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#15803d', marginTop: '0.4rem', borderTop: '1px dashed #bbf7d0', paddingTop: '0.35rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '0.4rem', borderTop: '1px dashed rgba(16, 185, 129, 0.3)', paddingTop: '0.35rem' }}>
                     ✓ 100% Transparent: Pay visiting fee on arrival. No surge pricing or hidden charges.
                   </div>
                 </div>
@@ -1245,7 +1246,7 @@ export default function ServicesPage() {
                       )?.name || selectedProForBooking.services?.[0]?.name || 'Home Repair'
                     }
                     readOnly
-                    style={{ background: '#f8fafc', fontWeight: 600 }}
+                    style={{ background: 'var(--bg-subtle)', color: 'var(--text-main)', border: '1px solid var(--border)', fontWeight: 600 }}
                   />
                 </div>
 
@@ -1426,7 +1427,7 @@ export default function ServicesPage() {
                 </p>
               </div>
 
-              <div className="grid-3" style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '12px' }}>
+              <div className="grid-3" style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', padding: '0.75rem', borderRadius: '12px' }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Experience</span>
                   <strong>{viewingProfile.experience} Years</strong>

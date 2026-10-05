@@ -1017,3 +1017,127 @@ a:hover {
     border-radius: 12px !important;
   }
 }
+
+/* =========================================================
+   DARK MODE ENHANCEMENTS & MAP INVERSION
+   ========================================================= */
+
+/* Dark Mode Leaflet Map Tiles & Controls */
+[data-theme="dark"] .leaflet-tile-pane {
+  filter: brightness(0.62) invert(1) contrast(1.22) hue-rotate(185deg) saturate(0.35) brightness(0.85);
+}
+
+[data-theme="dark"] .leaflet-container {
+  background-color: #0a0b0e !important;
+}
+
+[data-theme="dark"] .leaflet-bar,
+[data-theme="dark"] .leaflet-control-zoom {
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .leaflet-bar a,
+[data-theme="dark"] .leaflet-control-zoom a {
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] .leaflet-bar a:hover,
+[data-theme="dark"] .leaflet-control-zoom a:hover {
+  background-color: var(--bg-card-hover) !important;
+  color: var(--primary) !important;
+}
+
+[data-theme="dark"] .leaflet-popup-content-wrapper,
+[data-theme="dark"] .leaflet-popup-tip {
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme="dark"] .leaflet-popup-content {
+  color: var(--text-main) !important;
+}
+
+/* Category Cards in Dark Mode */
+[data-theme="dark"] .category-pill-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .category-pill-card:hover {
+  background: var(--bg-card-hover) !important;
+  border-color: var(--primary) !important;
+}
+
+[data-theme="dark"] .category-pill-card .category-icon-box {
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+[data-theme="dark"] .category-pill-card strong {
+  color: var(--text-main) !important;
+}
+
+/* Dark Mode Inputs, Dropdowns, and Tables */
+[data-theme="dark"] select option {
+  background-color: #13151d;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .step-icon-badge {
+  background: var(--bg-subtle) !important;
+  color: var(--primary) !important;
+}
+
+/* Leaflet Attribution in Dark Mode */
+[data-theme="dark"] .leaflet-control-attribution {
+  background: rgba(10, 11, 14, 0.85) !important;
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .leaflet-control-attribution a {
+  color: var(--primary) !important;
+}
+
+/* Tables in Dark Mode */
+[data-theme="dark"] .table th {
+  background-color: var(--bg-subtle) !important;
+  color: var(--text-main) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] .table td {
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .table tbody tr:hover {
+  background-color: var(--bg-card-hover) !important;
+}
+
+[data-theme="dark"] ::placeholder {
+  color: var(--text-light) !important;
+  opacity: 0.85;
+}
+
+/* Scrollbars in Dark Mode */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #0a0b0e;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #232736;
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #33394d;
+}

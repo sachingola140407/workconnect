@@ -201,7 +201,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
-              <label className="form-label" htmlFor="name" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155' }}>
+              <label className="form-label" htmlFor="name" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>
                 Full Name *
               </label>
               <div style={{ position: 'relative' }}>
@@ -223,7 +223,7 @@ export default function RegisterPage() {
 
             <div className="form-row">
               <div>
-                <label className="form-label" htmlFor="email" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155' }}>
+                <label className="form-label" htmlFor="email" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>
                   Email Address *
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -244,7 +244,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="form-label" htmlFor="phone" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155' }}>
+                <label className="form-label" htmlFor="phone" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>
                   Mobile Phone *
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -267,7 +267,7 @@ export default function RegisterPage() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                <label className="form-label" htmlFor="password" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', margin: 0 }}>
+                <label className="form-label" htmlFor="password" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', margin: 0 }}>
                   Password * (minimum 6 chars)
                 </label>
                 <button
@@ -314,8 +314,8 @@ export default function RegisterPage() {
                 style={{
                   marginTop: '0.5rem',
                   padding: '1.25rem',
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  background: 'var(--bg-main)',
+                  border: '1px solid var(--border)',
                   borderRadius: '16px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -329,7 +329,7 @@ export default function RegisterPage() {
 
                 {availableServices.length > 0 && (
                   <div>
-                    <label className="form-label" htmlFor="serviceSelect" style={{ fontSize: '0.825rem', fontWeight: 700, color: '#334155' }}>
+                    <label className="form-label" htmlFor="serviceSelect" style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-main)' }}>
                       Primary Trade / Service Category *
                     </label>
                     <select
@@ -350,7 +350,7 @@ export default function RegisterPage() {
 
                 <div className="form-row">
                   <div>
-                    <label className="form-label" htmlFor="experience" style={{ fontSize: '0.825rem', fontWeight: 700, color: '#334155' }}>
+                    <label className="form-label" htmlFor="experience" style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-main)' }}>
                       Years of Experience
                     </label>
                     <input
@@ -366,7 +366,7 @@ export default function RegisterPage() {
                   </div>
 
                   <div>
-                    <label className="form-label" htmlFor="price" style={{ fontSize: '0.825rem', fontWeight: 700, color: '#334155' }}>
+                    <label className="form-label" htmlFor="price" style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-main)' }}>
                       Hourly Rate (₹)
                     </label>
                     <input
@@ -384,7 +384,7 @@ export default function RegisterPage() {
 
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                    <label className="form-label" htmlFor="address" style={{ fontSize: '0.825rem', fontWeight: 700, color: '#334155', margin: 0 }}>
+                    <label className="form-label" htmlFor="address" style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-main)', margin: 0 }}>
                       Service City &amp; Living Locality *
                     </label>
                     <button
@@ -423,7 +423,7 @@ export default function RegisterPage() {
 
                   {/* Interactive Map for Professional Location Setup */}
                   {showMapPicker && (
-                    <div style={{ marginTop: '0.75rem', padding: '0.85rem', background: '#ffffff', borderRadius: '14px', border: '1px solid #bfdbfe' }}>
+                    <div style={{ marginTop: '0.75rem', padding: '0.85rem', background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border)' }}>
                       <LocationPickerMap
                         initialLat={proLocation.latitude}
                         initialLng={proLocation.longitude}
@@ -441,7 +441,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="form-label" htmlFor="bio" style={{ fontSize: '0.825rem', fontWeight: 700, color: '#334155' }}>
+                  <label className="form-label" htmlFor="bio" style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-main)' }}>
                     Skills &amp; Bio
                   </label>
                   <textarea

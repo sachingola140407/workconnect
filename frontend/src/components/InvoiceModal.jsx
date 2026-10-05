@@ -129,30 +129,30 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
             }}
           >
             <div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 700 }}>
                 Invoice Issued To
               </div>
-              <strong style={{ fontSize: '1.05rem', color: '#0f172a', display: 'block', marginTop: '0.15rem' }}>
+              <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)', display: 'block', marginTop: '0.15rem' }}>
                 {invoice.customer_name || 'Customer'}
               </strong>
-              <div style={{ fontSize: '0.85rem', color: '#64748b' }}>{invoice.customer_phone || 'N/A'}</div>
-              <div style={{ fontSize: '0.8rem', color: '#94a3b8', maxWidth: '280px', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{invoice.customer_phone || 'N/A'}</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', maxWidth: '280px', marginTop: '0.2rem' }}>
                 {invoice.customer_address}
               </div>
             </div>
 
             <div style={{ textAlign: 'right' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#dcfce7', color: '#16a34a', padding: '0.3rem 0.75rem', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(16, 185, 129, 0.15)', color: '#16a34a', padding: '0.3rem 0.75rem', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>
                 <CheckCircle2 size={14} /> PAID
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                 <strong>Date:</strong> {dateStr}
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                 <strong>Payment Mode:</strong> {invoice.payment_method || 'ONLINE'}
               </div>
               {invoice.transaction_id && (
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Ref: {invoice.transaction_id}
                 </div>
               )}
@@ -162,8 +162,8 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
           {/* Assigned Specialist Box */}
           <div
             style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              background: 'var(--bg-main)',
+              border: '1px solid var(--border)',
               borderRadius: '14px',
               padding: '1rem',
               display: 'flex',
@@ -173,52 +173,52 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
             }}
           >
             <div>
-              <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 700 }}>
                 Assigned Specialist
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.2rem' }}>
-                <strong style={{ fontSize: '1rem', color: '#0f172a' }}>{invoice.professional_name || 'Professional'}</strong>
+                <strong style={{ fontSize: '1rem', color: 'var(--text-main)' }}>{invoice.professional_name || 'Professional'}</strong>
                 <ShieldCheck size={16} color="#16a34a" fill="#16a34a" />
               </div>
-              <div style={{ fontSize: '0.825rem', color: '#64748b' }}>{invoice.service_name} Expert</div>
+              <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>{invoice.service_name} Expert</div>
             </div>
-            <div style={{ fontSize: '0.85rem', color: '#64748b', textAlign: 'right' }}>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'right' }}>
               <div>{invoice.professional_phone || '+91 9876543210'}</div>
               <div style={{ color: '#16a34a', fontWeight: 700, fontSize: '0.775rem' }}>Background Verified ✓</div>
             </div>
           </div>
 
           {/* Clear Fee Breakdown Table (Required by Section 22) */}
-          <div style={{ border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', marginBottom: '1.5rem' }}>
-            <div style={{ background: '#f1f5f9', padding: '0.65rem 1rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
+          <div style={{ border: '1px solid var(--border)', borderRadius: '14px', overflow: 'hidden', marginBottom: '1.5rem' }}>
+            <div style={{ background: 'var(--bg-subtle)', padding: '0.65rem 1rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
               <span>Item &amp; Description</span>
               <span>Amount</span>
             </div>
 
-            <div style={{ padding: '0.85rem 1rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '0.85rem 1rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block' }}>
+                <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
                   Professional Service Fee
                 </strong>
-                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Fee charged by specialist for actual labor &amp; repair work
                 </span>
               </div>
-              <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>
+              <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>
                 ₹{serviceAmount.toFixed(2)}
               </strong>
             </div>
 
-            <div style={{ padding: '0.85rem 1rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '0.85rem 1rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block' }}>
+                <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
                   Visiting &amp; Travel Fee
                 </strong>
-                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Fee for professional doorstep visit and initial inspection
                 </span>
               </div>
-              <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>
+              <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>
                 ₹{visitingFee.toFixed(2)}
               </strong>
             </div>
