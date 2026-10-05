@@ -5,7 +5,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$DIR"
 
 echo "=========================================================="
-echo "       🚀 Fixigo Cloud Deployment Helper Script"
+echo "       🚀 SabFix Cloud Deployment Helper Script"
 echo "=========================================================="
 
 echo ""
@@ -49,7 +49,7 @@ case $OPTION in
     ;;
   2)
     echo ""
-    read -p "Enter your live Render backend URL (e.g. https://fixigo-backend.onrender.com): " BURL
+    read -p "Enter your live Render backend URL (e.g. https://sabfix-backend.onrender.com): " BURL
     if [ -n "$BURL" ]; then
       CLEAN_URL="${BURL%/}/api/health"
       echo "Pinging $CLEAN_URL..."
@@ -58,7 +58,7 @@ case $OPTION in
     ;;
   3)
     echo ""
-    read -p "Enter your live Render backend URL (e.g. https://fixigo-backend.onrender.com): " BURL
+    read -p "Enter your live Render backend URL (e.g. https://sabfix-backend.onrender.com): " BURL
     if [ -n "$BURL" ]; then
       CLEAN_URL="${BURL%/}"
       echo "Deploying frontend to Vercel..."
