@@ -33,14 +33,21 @@ class AuthService {
 
     // 4. If professional role, create professional profile entry
     if (role === 'professional') {
+      const proLng = professionalDetails.longitude !== undefined && professionalDetails.longitude !== null && !isNaN(professionalDetails.longitude)
+        ? parseFloat(professionalDetails.longitude)
+        : 77.2090;
+      const proLat = professionalDetails.latitude !== undefined && professionalDetails.latitude !== null && !isNaN(professionalDetails.latitude)
+        ? parseFloat(professionalDetails.latitude)
+        : 28.6139;
+
       professional = await Professional.create({
         userId: user.id,
         bio: professionalDetails.bio || `Hello, I'm ${name}, a professional specialist on Fixigo.`,
         experience: professionalDetails.experience || 3,
         price: professionalDetails.price || 350,
         address: professionalDetails.address || 'Delhi NCR',
-        longitude: professionalDetails.longitude || 77.2090,
-        latitude: professionalDetails.latitude || 28.6139,
+        longitude: proLng,
+        latitude: proLat,
       });
 
       // Link selected service if provided

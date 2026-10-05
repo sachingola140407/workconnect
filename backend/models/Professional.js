@@ -93,7 +93,14 @@ class Professional {
   /**
    * Update professional profile details
    */
-  static async updateProfile(userId, { bio, experience, price, address }) {
+  static async updateProfile(userId, { bio, experience, price, address, longitude = null, latitude = null }) {
+    let locationClause = '';
+    const values = [userId, bio, experience, price, address];
+    if (longitude !== null && latitude !== null && !isNaN(longitude) && !isNaN(latitude)) {
+      locationClause = `, location = ST_SetSRID(ST_MakePoint($6, $7), 4326)::geography`;
+      values.push(parseFloat(longitude), parseFloat(latitude));
+    }
+
     const query = `
       UPDATE professionals
       SET
@@ -101,10 +108,11 @@ class Professional {
         experience = COALESCE($3, experience),
         price = COALESCE($4, price),
         address = COALESCE($5, address)
+        ${locationClause}
       WHERE user_id = $1
-      RETURNING id, user_id, bio, experience, price, address, is_available, is_verified, updated_at;
+      RETURNING id, user_id, bio, experience, price, address, is_available, is_verified, ST_X(location::geometry) as longitude, ST_Y(location::geometry) as latitude, updated_at;
     `;
-    const { rows } = await db.query(query, [userId, bio, experience, price, address]);
+    const { rows } = await db.query(query, values);
     return rows[0] || null;
   }
 

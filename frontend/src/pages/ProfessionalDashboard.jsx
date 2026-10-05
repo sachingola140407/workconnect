@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 import { userAPI, bookingsAPI, paymentsAPI, getSocketUrl } from '../services/api';
 import InvoiceModal from '../components/InvoiceModal';
+import LocationPickerMap from '../components/LocationPickerMap';
 import {
   Briefcase,
   Star,
@@ -45,6 +46,11 @@ export default function ProfessionalDashboard() {
   const [experience, setExperience] = useState(pro.experience || 0);
   const [price, setPrice] = useState(pro.price || 0);
   const [address, setAddress] = useState(pro.address || '');
+  const [proCoords, setProCoords] = useState({
+    lat: pro.latitude || 27.1767,
+    lng: pro.longitude || 78.0081,
+  });
+  const [showEditMapPicker, setShowEditMapPicker] = useState(false);
 
   // Bookings / Service Jobs state
   const [jobs, setJobs] = useState([]);
@@ -270,6 +276,8 @@ export default function ProfessionalDashboard() {
         experience,
         price,
         address,
+        latitude: proCoords?.lat,
+        longitude: proCoords?.lng,
       });
 
       updateUser({
@@ -1145,15 +1153,52 @@ export default function ProfessionalDashboard() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Operating / Base Address</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                  <label className="form-label" style={{ margin: 0 }}>Operating / Base Address *</label>
+                  <button
+                    type="button"
+                    onClick={() => setShowEditMapPicker(!showEditMapPicker)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--primary)',
+                      fontSize: '0.825rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                    }}
+                  >
+                    <MapPin size={13} />
+                    {showEditMapPicker ? 'Hide Map Picker' : 'Update Location on Map'}
+                  </button>
+                </div>
                 <input
                   type="text"
                   className="form-input"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="e.g. Connaught Place, New Delhi"
+                  placeholder="e.g. Sanjay Place, Agra or Connaught Place, New Delhi"
                   required
                 />
+
+                {showEditMapPicker && (
+                  <div style={{ marginTop: '0.75rem', padding: '0.85rem', background: '#f8fafc', borderRadius: '14px', border: '1px solid #bfdbfe' }}>
+                    <LocationPickerMap
+                      initialLat={proCoords.lat}
+                      initialLng={proCoords.lng}
+                      initialAddress={address}
+                      height="260px"
+                      title="Pin Base Operating Location"
+                      helpText="Drag pin or search to set your service home base"
+                      onLocationSelect={(loc) => {
+                        setProCoords({ lat: loc.latitude, lng: loc.longitude });
+                        setAddress(loc.address);
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="form-group">

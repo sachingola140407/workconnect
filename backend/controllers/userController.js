@@ -56,12 +56,14 @@ async function toggleAvailability(req, res, next) {
  */
 async function updateProfessionalProfile(req, res, next) {
   try {
-    const { bio, experience, price, address } = req.body;
+    const { bio, experience, price, address, longitude, latitude } = req.body;
     const updated = await Professional.updateProfile(req.user.id, {
       bio,
       experience: experience !== undefined ? parseInt(experience, 10) : undefined,
       price: price !== undefined ? parseFloat(price) : undefined,
       address,
+      longitude: longitude !== undefined && longitude !== null ? parseFloat(longitude) : null,
+      latitude: latitude !== undefined && latitude !== null ? parseFloat(latitude) : null,
     });
 
     if (!updated) {

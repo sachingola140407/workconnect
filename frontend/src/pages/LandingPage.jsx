@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLocationContext } from '../context/LocationContext';
 import {
   MapPin,
   Wrench,
@@ -27,13 +28,21 @@ import {
 
 export default function LandingPage() {
   const { isAuthenticated, user, login } = useAuth();
+  const { currentCity, setManualLocation, detectLocation, isDetecting } = useLocationContext();
   const navigate = useNavigate();
 
-  const [searchLocation, setSearchLocation] = useState('Delhi NCR');
+  const [searchLocation, setSearchLocation] = useState(currentCity || 'Agra');
   const [selectedService, setSelectedService] = useState('');
+
+  useEffect(() => {
+    if (currentCity) setSearchLocation(currentCity);
+  }, [currentCity]);
 
   const handleSearch = (e) => {
     e.preventDefault();
+    if (searchLocation && searchLocation !== currentCity) {
+      setManualLocation(searchLocation);
+    }
     let url = '/services';
     const params = new URLSearchParams();
     if (selectedService && selectedService !== 'all') {
@@ -228,22 +237,39 @@ export default function LandingPage() {
                     <span style={{ display: 'block', fontSize: '0.725rem', color: '#94a3b8', fontWeight: 600 }}>
                       Enter your location
                     </span>
-                    <input
-                      type="text"
-                      value={searchLocation}
-                      onChange={(e) => setSearchLocation(e.target.value)}
-                      placeholder="Delhi NCR, Connaught Place..."
-                      style={{
-                        border: 'none',
-                        outline: 'none',
-                        width: '100%',
-                        fontSize: '0.925rem',
-                        fontWeight: 700,
-                        color: '#0f172a',
-                        padding: 0,
-                        background: 'transparent',
-                      }}
-                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <input
+                        type="text"
+                        value={searchLocation}
+                        onChange={(e) => setSearchLocation(e.target.value)}
+                        placeholder="Agra, Delhi NCR, Connaught Place..."
+                        style={{
+                          border: 'none',
+                          outline: 'none',
+                          width: '100%',
+                          fontSize: '0.925rem',
+                          fontWeight: 700,
+                          color: '#0f172a',
+                          padding: 0,
+                          background: 'transparent',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => detectLocation(false)}
+                        title="Detect GPS Location"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: isDetecting ? '#2563eb' : '#94a3b8',
+                          display: 'flex',
+                          padding: '2px',
+                        }}
+                      >
+                        <Navigation size={14} className={isDetecting ? 'spin' : ''} />
+                      </button>
+                    </div>
                   </div>
                 </div>
 

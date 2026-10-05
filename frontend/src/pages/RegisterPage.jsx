@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { servicesAPI } from '../services/api';
+import LocationPickerMap from '../components/LocationPickerMap';
 import {
   UserPlus,
   AlertCircle,
@@ -16,6 +17,7 @@ import {
   ShieldCheck,
   Eye,
   EyeOff,
+  Navigation,
 } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -35,7 +37,13 @@ export default function RegisterPage() {
   const [bio, setBio] = useState('');
   const [experience, setExperience] = useState(3);
   const [price, setPrice] = useState(350);
-  const [address, setAddress] = useState('Connaught Place, New Delhi');
+  const [address, setAddress] = useState('Sanjay Place, Agra');
+  const [proLocation, setProLocation] = useState({
+    latitude: 27.1767,
+    longitude: 78.0081,
+    address: 'Sanjay Place, Agra',
+  });
+  const [showMapPicker, setShowMapPicker] = useState(false);
 
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,7 +88,9 @@ export default function RegisterPage() {
         bio: bio || `Certified ${name} delivering top-rated home repairs and services on Fixigo.`,
         experience: parseInt(experience, 10) || 0,
         price: parseFloat(price) || 300,
-        address: address || 'Delhi NCR',
+        address: address || proLocation.address || 'Local Area',
+        latitude: proLocation.latitude,
+        longitude: proLocation.longitude,
         serviceId: selectedServiceId || undefined,
       };
     }
@@ -391,9 +401,29 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="form-label" htmlFor="address" style={{ fontSize: '0.825rem', fontWeight: 700, color: '#334155' }}>
-                    Service City &amp; Locality
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                    <label className="form-label" htmlFor="address" style={{ fontSize: '0.825rem', fontWeight: 700, color: '#334155', margin: 0 }}>
+                      Service City &amp; Living Locality *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowMapPicker(!showMapPicker)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--primary)',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                      }}
+                    >
+                      <MapPin size={13} />
+                      {showMapPicker ? 'Hide Map' : 'Set Location on Map'}
+                    </button>
+                  </div>
                   <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex' }}>
                       <MapPin size={16} />
@@ -402,12 +432,30 @@ export default function RegisterPage() {
                       id="address"
                       type="text"
                       className="form-input"
-                      placeholder="e.g. Connaught Place, New Delhi"
+                      placeholder="e.g. Sanjay Place, Agra or Connaught Place, New Delhi"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       style={{ paddingLeft: '2.4rem', height: '44px', borderRadius: '10px' }}
                     />
                   </div>
+
+                  {/* Interactive Map for Professional Location Setup */}
+                  {showMapPicker && (
+                    <div style={{ marginTop: '0.75rem', padding: '0.85rem', background: '#ffffff', borderRadius: '14px', border: '1px solid #bfdbfe' }}>
+                      <LocationPickerMap
+                        initialLat={proLocation.latitude}
+                        initialLng={proLocation.longitude}
+                        initialAddress={address}
+                        height="260px"
+                        title="Set Your Base / Living Location"
+                        helpText="Map auto-selects your location. Drag marker or click anywhere to change it."
+                        onLocationSelect={(loc) => {
+                          setProLocation(loc);
+                          setAddress(loc.address);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div>

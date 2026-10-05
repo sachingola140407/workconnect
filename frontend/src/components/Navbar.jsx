@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, ChevronDown, User, LogOut, Shield, Briefcase, Layers, Navigation } from 'lucide-react';
+import { useLocationContext } from '../context/LocationContext';
+import { MapPin, ChevronDown, User, LogOut, Shield, Briefcase, Layers, Navigation, Search, Check } from 'lucide-react';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+  const {
+    currentCity,
+    userLocation,
+    setManualLocation,
+    detectLocation,
+    isDetecting,
+    popularCities,
+  } = useLocationContext();
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [currentCity, setCurrentCity] = useState('Delhi NCR');
   const [showLocationMenu, setShowLocationMenu] = useState(false);
+  const [citySearchInput, setCitySearchInput] = useState('');
 
   const handleLogout = async () => {
     await logout();
@@ -190,34 +200,97 @@ export default function Navbar() {
               <div
                 style={{
                   position: 'absolute',
-                  top: '110%',
+                  top: '115%',
                   right: 0,
-                  width: '200px',
+                  width: '270px',
                   background: 'white',
-                  borderRadius: '12px',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                  borderRadius: '16px',
+                  boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
                   border: '1px solid #e2e8f0',
-                  padding: '0.5rem',
-                  zIndex: 100,
+                  padding: '0.85rem',
+                  zIndex: 200,
                 }}
               >
-                {['Delhi NCR', 'Connaught Place', 'South Extension', 'Bangalore', 'Mumbai'].map((c) => (
-                  <div
-                    key={c}
-                    onClick={() => handleSelectCity(c)}
-                    style={{
-                      padding: '0.5rem 0.75rem',
-                      fontSize: '0.85rem',
-                      fontWeight: currentCity === c ? 700 : 500,
-                      color: currentCity === c ? '#2563eb' : '#334155',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      background: currentCity === c ? '#eff6ff' : 'transparent',
-                    }}
-                  >
-                    {c}
+                {/* Current Active Location Info */}
+                <div style={{ paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.65rem' }}>
+                  <span style={{ fontSize: '0.725rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Active Location
+                  </span>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.2rem' }}>
+                    <MapPin size={14} color="#2563eb" />
+                    <span>{currentCity}</span>
                   </div>
-                ))}
+                  {userLocation?.address && (
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {userLocation.address}
+                    </div>
+                  )}
+                </div>
+
+                {/* Detect GPS Button */}
+                <button
+                  onClick={async () => {
+                    await detectLocation(false);
+                    setShowLocationMenu(false);
+                  }}
+                  disabled={isDetecting}
+                  style={{
+                    width: '100%',
+                    padding: '0.65rem 0.85rem',
+                    background: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    borderRadius: '10px',
+                    color: '#1d4ed8',
+                    fontSize: '0.825rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.45rem',
+                    marginBottom: '0.75rem',
+                  }}
+                >
+                  <Navigation size={14} className={isDetecting ? 'spin' : ''} />
+                  <span>{isDetecting ? 'Detecting GPS...' : 'Detect My Location (GPS)'}</span>
+                </button>
+
+                {/* Popular Cities Header */}
+                <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.45rem' }}>
+                  Popular Cities
+                </div>
+
+                <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {popularCities.map((c) => (
+                    <div
+                      key={c.name}
+                      onClick={() => {
+                        setManualLocation(c.name, {
+                          latitude: c.latitude,
+                          longitude: c.longitude,
+                          city: c.name,
+                          address: c.defaultAddress,
+                        });
+                        setShowLocationMenu(false);
+                      }}
+                      style={{
+                        padding: '0.5rem 0.75rem',
+                        fontSize: '0.85rem',
+                        fontWeight: currentCity === c.name ? 700 : 500,
+                        color: currentCity === c.name ? '#2563eb' : '#334155',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        background: currentCity === c.name ? '#eff6ff' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <span>{c.name}</span>
+                      {currentCity === c.name && <Check size={14} color="#2563eb" />}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
