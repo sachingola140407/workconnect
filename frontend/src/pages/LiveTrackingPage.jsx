@@ -163,7 +163,7 @@ export default function LiveTrackingPage() {
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('[Socket.IO] Connected to Fixigo live gateway');
+      console.log('[Socket.IO] Connected to Getix live gateway');
       socket.emit('join:booking', {
         bookingId,
         userId: user?.id,
@@ -490,7 +490,7 @@ export default function LiveTrackingPage() {
         key: orderData.keyId,
         amount: orderData.amount, // in paise
         currency: orderData.currency || 'INR',
-        name: 'Fixigo Marketplace',
+        name: 'Getix Marketplace',
         description: `Payment for ${booking?.service_name || 'Home Repair'}`,
         image: 'https://cdn-icons-png.flaticon.com/512/9448/9448496.png',
         order_id: orderData.orderId,
@@ -522,7 +522,7 @@ export default function LiveTrackingPage() {
         },
         prefill: {
           name: user?.name || booking?.customer_name || 'Customer',
-          email: user?.email || 'customer@fixigo.in',
+          email: user?.email || 'customer@getix.in',
           contact: user?.phone || booking?.customer_phone || '9876543210',
         },
         theme: {
@@ -589,7 +589,7 @@ export default function LiveTrackingPage() {
     return (
       <div style={{ textAlign: 'center', padding: '6rem 1rem' }}>
         <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '0.5rem' }}>
-          Connecting to Fixigo Live Tracking...
+          Connecting to Getix Live Tracking...
         </div>
         <p style={{ color: 'var(--text-muted)' }}>Fetching GPS coordinates &amp; real-time specialist location</p>
       </div>
@@ -660,7 +660,7 @@ export default function LiveTrackingPage() {
                 <MapPin size={20} fill="white" color="white" />
               </div>
               <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em' }}>
-                Fixigo
+                Getix
               </span>
             </Link>
             <div style={{ width: '1px', height: '22px', background: '#cbd5e1' }} />
@@ -1189,7 +1189,7 @@ export default function LiveTrackingPage() {
                   <div style={{ padding: '0.65rem 1rem', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <span style={{ fontSize: '0.825rem', color: '#64748b' }}>
-                        Fixigo Platform Fee (included):
+                        Getix Platform Fee (included):
                       </span>
                     </div>
                     <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>

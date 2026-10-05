@@ -411,7 +411,7 @@ export default function LandingPage() {
             <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <img
                 src="/hero-technician.png"
-                alt="Fixigo Verified Professionals and Map Tracking"
+                alt="Getix Verified Professionals and Map Tracking"
                 style={{
                   width: '100%',
                   maxWidth: '640px',
@@ -618,7 +618,7 @@ export default function LandingPage() {
                     marginBottom: '0.35rem',
                   }}
                 >
-                  WHY CHOOSE FIXIGO
+                  WHY CHOOSE GETIX
                 </span>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '0.5rem' }}>
                   Fast. Reliable. Local.
@@ -845,7 +845,7 @@ export default function LandingPage() {
                   gap: '0.5rem',
                 }}
               >
-                Explore Fixigo Services <ArrowRight size={18} />
+                Explore Getix Services <ArrowRight size={18} />
               </Link>
             </div>
           </div>

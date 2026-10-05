@@ -146,7 +146,7 @@ export default function CustomerDashboard() {
               <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
                 Welcome back, {user?.name}!
               </h1>
-              <span className="badge badge-customer">Fixigo Customer</span>
+              <span className="badge badge-customer">Getix Customer</span>
             </div>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
               Book nearby plumbers, electricians, and technicians or track your active service requests.
@@ -184,10 +184,10 @@ export default function CustomerDashboard() {
           </div>
         )}
 
-        {/* How Fixigo Works in 3 Easy Steps Guide */}
+        {/* How Getix Works in 3 Easy Steps Guide */}
         <div style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid #bfdbfe', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-            <Sparkles size={16} /> How Fixigo Works For You
+            <Sparkles size={16} /> How Getix Works For You
           </div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.35rem' }}>
             Get Trusted Local Help at Your Doorstep in 3 Simple Steps
@@ -301,7 +301,7 @@ export default function CustomerDashboard() {
               </div>
               <div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{user?.name}</h3>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Fixigo Member</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Getix Member</span>
               </div>
             </div>
 

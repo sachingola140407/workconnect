@@ -84,10 +84,10 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
             </div>
             <div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
-                Fixigo Official Tax Invoice
+                Getix Official Tax Invoice
               </h3>
               <span style={{ fontSize: '0.8rem', opacity: 0.85 }}>
-                {invoice.invoice_no || 'FXG-INVOICE'}
+                {invoice.invoice_no || 'GTX-INVOICE'}
               </span>
             </div>
           </div>
@@ -224,7 +224,7 @@ export default function InvoiceModal({ invoice, isOpen, onClose }) {
             <div style={{ padding: '0.75rem 1rem', background: '#fafaf9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  Fixigo Marketplace Platform Fee (included):
+                  Getix Marketplace Platform Fee (included):
                 </span>
                 <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block' }}>
                   Covering 24/7 support, insurance &amp; technology

@@ -81,8 +81,8 @@ export default function LoginPage() {
               <Shield size={28} />
             </div>
 
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 850, color: 'var(--secondary)', letterSpacing: '-0.02em' }}>
-              Welcome to Fixigo
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 855, color: 'var(--secondary)', letterSpacing: '-0.02em' }}>
+              Welcome to Getix
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
               Sign in with your real account credentials
@@ -251,7 +251,7 @@ export default function LoginPage() {
               color: 'var(--text-muted)',
             }}
           >
-            New to Fixigo?{' '}
+            New to Getix?{' '}
             <Link
               to="/register"
               style={{

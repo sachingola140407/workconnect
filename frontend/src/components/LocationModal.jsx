@@ -18,7 +18,7 @@ export default function LocationModal() {
 
   useEffect(() => {
     // Check if user has already granted location or explicitly dismissed it
-    const dismissed = sessionStorage.getItem('fixigo_location_modal_dismissed');
+    const dismissed = sessionStorage.getItem('getix_location_modal_dismissed') || sessionStorage.getItem('fixigo_location_modal_dismissed');
     if (dismissed) {
       setHasDismissed(true);
       return;
@@ -37,7 +37,7 @@ export default function LocationModal() {
     const loc = await detectLocation(false);
     if (loc) {
       setIsOpen(false);
-      sessionStorage.setItem('fixigo_location_modal_dismissed', 'true');
+      sessionStorage.setItem('getix_location_modal_dismissed', 'true');
     }
   };
 
@@ -49,12 +49,12 @@ export default function LocationModal() {
       address: city.defaultAddress,
     });
     setIsOpen(false);
-    sessionStorage.setItem('fixigo_location_modal_dismissed', 'true');
+    sessionStorage.setItem('getix_location_modal_dismissed', 'true');
   };
 
   const handleDismiss = () => {
     setIsOpen(false);
-    sessionStorage.setItem('fixigo_location_modal_dismissed', 'true');
+    sessionStorage.setItem('getix_location_modal_dismissed', 'true');
   };
 
   if (!isOpen || hasDismissed) return null;
@@ -134,7 +134,7 @@ export default function LocationModal() {
             Allow Location Access
           </h2>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.4rem', lineHeight: '1.5' }}>
-            Fixigo uses your location to discover and map verified plumbers, electricians, and technicians nearest to you in real-time.
+            Getix uses your location to discover and map verified plumbers, electricians, and technicians nearest to you in real-time.
           </p>
         </div>
 

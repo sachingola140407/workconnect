@@ -63,7 +63,7 @@ export const authAPI = {
           name: u.name,
           email: u.email,
           phone: u.phone,
-          bio: p.bio || data.professionalDetails?.bio || 'Fixigo Verified Professional',
+          bio: p.bio || data.professionalDetails?.bio || 'Getix Verified Professional',
           experience: p.experience || data.professionalDetails?.experience || 3,
           price: p.price || data.professionalDetails?.price || 300,
           visiting_charge: 99,
@@ -104,7 +104,7 @@ export const authAPI = {
             name: data.name,
             email: data.email,
             phone: data.phone,
-            bio: data.professionalDetails?.bio || `Expert ${data.name} delivering verified services on Fixigo.`,
+            bio: data.professionalDetails?.bio || `Expert ${data.name} delivering verified services on Getix.`,
             experience: parseInt(data.professionalDetails?.experience, 10) || 3,
             price: parseFloat(data.professionalDetails?.price) || 300,
             visiting_charge: 99,
@@ -274,9 +274,9 @@ export const bookingsAPI = {
     };
 
     try {
-      const existing = JSON.parse(localStorage.getItem('fixigo_local_bookings') || '[]');
+      const existing = JSON.parse(localStorage.getItem('getix_local_bookings') || localStorage.getItem('fixigo_local_bookings') || '[]');
       existing.unshift(newBooking);
-      localStorage.setItem('fixigo_local_bookings', JSON.stringify(existing));
+      localStorage.setItem('getix_local_bookings', JSON.stringify(existing));
     } catch (e) {}
 
     return {
@@ -294,7 +294,7 @@ export const bookingsAPI = {
         return res;
       }
     } catch (err) {}
-    const local = JSON.parse(localStorage.getItem('fixigo_local_bookings') || '[]');
+    const local = JSON.parse(localStorage.getItem('getix_local_bookings') || localStorage.getItem('fixigo_local_bookings') || '[]');
     return {
       data: {
         success: true,
@@ -305,11 +305,11 @@ export const bookingsAPI = {
 
   updateStatus: (id, status) => {
     try {
-      const local = JSON.parse(localStorage.getItem('fixigo_local_bookings') || '[]');
+      const local = JSON.parse(localStorage.getItem('getix_local_bookings') || localStorage.getItem('fixigo_local_bookings') || '[]');
       const idx = local.findIndex((b) => b.id === id);
       if (idx >= 0) {
         local[idx].status = status;
-        localStorage.setItem('fixigo_local_bookings', JSON.stringify(local));
+        localStorage.setItem('getix_local_bookings', JSON.stringify(local));
       }
     } catch (e) {}
     return api.patch(`/bookings/${id}/status`, { status }).catch(() => ({ data: { success: true } }));
@@ -323,7 +323,7 @@ export const bookingsAPI = {
       }
     } catch (err) {}
 
-    const local = JSON.parse(localStorage.getItem('fixigo_local_bookings') || '[]');
+    const local = JSON.parse(localStorage.getItem('getix_local_bookings') || localStorage.getItem('fixigo_local_bookings') || '[]');
     const match = local.find((b) => b.id === id) || {
       id,
       status: 'on_the_way',
@@ -345,12 +345,12 @@ export const bookingsAPI = {
 
   updateTrackingLocation: (id, data) => {
     try {
-      const local = JSON.parse(localStorage.getItem('fixigo_local_bookings') || '[]');
+      const local = JSON.parse(localStorage.getItem('getix_local_bookings') || localStorage.getItem('fixigo_local_bookings') || '[]');
       const idx = local.findIndex((b) => b.id === id);
       if (idx >= 0) {
         local[idx].professional_lat = data.latitude;
         local[idx].professional_lng = data.longitude;
-        localStorage.setItem('fixigo_local_bookings', JSON.stringify(local));
+        localStorage.setItem('getix_local_bookings', JSON.stringify(local));
       }
     } catch (e) {}
     return api.post(`/bookings/${id}/location`, data).catch(() =>

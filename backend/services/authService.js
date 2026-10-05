@@ -42,7 +42,7 @@ class AuthService {
 
       professional = await Professional.create({
         userId: user.id,
-        bio: professionalDetails.bio || `Hello, I'm ${name}, a professional specialist on Fixigo.`,
+        bio: professionalDetails.bio || `Hello, I'm ${name}, a professional specialist on Getix.`,
         experience: professionalDetails.experience || 3,
         price: professionalDetails.price || 350,
         address: professionalDetails.address || 'Delhi NCR',

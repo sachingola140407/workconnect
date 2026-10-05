@@ -85,7 +85,7 @@ export default function RegisterPage() {
 
     if (role === 'professional') {
       payload.professionalDetails = {
-        bio: bio || `Certified ${name} delivering top-rated home repairs and services on Fixigo.`,
+        bio: bio || `Certified ${name} delivering top-rated home repairs and services on Getix.`,
         experience: parseInt(experience, 10) || 0,
         price: parseFloat(price) || 300,
         address: address || proLocation.address || 'Local Area',
@@ -154,7 +154,7 @@ export default function RegisterPage() {
             </div>
 
             <h1 style={{ fontSize: '1.85rem', fontWeight: 850, color: 'var(--secondary)', letterSpacing: '-0.02em' }}>
-              Join Fixigo
+              Join Getix
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
               Create your real account as a customer or service partner

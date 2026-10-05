@@ -18,7 +18,7 @@ export function LocationProvider({ children }) {
   // Initialize from localStorage if saved, else default to Agra
   const [userLocation, setUserLocation] = useState(() => {
     try {
-      const saved = localStorage.getItem('fixigo_user_location');
+      const saved = localStorage.getItem('getix_user_location') || localStorage.getItem('fixigo_user_location');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.warn('Could not read saved location from localStorage:', e);
@@ -153,7 +153,7 @@ export function LocationProvider({ children }) {
 
     setUserLocation(newLoc);
     setCurrentCity(newLoc.city);
-    localStorage.setItem('fixigo_user_location', JSON.stringify(newLoc));
+    localStorage.setItem('getix_user_location', JSON.stringify(newLoc));
     setStatusMessage(`📍 Location set to ${newLoc.city}`);
     return newLoc;
   }, []);
@@ -184,7 +184,7 @@ export function LocationProvider({ children }) {
           // Only update if not already set by high precision GPS
           setUserLocation((prev) => {
             if (prev?.isGps) return prev;
-            localStorage.setItem('fixigo_user_location', JSON.stringify(loc));
+            localStorage.setItem('getix_user_location', JSON.stringify(loc));
             return loc;
           });
           setCurrentCity((prev) => (userLocation?.isGps ? prev : detectedCity));
@@ -228,7 +228,7 @@ export function LocationProvider({ children }) {
             };
 
             setUserLocation(initialLoc);
-            localStorage.setItem('fixigo_user_location', JSON.stringify(initialLoc));
+            localStorage.setItem('getix_user_location', JSON.stringify(initialLoc));
             setIsDetecting(false);
             setStatusMessage(`📍 GPS Location verified (${initialCity})`);
             resolve(initialLoc);
@@ -247,7 +247,7 @@ export function LocationProvider({ children }) {
                 };
                 setUserLocation(refinedLoc);
                 setCurrentCity(geo.city);
-                localStorage.setItem('fixigo_user_location', JSON.stringify(refinedLoc));
+                localStorage.setItem('getix_user_location', JSON.stringify(refinedLoc));
                 setStatusMessage(`📍 GPS Location verified: ${geo.city}`);
               }
             } catch (err) {}

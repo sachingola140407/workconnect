@@ -198,7 +198,7 @@ export default function AdminDashboard() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
-                Fixigo Admin Control Center
+                Getix Admin Control Center
               </h1>
               <span className="badge badge-admin">
                 <Shield size={12} /> System Admin
@@ -452,7 +452,7 @@ export default function AdminDashboard() {
                                 <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                                   {pro.name}
                                   {pro.is_verified && (
-                                    <ShieldCheck size={14} color="#16a34a" title="Verified Fixigo Partner" />
+                                    <ShieldCheck size={14} color="#16a34a" title="Verified Getix Partner" />
                                   )}
                                 </div>
                                 <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>
@@ -687,7 +687,7 @@ export default function AdminDashboard() {
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#16a34a', marginTop: '0.35rem' }}>
                   ₹{(financialData?.stats?.totalPlatformFees || 0).toFixed(2)}
                 </div>
-                <span style={{ fontSize: '0.75rem', color: '#15803d' }}>Fixigo marketplace margin</span>
+                <span style={{ fontSize: '0.75rem', color: '#15803d' }}>Getix marketplace margin</span>
               </div>
 
               <div className="card" style={{ background: '#fffbeb', textAlign: 'center', border: '1.5px solid #fde68a' }}>

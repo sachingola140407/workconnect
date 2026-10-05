@@ -111,7 +111,7 @@ export default function ProfessionalDashboard() {
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('[Pro Socket] Connected to Fixigo gateway');
+      console.log('[Pro Socket] Connected to Getix gateway');
     });
 
     socket.on('payment:cash-customer-paid', ({ bookingId }) => {
@@ -287,7 +287,7 @@ export default function ProfessionalDashboard() {
         },
       });
       setIsEditing(false);
-      setMessage('Professional profile updated successfully on Fixigo!');
+      setMessage('Professional profile updated successfully on Getix!');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update professional profile');
     } finally {
@@ -403,7 +403,7 @@ export default function ProfessionalDashboard() {
     setIsConfirmingCash(true);
     try {
       const res = await paymentsAPI.confirmCashReceived({ bookingId: jobId });
-      setMessage('Cash payment confirmed and invoice generated! Fixigo ₹50 platform fee recorded as due.');
+      setMessage('Cash payment confirmed and invoice generated! Getix ₹50 platform fee recorded as due.');
       setSelectedJobForPayment(null);
       fetchJobs();
       fetchEarnings();
@@ -424,8 +424,8 @@ export default function ProfessionalDashboard() {
           key: 'rzp_test_1DP5mmOlF5G5ag',
           amount: Math.round(amount * 100), // ₹50.00 = 5000 paise
           currency: 'INR',
-          name: 'Fixigo Partner Settlement',
-          description: 'Payment of ₹50 Fixigo Platform Fee',
+          name: 'Getix Partner Settlement',
+          description: 'Payment of ₹50 Getix Platform Fee',
           handler: async function (response) {
             await paymentsAPI.settlePlatformFee({
               paymentId,
@@ -437,7 +437,7 @@ export default function ProfessionalDashboard() {
           },
           prefill: {
             name: user?.name || 'Professional Partner',
-            email: user?.email || 'partner@fixigo.in',
+            email: user?.email || 'partner@getix.in',
             contact: user?.phone || '9876543210',
           },
           theme: { color: '#1e3a8a' },
@@ -493,7 +493,7 @@ export default function ProfessionalDashboard() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--secondary)' }}>
-                Fixigo Partner Operations
+                Getix Partner Operations
               </h1>
               <span className="badge badge-professional">Verified Partner</span>
             </div>
@@ -1065,7 +1065,7 @@ export default function ProfessionalDashboard() {
                 {/* Platform Fee Readonly Indicator (Section 10) */}
                 <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Fixigo Platform Fee:</span>
+                    <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Getix Platform Fee:</span>
                     <span style={{ fontSize: '0.7rem', color: '#2563eb', display: 'block', fontWeight: 700 }}>ENFORCED BY BACKEND</span>
                   </div>
                   <strong style={{ fontSize: '1rem', color: '#0f172a' }}>₹50.00</strong>

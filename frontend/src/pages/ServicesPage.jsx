@@ -254,7 +254,7 @@ export default function ServicesPage() {
               marginBottom: '0.35rem',
             }}
           >
-            <Wrench size={16} /> Fixigo Service Network
+            <Wrench size={16} /> Getix Service Network
           </div>
           <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--secondary)', letterSpacing: '-0.02em' }}>
             Find Skilled Professionals Near You
@@ -515,7 +515,7 @@ export default function ServicesPage() {
         {loading ? (
           <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-muted)' }}>
             <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b' }}>
-              Finding skilled Fixigo professionals near {currentCity}...
+              Finding skilled Getix professionals near {currentCity}...
             </div>
             <p style={{ fontSize: '0.875rem', marginTop: '0.35rem' }}>
               Querying PostGIS geospatial database for nearest verified specialists
@@ -1103,7 +1103,7 @@ export default function ServicesPage() {
               }}
             >
               <div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 800 }}>Request Service from Fixigo Partner</h3>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800 }}>Request Service from Getix Partner</h3>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   Professional: <strong>{selectedProForBooking.name}</strong> &bull; Rate: ₹{selectedProForBooking.price}/hr
                 </span>

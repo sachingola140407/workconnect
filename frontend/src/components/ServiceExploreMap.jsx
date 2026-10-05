@@ -115,7 +115,7 @@ export default function ServiceExploreMap({
       const serviceName = pro.services?.[0]?.name || 'Specialist';
       const distanceText = pro.distance_km !== null ? `${pro.distance_km} km` : 'Nearby';
 
-      // Custom marker matching Fixigo reference layout
+      // Custom marker matching Getix reference layout
       const proIcon = L.divIcon({
         className: `pro-map-pin ${isSelected ? 'selected' : ''}`,
         html: `

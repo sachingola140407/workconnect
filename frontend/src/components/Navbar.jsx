@@ -82,7 +82,7 @@ export default function Navbar() {
             <MapPin size={22} color="#ffffff" fill="#ffffff" />
           </div>
           <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>
-            Fixigo
+            Getix
           </span>
         </Link>
 

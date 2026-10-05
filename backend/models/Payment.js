@@ -387,7 +387,7 @@ class Payment {
     const totalAmount = parseFloat(b.total_amount || (sAmount + vCharge).toFixed(2));
     const proNetAmount = parseFloat((totalAmount - platformFee).toFixed(2));
 
-    // Update payment record: cash confirmed, platform fee status = PENDING (professional owes Fixigo ₹50)
+    // Update payment record: cash confirmed, platform fee status = PENDING (professional owes Getix ₹50)
     const updatePaymentQuery = `
       UPDATE payments
       SET 

@@ -33,7 +33,7 @@ async function createRazorpayOrder({ bookingId, amount, receipt = null }) {
       receipt: cleanReceipt,
       notes: {
         bookingId: String(bookingId),
-        platform: 'Fixigo',
+        platform: 'Getix',
       },
     };
 
@@ -99,7 +99,7 @@ function verifyRazorpaySignature({ razorpay_order_id, razorpay_payment_id, razor
  */
 async function generatePaymentQRCode({ bookingId, amount, serviceName = 'Service' }) {
   const cleanAmount = parseFloat(amount).toFixed(2);
-  const upiPayload = `upi://pay?pa=fixigo.pay@icici&pn=Fixigo%20Marketplace&am=${cleanAmount}&cu=INR&tn=Fixigo%20Bill%20${String(bookingId).slice(0, 8)}`;
+  const upiPayload = `upi://pay?pa=getix.pay@icici&pn=Getix%20Marketplace&am=${cleanAmount}&cu=INR&tn=Getix%20Bill%20${String(bookingId).slice(0, 8)}`;
 
   const qrDataUrl = await QRCode.toDataURL(upiPayload, {
     errorCorrectionLevel: 'M',
