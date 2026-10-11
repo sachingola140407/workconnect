@@ -49,4 +49,62 @@ router.get('/professionals/activity', adminController.getProfessionalActivity);
  */
 router.get('/professionals/:id/jobs', adminController.getProfessionalJobHistory);
 
+/**
+ * @route   GET /api/admin/bookings
+ * @desc    Get all platform bookings
+ * @access  Private (Admin only)
+ */
+router.get('/bookings', adminController.getBookings);
+
+/**
+ * @route   GET /api/admin/tracking
+ * @desc    Get active trackable bookings for admin live map
+ * @access  Private (Admin only)
+ */
+router.get('/tracking', adminController.getActiveTracking);
+
+/**
+ * @route   GET /api/admin/payments
+ * @desc    Get all payments
+ * @access  Private (Admin only)
+ */
+router.get('/payments', adminController.getPayments);
+
+/**
+ * @route   GET /api/admin/invoices
+ * @desc    Get all invoices
+ * @access  Private (Admin only)
+ */
+router.get('/invoices', adminController.getInvoices);
+
+/**
+ * @route   GET /api/admin/reviews
+ * @desc    Get all reviews for moderation
+ * @access  Private (Admin only)
+ */
+router.get('/reviews', adminController.getReviews);
+router.delete('/reviews/:id', adminController.deleteReview);
+
+/**
+ * @route   GET /api/admin/complaints
+ * @desc    Get and update user complaints
+ * @access  Private (Admin only)
+ */
+router.get('/complaints', adminController.getComplaints);
+router.patch('/complaints/:id/status', adminController.updateComplaint);
+
+/**
+ * @route   GET /api/admin/reports
+ * @desc    Get platform reports and revenue statistics
+ * @access  Private (Admin only)
+ */
+router.get('/reports', adminController.getReports);
+
+/**
+ * @route   GET /api/admin/config
+ * @desc    Get platform configuration including centralized platform fee
+ * @access  Private (Admin only)
+ */
+router.get('/config', adminController.getPlatformConfig);
+
 module.exports = router;

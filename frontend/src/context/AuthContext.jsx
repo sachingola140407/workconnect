@@ -63,6 +63,34 @@ export function AuthProvider({ children }) {
     return receivedUser;
   };
 
+  // Mobile Login handler (phone + role, no password required)
+  const mobileLogin = async (phone, role) => {
+    const response = await authAPI.mobileLogin({ phone, role });
+    const { token: receivedToken, user: receivedUser } = response.data.data;
+
+    localStorage.setItem('token', receivedToken);
+    localStorage.setItem('user', JSON.stringify(receivedUser));
+
+    setToken(receivedToken);
+    setUser(receivedUser);
+
+    return receivedUser;
+  };
+
+  // Mobile Register handler
+  const mobileRegister = async (registrationData) => {
+    const response = await authAPI.mobileRegister(registrationData);
+    const { token: receivedToken, user: receivedUser } = response.data.data;
+
+    localStorage.setItem('token', receivedToken);
+    localStorage.setItem('user', JSON.stringify(receivedUser));
+
+    setToken(receivedToken);
+    setUser(receivedUser);
+
+    return receivedUser;
+  };
+
   // Register handler
   const register = async (userData) => {
     const response = await authAPI.register(userData);
@@ -107,7 +135,9 @@ export function AuthProvider({ children }) {
     role: user?.role || null,
     isLoading,
     login,
+    mobileLogin,
     register,
+    mobileRegister,
     logout,
     updateUser,
   };

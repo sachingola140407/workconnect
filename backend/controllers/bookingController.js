@@ -245,10 +245,54 @@ async function updateTrackingLocation(req, res, next) {
   }
 }
 
+/**
+ * Simulate professional action for testing / demo
+ */
+async function simulateProAction(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { action, serviceAmount, visitingCharge } = req.body;
+
+    const booking = await Booking.getTrackingDetails(id);
+    if (!booking) {
+      return errorResponse(res, 404, 'Booking not found');
+    }
+
+    let result = null;
+    const Payment = require('../models/Payment');
+
+    if (action === 'on_the_way') {
+      result = await Booking.updateStatus(id, 'on_the_way');
+    } else if (action === 'arrived') {
+      result = await Booking.updateStatus(id, 'arrived');
+    } else if (action === 'working') {
+      result = await Booking.updateStatus(id, 'working');
+    } else if (action === 'submit_bill') {
+      const sAmt = parseFloat(serviceAmount || booking.final_service_amount || booking.price || 399);
+      const vChg = parseFloat(visitingCharge || booking.visiting_charge || 149);
+      result = await Payment.submitFinalBill({
+        bookingId: id,
+        professionalId: booking.professional_id,
+        serviceAmount: sAmt,
+        visitingCharge: vChg,
+      });
+    } else if (action === 'cash_confirmed') {
+      result = await Payment.professionalConfirmCashReceived(id, booking.professional_id);
+    } else {
+      return errorResponse(res, 400, `Unknown simulated action: ${action}`);
+    }
+
+    return successResponse(res, 200, `Simulated professional action '${action}' successful`, result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createBooking,
   getMyBookings,
   updateBookingStatus,
   getTracking,
   updateTrackingLocation,
+  simulateProAction,
 };

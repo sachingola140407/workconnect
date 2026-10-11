@@ -27,10 +27,43 @@ async function register(req, res, next) {
  */
 async function login(req, res, next) {
   try {
-    const { email, password } = req.body;
-    const result = await AuthService.login({ email, password });
+    const { email, phone, password, role } = req.body;
+    const result = await AuthService.login({ email: email || phone, password, role });
 
     return successResponse(res, 200, 'Login successful', result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Handle instant mobile-only login (No password/email needed)
+ */
+async function mobileLogin(req, res, next) {
+  try {
+    const { phone, role } = req.body;
+    const result = await AuthService.mobileLogin({ phone, role });
+
+    return successResponse(res, 200, 'Mobile login successful', result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Handle instant mobile-only registration
+ */
+async function mobileRegister(req, res, next) {
+  try {
+    const { name, phone, role, professionalDetails } = req.body;
+    const result = await AuthService.mobileRegister({
+      name,
+      phone,
+      role,
+      professionalDetails,
+    });
+
+    return successResponse(res, 201, 'Mobile registration successful', result);
   } catch (err) {
     next(err);
   }
@@ -62,6 +95,8 @@ async function logout(req, res, next) {
 module.exports = {
   register,
   login,
+  mobileLogin,
+  mobileRegister,
   getMe,
   logout,
 };

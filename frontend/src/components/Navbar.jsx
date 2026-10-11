@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLocationContext } from '../context/LocationContext';
-import { MapPin, ChevronDown, User, LogOut, Shield, Briefcase, Layers, Navigation, Check, Menu, X } from 'lucide-react';
+import { MapPin, ChevronDown, User, LogOut, Shield, Briefcase, Layers, Navigation, Check, Menu, X, Smartphone } from 'lucide-react';
 import SabFixBrand from './SabFixBrand';
 import ThemeToggle from './ThemeToggle';
 
@@ -153,7 +153,30 @@ export default function Navbar() {
         </ul>
 
         {/* Right Actions: Theme Toggle + Location Dropdown + Login & Sign Up Pills (Desktop) */}
-        <div className="nav-actions-desktop" style={{ alignItems: 'center', gap: '1rem' }}>
+        <div className="nav-actions-desktop" style={{ alignItems: 'center', gap: '0.85rem' }}>
+          {/* Install App Trigger Button */}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('sabfix:open-install-modal'))}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
+              border: '1px solid #fed7aa',
+              color: '#ea580c',
+              padding: '0.45rem 0.85rem',
+              borderRadius: '999px',
+              fontSize: '0.85rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            title="Install SabFix Android App"
+          >
+            <Smartphone size={15} />
+            <span>Install App</span>
+          </button>
+
           {/* Theme Mode Toggle (Light / Dark / System) */}
           <ThemeToggle variant="segmented" size="sm" />
 
@@ -538,6 +561,31 @@ export default function Navbar() {
             >
               About
             </a>
+
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                window.dispatchEvent(new CustomEvent('sabfix:open-install-modal'));
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                padding: '0.75rem 0.85rem',
+                borderRadius: '12px',
+                border: '1px solid #fed7aa',
+                background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
+                color: '#ea580c',
+                fontWeight: 800,
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+              }}
+            >
+              <Smartphone size={18} />
+              <span>Install SabFix Android App</span>
+            </button>
 
             {isAuthenticated && (
               <Link

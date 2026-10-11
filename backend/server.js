@@ -79,13 +79,17 @@ app.use(errorHandler);
 
 // 9. Start Server
 if (require.main === module) {
-  server.listen(PORT, '0.0.0.0', () => {
+  server.listen(PORT, '0.0.0.0', async () => {
     console.log(`====================================================`);
     console.log(` SabFix Backend Server + Socket.IO on port ${PORT}`);
     console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(` Health check: http://localhost:${PORT}/api/health`);
     console.log(` API Endpoint: http://localhost:${PORT}/api`);
     console.log(`====================================================`);
+
+    // Ensure admin user sachin123@gmail.com is created and ready
+    const { ensureAdminUser } = require('./config/initAdmin');
+    await ensureAdminUser();
   });
 }
 

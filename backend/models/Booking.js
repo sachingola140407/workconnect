@@ -379,6 +379,146 @@ class Booking {
       customer_lng: b.cust_lng,
     };
   }
+
+  /**
+   * Get all bookings with filtering and pagination (Admin & Platform reporting)
+   */
+  static async getAll({ status, search, limit = 50, offset = 0 } = {}) {
+    let whereClauses = [];
+    let values = [];
+    let idx = 1;
+
+    if (status && status !== 'all') {
+      whereClauses.push(`b.status = $${idx++}`);
+      values.push(status);
+    }
+
+    if (search && search.trim()) {
+      whereClauses.push(`(u_cust.name ILIKE $${idx} OR u_pro.name ILIKE $${idx} OR s.name ILIKE $${idx} OR b.id::text ILIKE $${idx})`);
+      values.push(`%${search.trim()}%`);
+      idx++;
+    }
+
+    const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    const countQuery = `
+      SELECT COUNT(*) AS total
+      FROM bookings b
+      JOIN users u_cust ON b.customer_id = u_cust.id
+      JOIN professionals p ON b.professional_id = p.id
+      JOIN users u_pro ON p.user_id = u_pro.id
+      JOIN services s ON b.service_id = s.id
+      ${whereSql};
+    `;
+
+    const dataQuery = `
+      SELECT 
+        b.id,
+        b.status,
+        b.price,
+        COALESCE(b.final_service_amount, b.price) AS final_service_amount,
+        COALESCE(b.visiting_charge, 99.00) AS visiting_charge,
+        COALESCE(b.platform_fee, 50.00) AS platform_fee,
+        COALESCE(b.total_amount, (COALESCE(b.final_service_amount, b.price) + COALESCE(b.visiting_charge, 99.00) + COALESCE(b.platform_fee, 50.00))) AS total_amount,
+        b.payment_status,
+        b.payment_method,
+        b.invoice_id,
+        b.customer_address,
+        b.notes,
+        b.scheduled_at,
+        b.started_at,
+        b.arrived_at,
+        b.work_started_at,
+        b.work_completed_at,
+        b.completed_at,
+        b.created_at,
+        b.updated_at,
+        ST_X(b.customer_location::geometry) AS customer_lng,
+        ST_Y(b.customer_location::geometry) AS customer_lat,
+        COALESCE(ST_X(b.professional_location::geometry), ST_X(p.location::geometry)) AS professional_lng,
+        COALESCE(ST_Y(b.professional_location::geometry), ST_Y(p.location::geometry)) AS professional_lat,
+        ROUND((ST_Distance(COALESCE(b.professional_location, p.location), b.customer_location) / 1000.0)::numeric, 1) AS distance_km,
+        s.id AS service_id,
+        s.name AS service_name,
+        s.category AS service_category,
+        s.icon AS service_icon,
+        p.id AS professional_id,
+        p.rating AS professional_rating,
+        p.experience AS professional_experience,
+        u_cust.id AS customer_id,
+        u_cust.name AS customer_name,
+        u_cust.email AS customer_email,
+        u_cust.phone AS customer_phone,
+        u_pro.name AS professional_name,
+        u_pro.email AS professional_email,
+        u_pro.phone AS professional_phone
+      FROM bookings b
+      JOIN users u_cust ON b.customer_id = u_cust.id
+      JOIN professionals p ON b.professional_id = p.id
+      JOIN users u_pro ON p.user_id = u_pro.id
+      JOIN services s ON b.service_id = s.id
+      ${whereSql}
+      ORDER BY b.created_at DESC
+      LIMIT $${idx++} OFFSET $${idx++};
+    `;
+
+    const countRes = await db.query(countQuery, values);
+    const dataRes = await db.query(dataQuery, [...values, limit, offset]);
+
+    return {
+      bookings: dataRes.rows.map((r) => ({
+        ...r,
+        price: parseFloat(r.price) || 0,
+        visiting_charge: parseFloat(r.visiting_charge) || 99,
+        platform_fee: parseFloat(r.platform_fee) || 50,
+        total_amount: parseFloat(r.total_amount) || 0,
+        distance_km: r.distance_km ? parseFloat(r.distance_km) : null,
+      })),
+      total: parseInt(countRes.rows[0].total, 10),
+    };
+  }
+
+  /**
+   * Get active live trackable bookings for admin live map
+   */
+  static async getActiveTrackableBookings() {
+    const query = `
+      SELECT 
+        b.id,
+        b.status,
+        b.price,
+        b.visiting_charge,
+        b.platform_fee,
+        b.customer_address,
+        b.created_at,
+        b.estimated_arrival_minutes AS eta_minutes,
+        b.estimated_distance_km,
+        ST_X(b.customer_location::geometry) AS customer_lng,
+        ST_Y(b.customer_location::geometry) AS customer_lat,
+        COALESCE(ST_X(b.professional_location::geometry), ST_X(p.location::geometry)) AS professional_lng,
+        COALESCE(ST_Y(b.professional_location::geometry), ST_Y(p.location::geometry)) AS professional_lat,
+        ROUND((ST_Distance(COALESCE(b.professional_location, p.location), b.customer_location) / 1000.0)::numeric, 1) AS distance_km,
+        s.name AS service_name,
+        s.category AS service_category,
+        u_cust.name AS customer_name,
+        u_cust.phone AS customer_phone,
+        u_pro.name AS professional_name,
+        u_pro.phone AS professional_phone
+      FROM bookings b
+      JOIN users u_cust ON b.customer_id = u_cust.id
+      JOIN professionals p ON b.professional_id = p.id
+      JOIN users u_pro ON p.user_id = u_pro.id
+      JOIN services s ON b.service_id = s.id
+      WHERE b.status IN ('pending', 'accepted', 'on_the_way', 'arrived', 'working', 'work_completed', 'payment_pending')
+      ORDER BY b.updated_at DESC
+      LIMIT 100;
+    `;
+    const { rows } = await db.query(query);
+    return rows.map((r) => ({
+      ...r,
+      distance_km: r.distance_km ? parseFloat(r.distance_km) : null,
+    }));
+  }
 }
 
 module.exports = Booking;

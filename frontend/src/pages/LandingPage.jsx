@@ -1,886 +1,560 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useLocationContext } from '../context/LocationContext';
+import { useNavigate } from 'react-router-dom';
 import {
-  MapPin,
-  Wrench,
-  Zap,
-  Wind,
-  Hammer,
-  Paintbrush,
-  Sparkles,
-  Car,
-  Laptop,
-  LayoutGrid,
-  ShieldCheck,
-  Tag,
-  Star,
-  Clock,
-  ArrowRight,
-  ChevronRight,
-  List,
-  Users,
-  CheckCircle,
-  Navigation,
   Search,
+  SlidersHorizontal,
+  Zap,
+  Wrench,
+  Wind,
+  Car,
+  Paintbrush,
+  Hammer,
+  Cpu,
+  Sparkles,
+  Timer,
+  ChevronRight,
+  ArrowRight,
+  Layers,
+  Smartphone,
+  Download,
 } from 'lucide-react';
+import MobileStatusBar from '../components/MobileStatusBar';
+import CustomerHeader from '../components/CustomerHeader';
+import CustomerBottomNav from '../components/CustomerBottomNav';
+import SabFixSplash from '../components/SabFixSplash';
+import AllServicesModal from '../components/AllServicesModal';
+import { useLocationContext } from '../context/LocationContext';
 
 export default function LandingPage() {
-  const { isAuthenticated, user, login } = useAuth();
-  const { currentCity, setManualLocation, detectLocation, isDetecting } = useLocationContext();
   const navigate = useNavigate();
+  const { currentCity } = useLocationContext();
 
-  const [searchLocation, setSearchLocation] = useState(currentCity || 'Agra');
-  const [selectedService, setSelectedService] = useState('');
+  const isCapacitor =
+    typeof window !== 'undefined' &&
+    (window.Capacitor !== undefined || window.location.protocol === 'capacitor:');
 
-  useEffect(() => {
-    if (currentCity) setSearchLocation(currentCity);
-  }, [currentCity]);
+  const [showSplash, setShowSplash] = useState(() => {
+    // Show splash screen only once per session or if requested
+    return !sessionStorage.getItem('sabfix_splash_shown');
+  });
+  const [showAllServices, setShowAllServices] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = (e) => {
+  const handleSplashDismiss = () => {
+    setShowSplash(false);
+    sessionStorage.setItem('sabfix_splash_shown', 'true');
+  };
+
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchLocation && searchLocation !== currentCity) {
-      setManualLocation(searchLocation);
-    }
-    let url = '/services';
-    const params = new URLSearchParams();
-    if (selectedService && selectedService !== 'all') {
-      params.append('category', selectedService);
-    }
-    if (params.toString()) {
-      url += `?${params.toString()}`;
-    }
-    navigate(url);
-  };
-
-  const handleCategoryClick = (category) => {
-    if (category === 'all') {
-      navigate('/services');
+    if (searchQuery.trim()) {
+      navigate(`/services?search=${encodeURIComponent(searchQuery.trim())}`);
     } else {
-      navigate(`/services?category=${encodeURIComponent(category)}`);
+      navigate('/services');
     }
   };
 
-  // 9 Pastel Categories matching the image
-  const categories = [
-    {
-      name: 'Plumbing',
-      category: 'Plumber',
-      bg: '#e0f2fe',
-      border: '#bae6fd',
-      iconColor: '#0284c7',
-      icon: <Wrench size={26} color="#0284c7" />,
-    },
-    {
-      name: 'Electrician',
-      category: 'Electrician',
-      bg: '#fef3c7',
-      border: '#fde68a',
-      iconColor: '#d97706',
-      icon: <Zap size={26} color="#d97706" />,
-    },
-    {
-      name: 'AC Repair',
-      category: 'AC Repairer',
-      bg: '#ecfeff',
-      border: '#cffafe',
-      iconColor: '#0891b2',
-      icon: <Wind size={26} color="#0891b2" />,
-    },
-    {
-      name: 'Carpenter',
-      category: 'Carpenter',
-      bg: '#fee2e2',
-      border: '#fecaca',
-      iconColor: '#dc2626',
-      icon: <Hammer size={26} color="#dc2626" />,
-    },
-    {
-      name: 'Painter',
-      category: 'Painter',
-      bg: '#faf5ff',
-      border: '#f3e8ff',
-      iconColor: '#9333ea',
-      icon: <Paintbrush size={26} color="#9333ea" />,
-    },
-    {
-      name: 'Cleaner',
-      category: 'Cleaner',
-      bg: '#f0fdf4',
-      border: '#bbf7d0',
-      iconColor: '#16a34a',
-      icon: <Sparkles size={26} color="#16a34a" />,
-    },
-    {
-      name: 'Mechanic',
-      category: 'Mechanic',
-      bg: '#fff1f2',
-      border: '#ffe4e6',
-      iconColor: '#e11d48',
-      icon: <Car size={26} color="#e11d48" />,
-    },
-    {
-      name: 'Computer Repair',
-      category: 'Appliance Repairer',
-      bg: '#f5f3ff',
-      border: '#ede9fe',
-      iconColor: '#4f46e5',
-      icon: <Laptop size={26} color="#4f46e5" />,
-    },
-    {
-      name: 'More',
-      category: 'all',
-      bg: '#f8fafc',
-      border: '#e2e8f0',
-      iconColor: '#64748b',
-      icon: <LayoutGrid size={26} color="#64748b" />,
-    },
+  const handleSelectServiceCategory = (categoryName) => {
+    navigate(`/services?category=${encodeURIComponent(categoryName)}`);
+  };
+
+  // 8 Quick Service Icons (Reference Image 1 Screen 2)
+  const quickServices = [
+    { name: 'Electrician', category: 'Electrician', icon: Zap, iconColor: '#ff6a00', bg: '#fff4ea' },
+    { name: 'Plumber', category: 'Plumber', icon: Wrench, iconColor: '#0284c7', bg: '#e0f2fe' },
+    { name: 'AC Repair', category: 'AC Repairer', icon: Wind, iconColor: '#0891b2', bg: '#ecfeff' },
+    { name: 'Car Mechanic', category: 'Mechanic', icon: Car, iconColor: '#ef4444', bg: '#fef2f2' },
+    { name: 'Painter', category: 'Painter', icon: Paintbrush, iconColor: '#9333ea', bg: '#faf5ff' },
+    { name: 'Carpenter', category: 'Carpenter', icon: Hammer, iconColor: '#d97706', bg: '#fef3c7' },
+    { name: 'Appliance Repair', category: 'Appliance Repairer', icon: Cpu, iconColor: '#10b981', bg: '#ecfdf5' },
+    { name: 'Cleaning', category: 'Cleaner', icon: Sparkles, iconColor: '#eab308', bg: '#fefce8' },
   ];
 
   return (
-    <div style={{ background: 'var(--bg-main)', color: 'var(--text-main)', minHeight: '100vh', overflowX: 'hidden' }}>
-      {/* ===================== HERO SECTION ===================== */}
-      <section
-        style={{
-          background: 'var(--hero-bg)',
-          padding: '3rem 0 3.5rem',
-          position: 'relative',
-        }}
-      >
-        <div className="container">
-          <div className="hero-grid">
-            {/* Left Column: Headlines, Search Pill & Trust Badges */}
-            <div>
-              {/* Pill Badge with Green Dot */}
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  background: 'var(--bg-subtle)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '9999px',
-                  padding: '0.4rem 1rem',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-main)',
-                  fontWeight: 700,
-                  marginBottom: '1.25rem',
-                }}
-              >
-                <span
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: '#10b981',
-                    boxShadow: '0 0 0 3px rgba(16, 185, 129, 0.2)',
-                  }}
-                />
-                Trusted Professionals &bull; Verified &amp; Rated
-              </div>
+    <>
+      {showSplash && <SabFixSplash onDismiss={handleSplashDismiss} />}
 
-              {/* Main Headline */}
-              <h1
-                className="hero-title"
-                style={{
-                  fontWeight: 900,
-                  color: 'var(--text-main)',
-                  lineHeight: '1.15',
-                  letterSpacing: '-0.03em',
-                  marginBottom: '1.25rem',
-                }}
-              >
-                Find Skilled Professionals <br />
-                <span style={{ color: 'var(--primary)' }}>Near You, Instantly</span>
-              </h1>
+      <div className="sabfix-app-wrapper">
+        <div className="sabfix-mobile-shell">
+          {/* Top Mobile Status Bar */}
+          <MobileStatusBar />
 
-              {/* Subtitle */}
-              <p
-                className="hero-subtitle"
-                style={{
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.6,
-                  maxWidth: '560px',
-                  marginBottom: '2rem',
-                }}
-              >
-                From plumbing to AC repair, electricians to cleaners &mdash; get trusted professionals for all your home and business needs, right at your doorstep.
-              </p>
+          {/* Customer Header (Location, Theme Toggle, Avatar, SabFix Logo, Bell) */}
+          <CustomerHeader />
 
-              {/* Floating Search / Booking Capsule Card */}
-              <form onSubmit={handleSearch} className="hero-search-form">
-                {/* Location Input */}
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <MapPin size={22} color="var(--primary)" style={{ flexShrink: 0 }} />
-                  <div style={{ flex: 1 }}>
-                    <span style={{ display: 'block', fontSize: '0.725rem', color: 'var(--text-light)', fontWeight: 600 }}>
-                      Enter your location
-                    </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <input
-                        type="text"
-                        value={searchLocation}
-                        onChange={(e) => setSearchLocation(e.target.value)}
-                        placeholder="Agra, Delhi NCR, Connaught Place..."
-                        style={{
-                          border: 'none',
-                          outline: 'none',
-                          width: '100%',
-                          fontSize: '0.925rem',
-                          fontWeight: 700,
-                          color: 'var(--text-main)',
-                          padding: 0,
-                          background: 'transparent',
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => detectLocation(false)}
-                        title="Detect GPS Location"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: isDetecting ? 'var(--primary)' : 'var(--text-light)',
-                          display: 'flex',
-                          padding: '2px',
-                        }}
-                      >
-                        <Navigation size={14} className={isDetecting ? 'spin' : ''} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Vertical Divider */}
-                <div className="form-divider" style={{ width: '1px', height: '36px', background: 'var(--border)' }} />
-
-                {/* Service Select */}
-                <div style={{ flex: 1.2, display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <Wrench size={22} color="var(--primary)" style={{ flexShrink: 0 }} />
-                  <div style={{ flex: 1 }}>
-                    <span style={{ display: 'block', fontSize: '0.725rem', color: 'var(--text-light)', fontWeight: 600 }}>
-                      Select service
-                    </span>
-                    <select
-                      value={selectedService}
-                      onChange={(e) => setSelectedService(e.target.value)}
-                      style={{
-                        border: 'none',
-                        outline: 'none',
-                        width: '100%',
-                        fontSize: '0.925rem',
-                        fontWeight: 700,
-                        color: selectedService ? 'var(--text-main)' : 'var(--text-muted)',
-                        padding: 0,
-                        background: 'transparent',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <option value="">e.g. Plumber, Electrician...</option>
-                      <option value="Plumber">Plumber (From ₹99 Visiting)</option>
-                      <option value="Electrician">Electrician (From ₹99 Visiting)</option>
-                      <option value="AC Repairer">AC Repairer</option>
-                      <option value="Carpenter">Carpenter</option>
-                      <option value="Painter">Painter</option>
-                      <option value="Cleaner">Deep Cleaning</option>
-                      <option value="Mechanic">Mechanic</option>
-                      <option value="Appliance Repairer">Appliance Repair</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Submit Find Professionals Button */}
-                <button
-                  type="submit"
-                  className="btn"
-                  style={{
-                    background: 'var(--primary)',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '16px',
-                    padding: '0.85rem 1.6rem',
-                    fontWeight: 800,
-                    fontSize: '0.95rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    boxShadow: '0 4px 14px rgba(255, 106, 0, 0.35)',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Search size={18} /> Find Professionals
-                </button>
-              </form>
-
-              {/* 4 Trust Feature Badges below search bar */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1.5rem',
-                  flexWrap: 'wrap',
-                  marginTop: '1.75rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: 'var(--text-main)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  <ShieldCheck size={18} color="#16a34a" />
-                  <span>Verified Professionals</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  <Tag size={17} color="var(--primary)" />
-                  <span>Affordable Rates (Visiting ₹99)</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  <Star size={17} color="#f59e0b" fill="#f59e0b" />
-                  <span>Real Reviews</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  <Zap size={17} color="#0284c7" fill="#0284c7" />
-                  <span>Quick Booking</span>
-                </div>
-              </div>
-
-              {/* Live Availability & Popular Search Badges */}
-              <div
-                className="animate-fade-in"
-                style={{
-                  marginTop: '1.75rem',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '16px',
-                  padding: '1rem 1.25rem',
-                  maxWidth: '630px',
-                  boxShadow: 'var(--shadow-sm)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.825rem', fontWeight: 750, color: '#15803d' }}>
-                    <span
-                      className="animate-pulse-green"
-                      style={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        background: '#16a34a',
-                        display: 'inline-block',
-                      }}
-                    />
-                    Specialists Online Now in {searchLocation}
-                  </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                    ⚡ Instant Booking
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {[
-                    { label: '🔧 Plumbers', cat: 'Plumbing' },
-                    { label: '⚡ Electricians', cat: 'Electrical' },
-                    { label: '❄️ AC Repair', cat: 'Appliances' },
-                    { label: '🔨 Carpenters', cat: 'Carpentry' },
-                    { label: '🎨 Painters', cat: 'Painting' },
-                  ].map((p, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleCategoryClick(p.cat)}
-                      className="btn btn-secondary btn-sm interactive-pill"
-                      style={{
-                        fontSize: '0.8rem',
-                        borderRadius: '9999px',
-                        padding: '0.35rem 0.85rem',
-                        fontWeight: 650,
-                      }}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Hero Visual Graphic with Floating Animated Badges */}
-            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <img
-                src="/hero-technician.png"
-                alt="SabFix Verified Professionals and Map Tracking"
-                style={{
-                  width: '100%',
-                  maxWidth: '640px',
-                  height: 'auto',
-                  display: 'block',
-                  filter: 'drop-shadow(0 20px 35px rgba(15, 23, 42, 0.1))',
-                }}
-              />
-
-              {/* Floating Top Badge */}
-              <div
-                className="animate-float glass-card"
-                style={{
-                  position: 'absolute',
-                  top: '15px',
-                  left: '10px',
-                  padding: '0.65rem 1rem',
-                  borderRadius: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  fontSize: '0.825rem',
-                  fontWeight: 750,
-                  color: 'var(--text-main)',
-                  zIndex: 2,
-                }}
-              >
-                <div style={{ background: 'var(--warning-light)', padding: '0.3rem', borderRadius: '8px', display: 'flex' }}>
-                  <Star size={16} color="#d97706" fill="#d97706" />
-                </div>
-                <div>
-                  <div>4.9 / 5 Rating</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>12,500+ Homes Served</div>
-                </div>
-              </div>
-
-              {/* Floating Bottom Badge */}
-              <div
-                className="animate-float glass-card"
-                style={{
-                  position: 'absolute',
-                  bottom: '25px',
-                  right: '10px',
-                  padding: '0.65rem 1rem',
-                  borderRadius: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  fontSize: '0.825rem',
-                  fontWeight: 750,
-                  color: 'var(--text-main)',
-                  animationDelay: '1.5s',
-                  zIndex: 2,
-                }}
-              >
-                <div style={{ background: 'var(--success-light)', padding: '0.35rem', borderRadius: '8px', display: 'flex' }}>
-                  <Navigation size={16} color="#059669" />
-                </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <span>Live GPS Map</span>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Turn-by-turn Navigation</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== POPULAR SERVICE CATEGORIES ===================== */}
-      <section style={{ padding: '3.5rem 0', background: 'var(--bg-main)' }}>
-        <div className="container">
-          {/* Section Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <span
-                style={{
-                  display: 'block',
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                  color: 'var(--text-muted)',
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  marginBottom: '0.25rem',
-                }}
-              >
-                OUR SERVICES
-              </span>
-              <h2 style={{ fontSize: '2.1rem', fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
-                Popular Service Categories
-              </h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.35rem', margin: 0 }}>
-                Choose from a wide range of services and find the right professional near you.
-              </p>
-            </div>
-
-            <Link
-              to="/services"
+          {/* Main Content Area */}
+          <div style={{ padding: '0.75rem 1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* ==================== HERO PROMOTIONAL BANNER ==================== */}
+            <div
               style={{
-                display: 'inline-flex',
+                position: 'relative',
+                background: 'linear-gradient(135deg, #fff2e4 0%, #ffe3cb 100%)',
+                borderRadius: '22px',
+                padding: '1.25rem 1.15rem',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                color: 'var(--primary)',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                textDecoration: 'none',
+                justifyContent: 'space-between',
+                overflow: 'hidden',
+                boxShadow: '0 6px 18px rgba(255, 106, 0, 0.08)',
+                border: '1px solid #ffd7b5',
               }}
             >
-              View All Services <ArrowRight size={16} />
-            </Link>
-          </div>
+              {/* Left Text Block */}
+              <div style={{ flex: 1, zIndex: 2, paddingRight: '0.5rem' }}>
+                <h1
+                  style={{
+                    fontSize: '1.35rem',
+                    fontWeight: 900,
+                    lineHeight: 1.2,
+                    color: '#0b1320',
+                    margin: '0 0 0.35rem',
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  Get Home Services in{' '}
+                  <span style={{ color: '#ff6a00' }}>Minutes!</span>
+                </h1>
+                <p
+                  style={{
+                    fontSize: '0.8rem',
+                    color: '#475569',
+                    margin: 0,
+                    fontWeight: 600,
+                    lineHeight: 1.35,
+                  }}
+                >
+                  Verified professionals at your doorstep.
+                </p>
+              </div>
 
-          {/* 9 Category Cards */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(115px, 1fr))',
-              gap: '1rem',
-            }}
-          >
-            {categories.map((cat, i) => (
+              {/* Right Architectural House Graphic */}
               <div
-                key={i}
-                onClick={() => handleCategoryClick(cat.category)}
-                className="category-pill-card"
                 style={{
-                  background: cat.bg,
-                  border: `1px solid ${cat.border}`,
-                  borderRadius: '16px',
-                  padding: '1.25rem 0.75rem',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  width: '115px',
+                  height: '95px',
+                  flexShrink: 0,
+                  position: 'relative',
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.65rem',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(0, 0, 0, 0.08)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <div
-                  className="category-icon-box"
+                {/* Modern Villa Vector Card */}
+                <svg
+                  viewBox="0 0 140 110"
+                  width="100%"
+                  height="100%"
+                  style={{ filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.12))' }}
+                >
+                  <defs>
+                    <linearGradient id="wallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="100%" stopColor="#f1ede6" />
+                    </linearGradient>
+                    <linearGradient id="woodGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#d97706" />
+                      <stop offset="100%" stopColor="#b45309" />
+                    </linearGradient>
+                    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#bae6fd" />
+                      <stop offset="100%" stopColor="#38bdf8" />
+                    </linearGradient>
+                  </defs>
+                  {/* Sky/ground background subtle */}
+                  <ellipse cx="70" cy="100" rx="65" ry="8" fill="#16a34a" opacity="0.3" />
+                  {/* Main house building */}
+                  <rect x="25" y="35" width="90" height="65" rx="6" fill="url(#wallGrad)" stroke="#cbd5e1" strokeWidth="1.5" />
+                  {/* Wood accent facade */}
+                  <rect x="25" y="35" width="35" height="65" rx="4" fill="url(#woodGrad)" />
+                  {/* Top terrace cantilever */}
+                  <rect x="55" y="22" width="65" height="28" rx="4" fill="url(#wallGrad)" stroke="#cbd5e1" strokeWidth="1.5" />
+                  {/* Large modern glass window pane */}
+                  <rect x="65" y="27" width="48" height="18" rx="2" fill="url(#glassGrad)" opacity="0.85" />
+                  <line x1="89" y1="27" x2="89" y2="45" stroke="#ffffff" strokeWidth="1.2" />
+                  {/* Lower window & entrance */}
+                  <rect x="70" y="55" width="38" height="35" rx="3" fill="url(#glassGrad)" opacity="0.8" />
+                  <line x1="89" y1="55" x2="89" y2="90" stroke="#ffffff" strokeWidth="1.2" />
+                  {/* Modern front door */}
+                  <rect x="35" y="58" width="16" height="42" rx="2" fill="#1e293b" />
+                  <circle cx="48" cy="78" r="1.5" fill="#f59e0b" />
+                  {/* Green bushes around house */}
+                  <circle cx="18" cy="94" r="9" fill="#15803d" />
+                  <circle cx="26" cy="96" r="7" fill="#16a34a" />
+                  <circle cx="118" cy="95" r="8" fill="#16a34a" />
+                  <circle cx="126" cy="96" r="6" fill="#22c55e" />
+                </svg>
+              </div>
+            </div>
+
+            {/* ==================== SEARCH BAR ==================== */}
+            <form
+              onSubmit={handleSearchSubmit}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: '#ffffff',
+                borderRadius: '16px',
+                padding: '10px 14px',
+                border: '1px solid #eae5dd',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              }}
+            >
+              <Search size={19} color="var(--text-light)" />
+              <input
+                type="text"
+                placeholder='Search "electrician, plumber..."'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                  fontSize: '0.9rem',
+                  color: 'var(--text-main)',
+                  fontWeight: 600,
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowAllServices(true)}
+                title="View All Services"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-light)',
+                  cursor: 'pointer',
+                  padding: '2px',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <SlidersHorizontal size={18} />
+              </button>
+            </form>
+
+            {/* ==================== QUICK SERVICES 8-GRID ==================== */}
+            <div>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: '12px 8px',
+                }}
+              >
+                {quickServices.map((item) => {
+                  const IconComp = item.icon;
+                  return (
+                    <button
+                      key={item.name}
+                      type="button"
+                      onClick={() => handleSelectServiceCategory(item.name)}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '4px 0',
+                      }}
+                    >
+                      {/* Pastel Rounded Square Tile */}
+                      <div
+                        style={{
+                          width: '56px',
+                          height: '56px',
+                          borderRadius: '18px',
+                          backgroundColor: item.bg,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 3px 8px rgba(0, 0, 0, 0.04)',
+                          transition: 'transform 0.15s ease',
+                        }}
+                      >
+                        <IconComp size={25} color={item.iconColor} strokeWidth={2.2} />
+                      </div>
+
+                      {/* Service Title */}
+                      <span
+                        style={{
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          color: 'var(--text-main)',
+                          textAlign: 'center',
+                          lineHeight: 1.15,
+                        }}
+                      >
+                        {item.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* View All Services pill button */}
+              <div style={{ textAlign: 'center', marginTop: '0.65rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowAllServices(true)}
                   style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '12px',
+                    background: 'none',
+                    border: 'none',
+                    color: '#ff6a00',
+                    fontSize: '0.8rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <Layers size={14} />
+                  <span>View All 15 Services &rarr;</span>
+                </button>
+              </div>
+            </div>
+
+            {/* ==================== EXPRESS SERVICE CARD ==================== */}
+            <div
+              onClick={() => handleSelectServiceCategory('Electrician')}
+              style={{
+                backgroundColor: '#ffffff',
+                borderRadius: '18px',
+                padding: '14px 16px',
+                border: '1px solid #eae5dd',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.03)',
+                cursor: 'pointer',
+                transition: 'transform 0.15s ease',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    backgroundColor: '#fff4ea',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: 'rgba(255, 255, 255, 0.65)',
+                    color: '#ff6a00',
                   }}
                 >
-                  {cat.icon}
+                  <Timer size={22} strokeWidth={2.4} />
                 </div>
-                <strong style={{ fontSize: '0.925rem', color: 'var(--text-main)', fontWeight: 700 }}>
-                  {cat.name}
-                </strong>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== DUAL FEATURE CARDS (WHY CHOOSE & HOW IT WORKS) ===================== */}
-      <section style={{ padding: '1rem 0 3.5rem', background: 'var(--bg-main)' }}>
-        <div className="container">
-          <div className="dual-feature-grid">
-            {/* Left Card: WHY CHOOSE SABFIX */}
-            <div className="why-choose-card">
-              {/* Mini Map Graphic */}
-              <div style={{ flexShrink: 0 }}>
-                <img
-                  src="/mini-map.png"
-                  alt="Nearby Specialists GPS Map"
-                  style={{
-                    width: '170px',
-                    maxWidth: '100%',
-                    height: 'auto',
-                    borderRadius: '14px',
-                    boxShadow: '0 8px 20px rgba(37, 99, 235, 0.12)',
-                    display: 'block',
-                  }}
-                />
+                <div>
+                  <h3
+                    style={{
+                      fontSize: '0.95rem',
+                      fontWeight: 800,
+                      color: 'var(--text-main)',
+                      margin: '0 0 2px',
+                    }}
+                  >
+                    Express Service
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: '0.75rem',
+                      color: 'var(--text-muted)',
+                      margin: 0,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Get a professional at home in <span style={{ color: '#ff6a00', fontWeight: 800 }}>5, 10 or 15 minutes</span>
+                  </p>
+                </div>
               </div>
 
-              {/* Text Information */}
-              <div>
-                <span
-                  style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                    color: 'var(--text-muted)',
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    display: 'block',
-                    marginBottom: '0.35rem',
-                  }}
-                >
-                  WHY CHOOSE SABFIX
-                </span>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
-                  Fast. Reliable. Local.
-                </h3>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '1.25rem' }}>
-                  We make it easy to find trusted professionals near you, with real reviews, transparent pricing and secure payments.
-                </p>
-
-                <Link
-                  to="/services"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                    background: 'var(--primary)',
-                    color: '#ffffff',
-                    padding: '0.65rem 1.25rem',
-                    borderRadius: '12px',
-                    fontWeight: 700,
-                    fontSize: '0.875rem',
-                    textDecoration: 'none',
-                    boxShadow: '0 4px 12px rgba(255, 106, 0, 0.25)',
-                  }}
-                >
-                  Learn More <ArrowRight size={15} />
-                </Link>
-              </div>
+              <ChevronRight size={18} color="var(--text-light)" />
             </div>
 
-            {/* Right Card: HOW IT WORKS (4 Simple Steps) */}
-            <div
-              id="how-it-works"
-              style={{
-                background: 'var(--bg-card)',
-                border: '1.5px solid var(--border)',
-                borderRadius: '22px',
-                padding: '2rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  color: 'var(--text-muted)',
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  display: 'block',
-                  marginBottom: '0.35rem',
-                }}
-              >
-                HOW IT WORKS
-              </span>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '1.5rem' }}>
-                Get Your Work Done in 4 Simple Steps
-              </h3>
-
-              {/* 4 Steps Row */}
-              <div className="how-it-works-grid">
-                {/* Step 1 */}
-                <div>
-                  <div
-                    className="step-icon-badge"
-                    style={{
-                      width: '38px',
-                      height: '38px',
-                      borderRadius: '50%',
-                      background: 'var(--primary-light)',
-                      color: 'var(--primary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '0.65rem',
-                    }}
-                  >
-                    <MapPin size={18} />
-                  </div>
-                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    1. Share Your Location
-                  </strong>
-                  <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
-                    Allow location access or enter your area.
-                  </p>
-                </div>
-
-                {/* Step 2 */}
-                <div>
-                  <div
-                    className="step-icon-badge"
-                    style={{
-                      width: '38px',
-                      height: '38px',
-                      borderRadius: '50%',
-                      background: '#e0f2fe',
-                      color: '#0284c7',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '0.65rem',
-                    }}
-                  >
-                    <List size={18} />
-                  </div>
-                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    2. Choose a Service
-                  </strong>
-                  <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
-                    Select the service you need from our categories.
-                  </p>
-                </div>
-
-                {/* Step 3 */}
-                <div>
-                  <div
-                    className="step-icon-badge"
-                    style={{
-                      width: '38px',
-                      height: '38px',
-                      borderRadius: '50%',
-                      background: '#f3e8ff',
-                      color: '#9333ea',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '0.65rem',
-                    }}
-                  >
-                    <Users size={18} />
-                  </div>
-                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    3. Find &amp; Connect
-                  </strong>
-                  <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
-                    View nearby professionals, compare ratings and prices.
-                  </p>
-                </div>
-
-                {/* Step 4 */}
-                <div>
-                  <div
-                    className="step-icon-badge"
-                    style={{
-                      width: '38px',
-                      height: '38px',
-                      borderRadius: '50%',
-                      background: '#dcfce7',
-                      color: '#16a34a',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '0.65rem',
-                    }}
-                  >
-                    <CheckCircle size={18} />
-                  </div>
-                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    4. Get It Done
-                  </strong>
-                  <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
-                    Book, track, pay and rate the professional.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== LIVE GPS MAP HIGHLIGHT ===================== */}
-      <section id="about" style={{ padding: '0 0 3.5rem', background: 'var(--bg-main)' }}>
-        <div className="container">
-          <div
-            style={{
-              background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-              color: 'white',
-              borderRadius: '24px',
-              padding: '2.5rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '1.75rem',
-              boxShadow: '0 15px 35px -5px rgba(15, 23, 42, 0.25)',
-            }}
-          >
-            <div style={{ maxWidth: '620px' }}>
+            {/* ==================== INSTALL APP PROMO CARD (Web Only) ==================== */}
+            {!isCapacitor && (
               <div
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  background: '#f59e0b',
-                  color: '#0f172a',
-                  fontWeight: 800,
-                  fontSize: '0.75rem',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '999px',
-                  textTransform: 'uppercase',
-                  marginBottom: '0.85rem',
-                }}
-              >
-                🛵 Real-Time OpenStreetMap Tracking
-              </div>
-              <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.5rem', color: '#ffffff' }}>
-                Track Your Specialist Live to Your Doorstep
-              </h3>
-              <p style={{ color: '#cbd5e1', fontSize: '0.975rem', lineHeight: 1.6, margin: 0 }}>
-                Once your service request is accepted, watch the specialist navigate straight to your address on an interactive live map, with live arrival countdown and transparent visiting fees.
-              </p>
-            </div>
-
-            <div>
-              <Link
-                to="/services"
-                className="btn"
-                style={{
-                  background: 'var(--primary)',
+                  background: 'linear-gradient(135deg, #0b1320 0%, #1e293b 100%)',
+                  borderRadius: '18px',
+                  padding: '14px 16px',
                   color: '#ffffff',
-                  fontWeight: 800,
-                  padding: '0.9rem 1.75rem',
-                  fontSize: '1rem',
-                  border: 'none',
-                  borderRadius: '14px',
-                  display: 'inline-flex',
+                  display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  boxShadow: '0 4px 14px rgba(255, 106, 0, 0.4)',
+                  justifyContent: 'space-between',
+                  boxShadow: '0 4px 16px rgba(11, 19, 32, 0.12)',
+                  border: '1px solid rgba(255, 106, 0, 0.25)',
                 }}
               >
-                Explore SabFix Services <ArrowRight size={18} />
-              </Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #ff6a00 0%, #ee5a00 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#ffffff',
+                      flexShrink: 0,
+                      boxShadow: '0 3px 10px rgba(255, 106, 0, 0.35)',
+                    }}
+                  >
+                    <Smartphone size={22} />
+                  </div>
+                  <div>
+                    <h4 style={{ margin: '0 0 2px', fontSize: '0.92rem', fontWeight: 800, color: '#ffffff' }}>
+                      Install SabFix App
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '0.74rem', color: '#cbd5e1', fontWeight: 500 }}>
+                      Faster booking & live GPS tracking
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('sabfix:open-install-modal'))}
+                  style={{
+                    backgroundColor: '#ff6a00',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '8px 14px',
+                    fontSize: '0.8rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    flexShrink: 0,
+                    boxShadow: '0 2px 8px rgba(255, 106, 0, 0.35)',
+                  }}
+                >
+                  <Download size={13} />
+                  <span>Install</span>
+                </button>
+              </div>
+            )}
+
+            {/* ==================== RECENTLY BOOKED SECTION ==================== */}
+            <div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '10px',
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 800,
+                    color: 'var(--text-main)',
+                    margin: 0,
+                  }}
+                >
+                  Recently Booked
+                </h3>
+
+                <button
+                  type="button"
+                  onClick={() => navigate('/customer?tab=orders')}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ff6a00',
+                    fontSize: '0.8rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '2px',
+                  }}
+                >
+                  <span>See All</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* Recently Booked Card (Matching Reference Image 1 Screen 2) */}
+              <div
+                style={{
+                  backgroundColor: '#ffffff',
+                  borderRadius: '18px',
+                  padding: '12px 14px',
+                  border: '1px solid #eae5dd',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  boxShadow: '0 3px 10px rgba(0,0,0,0.03)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {/* Thumbnail AC unit */}
+                  <div
+                    style={{
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '12px',
+                      backgroundColor: '#ecfeff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#0891b2',
+                    }}
+                  >
+                    <Wind size={24} />
+                  </div>
+
+                  <div>
+                    <strong style={{ fontSize: '0.92rem', color: 'var(--text-main)', display: 'block' }}>
+                      AC Service
+                    </strong>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      ₹499 &bull; 12 days ago
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectServiceCategory('AC Repairer')}
+                  style={{
+                    backgroundColor: '#ff6a00',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '8px 14px',
+                    fontSize: '0.8rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(255, 106, 0, 0.25)',
+                  }}
+                >
+                  Book Again
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* ===================== BOTTOM SOCIAL PROOF TRUST BAR ===================== */}
-      <footer
-        style={{
-          background: 'var(--footer-bg)',
-          color: 'var(--text-main)',
-          padding: '1.15rem 0',
-          textAlign: 'center',
-          borderTop: '1px solid var(--border)',
+      {/* All Services Modal (Screen 3 in Reference Image 1) */}
+      <AllServicesModal
+        isOpen={showAllServices}
+        onClose={() => setShowAllServices(false)}
+        onSelectService={(service) => {
+          navigate(`/services?category=${encodeURIComponent(service.name)}`);
         }}
-      >
-        <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.9rem', fontWeight: 600 }}>
-          <span>Trusted by 1000+ happy customers</span>
-          <div style={{ display: 'inline-flex', gap: '0.15rem', color: '#f59e0b' }}>
-            <Star size={15} fill="#f59e0b" color="#f59e0b" />
-            <Star size={15} fill="#f59e0b" color="#f59e0b" />
-            <Star size={15} fill="#f59e0b" color="#f59e0b" />
-            <Star size={15} fill="#f59e0b" color="#f59e0b" />
-            <Star size={15} fill="#f59e0b" color="#f59e0b" />
-          </div>
-          <span style={{ color: '#94a3b8' }}>4.8/5 (from 5K+ reviews)</span>
-        </div>
-      </footer>
-    </div>
+      />
+    </>
   );
 }

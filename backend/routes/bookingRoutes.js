@@ -48,4 +48,11 @@ router.patch('/:id/track-location', bookingController.updateTrackingLocation);
  */
 router.post('/:id/location', bookingController.updateTrackingLocation);
 
+/**
+ * @route   POST /api/bookings/:id/simulate-pro-action
+ * @desc    Simulate technician lifecycle actions for live testing
+ * @access  Private
+ */
+router.post('/:id/simulate-pro-action', bookingController.simulateProAction);
+
 module.exports = router;

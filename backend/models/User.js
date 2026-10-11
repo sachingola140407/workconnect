@@ -4,27 +4,88 @@ class User {
   /**
    * Create a new user in the database
    */
-  static async create({ name, email, phone, passwordHash, role = 'customer' }) {
+  static async create({ name, email = null, phone = null, passwordHash = null, role = 'customer' }) {
+    const cleanEmail = email ? email.toLowerCase().trim() : null;
+    const cleanPhone = phone ? phone.trim() : null;
     const query = `
       INSERT INTO users (name, email, phone, password_hash, role)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id, name, email, phone, role, avatar_url, is_active, created_at, updated_at;
     `;
-    const values = [name.trim(), email.toLowerCase().trim(), phone ? phone.trim() : null, passwordHash, role];
+    const values = [name.trim(), cleanEmail, cleanPhone, passwordHash, role];
     const { rows } = await db.query(query, values);
     return rows[0];
+  }
+
+  /**
+   * Find a user by mobile phone number with optional role filter
+   */
+  static async findByPhone(phone, role = null) {
+    if (!phone) return null;
+    const digitsOnly = String(phone).replace(/[^0-9]/g, '');
+    const tenDigits = digitsOnly.length >= 10 ? digitsOnly.slice(-10) : digitsOnly;
+    if (!tenDigits) return null;
+
+    let query = `
+      SELECT id, name, email, phone, password_hash, role, avatar_url, is_active, created_at, updated_at
+      FROM users
+      WHERE REGEXP_REPLACE(COALESCE(phone, ''), '[^0-9]', '', 'g') LIKE '%' || $1
+    `;
+    const values = [tenDigits];
+
+    if (role) {
+      query += ` AND role = $2`;
+      values.push(role);
+    }
+
+    query += ` ORDER BY created_at DESC LIMIT 1;`;
+    const { rows } = await db.query(query, values);
+    return rows[0] || null;
   }
 
   /**
    * Find a user by email (includes password_hash for authentication)
    */
   static async findByEmail(email) {
+    if (!email) return null;
     const query = `
       SELECT id, name, email, phone, password_hash, role, avatar_url, is_active, created_at, updated_at
       FROM users
-      WHERE email = $1;
+      WHERE LOWER(email) = $1;
     `;
     const { rows } = await db.query(query, [email.toLowerCase().trim()]);
+    return rows[0] || null;
+  }
+
+  /**
+   * Find a user by email OR phone number (includes password_hash for authentication)
+   */
+  static async findByEmailOrPhone(identifier) {
+    if (!identifier) return null;
+    const clean = identifier.toLowerCase().trim();
+
+    if (clean.includes('@')) {
+      const query = `
+        SELECT id, name, email, phone, password_hash, role, avatar_url, is_active, created_at, updated_at
+        FROM users
+        WHERE LOWER(email) = $1
+        LIMIT 1;
+      `;
+      const { rows } = await db.query(query, [clean]);
+      return rows[0] || null;
+    }
+
+    const digitsOnly = identifier.replace(/[^0-9]/g, '');
+    const tenDigits = digitsOnly.length >= 10 ? digitsOnly.slice(-10) : digitsOnly;
+
+    const query = `
+      SELECT id, name, email, phone, password_hash, role, avatar_url, is_active, created_at, updated_at
+      FROM users
+      WHERE REGEXP_REPLACE(COALESCE(phone, ''), '[^0-9]', '', 'g') LIKE '%' || $1
+      ORDER BY created_at DESC
+      LIMIT 1;
+    `;
+    const { rows } = await db.query(query, [tenDigits]);
     return rows[0] || null;
   }
 
@@ -110,17 +171,18 @@ class User {
   /**
    * Update user details
    */
-  static async update(id, { name, phone, avatarUrl }) {
+  static async update(id, { name, phone, email, avatarUrl }) {
     const query = `
       UPDATE users
       SET 
         name = COALESCE($2, name),
         phone = COALESCE($3, phone),
-        avatar_url = COALESCE($4, avatar_url)
+        email = COALESCE($4, email),
+        avatar_url = COALESCE($5, avatar_url)
       WHERE id = $1
       RETURNING id, name, email, phone, role, avatar_url, is_active, created_at, updated_at;
     `;
-    const { rows } = await db.query(query, [id, name, phone, avatarUrl]);
+    const { rows } = await db.query(query, [id, name, phone, email ? email.toLowerCase().trim() : null, avatarUrl]);
     return rows[0] || null;
   }
 

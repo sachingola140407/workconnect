@@ -22,8 +22,8 @@ async function getProfile(req, res, next) {
  */
 async function updateProfile(req, res, next) {
   try {
-    const { name, phone, avatarUrl } = req.body;
-    const updatedUser = await User.update(req.user.id, { name, phone, avatarUrl });
+    const { name, phone, email, avatarUrl } = req.body;
+    const updatedUser = await User.update(req.user.id, { name, phone, email, avatarUrl });
     return successResponse(res, 200, 'Profile updated successfully', updatedUser);
   } catch (err) {
     next(err);

@@ -613,6 +613,62 @@ class Payment {
     };
   }
 
+  /**
+   * Get all payments with customer, pro, and service details (Admin management)
+   */
+  static async getAll({ status, paymentMethod, limit = 50, offset = 0 } = {}) {
+    let whereClauses = [];
+    let values = [];
+    let idx = 1;
+
+    if (status && status !== 'all') {
+      whereClauses.push(`p.payment_status = $${idx++}`);
+      values.push(status);
+    }
+
+    if (paymentMethod && paymentMethod !== 'all') {
+      whereClauses.push(`p.payment_method = $${idx++}`);
+      values.push(paymentMethod);
+    }
+
+    const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM payments p
+      ${whereSql};
+    `;
+
+    const dataQuery = `
+      SELECT 
+        p.*,
+        u_cust.name AS customer_name,
+        u_cust.email AS customer_email,
+        u_cust.phone AS customer_phone,
+        u_pro.name AS professional_name,
+        u_pro.phone AS professional_phone,
+        s.name AS service_name,
+        b.status AS booking_status
+      FROM payments p
+      LEFT JOIN bookings b ON p.booking_id = b.id
+      LEFT JOIN users u_cust ON p.customer_id = u_cust.id
+      LEFT JOIN professionals pro ON p.professional_id = pro.id
+      LEFT JOIN users u_pro ON pro.user_id = u_pro.id
+      LEFT JOIN services s ON b.service_id = s.id
+      ${whereSql}
+      ORDER BY p.created_at DESC
+      LIMIT $${idx++} OFFSET $${idx++};
+    `;
+
+    const countRes = await db.query(countQuery, values);
+    const dataRes = await db.query(dataQuery, [...values, limit, offset]);
+
+    return {
+      payments: dataRes.rows.map((r) => this._format(r)),
+      total: parseInt(countRes.rows[0].total, 10),
+    };
+  }
+
   static _format(r) {
     return {
       ...r,

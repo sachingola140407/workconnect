@@ -1,0 +1,9 @@
+{
+  "appId": "com.sabfix.app",
+  "appName": "SabFix",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
+  }
+}

@@ -46,6 +46,20 @@ router.get('/health', async (req, res) => {
   }
 });
 
+const constants = require('../config/constants');
+router.get('/config', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      platformFee: constants.PLATFORM_FEE,
+      maxServiceRadiusKm: constants.MAX_SERVICE_RADIUS_KM,
+      defaultVisitingFee: constants.DEFAULT_VISITING_FEE,
+      brandName: 'SabFix',
+      tagline: 'Get It Fixed.',
+    },
+  });
+});
+
 // Mount modules
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);

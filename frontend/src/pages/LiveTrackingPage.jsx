@@ -34,6 +34,7 @@ import {
   FileText,
   Download,
   ExternalLink,
+  Bell,
 } from 'lucide-react';
 
 export default function LiveTrackingPage() {
@@ -77,6 +78,12 @@ export default function LiveTrackingPage() {
   const [rating, setRating] = useState(5);
   const [hasRated, setHasRated] = useState(false);
 
+  // Real-time notifications for customer
+  const [showArrivalModal, setShowArrivalModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [notificationToast, setNotificationToast] = useState(null);
+  const prevStatusRef = useRef(null);
+
   // Leaflet map refs
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
@@ -109,6 +116,69 @@ export default function LiveTrackingPage() {
     }
   };
 
+  const getStageOrder = (stage) => {
+    switch (stage) {
+      case 'confirmed': return 1;
+      case 'on_the_way': return 2;
+      case 'arrived': return 3;
+      case 'working': return 4;
+      case 'payment_pending': return 5;
+      case 'completed': return 6;
+      default: return 1;
+    }
+  };
+
+  // Trigger real-time popups and notification toasts
+  const triggerStatusNotification = (newStatus, data = {}) => {
+    const norm = (newStatus || '').toLowerCase();
+    const pro = data.professional_name || booking?.professional_name || 'Specialist';
+    const total = data.totalAmount || data.total_amount || (booking?.final_service_amount + booking?.visiting_charge) || 499;
+
+    if (norm === 'arrived') {
+      setShowArrivalModal(true);
+      setNotificationToast({
+        type: 'arrived',
+        title: '🔔 Specialist Arrived!',
+        message: `${pro} is at your doorstep! Please unlock your door.`,
+      });
+    } else if (norm === 'payment_pending' || norm === 'work_completed') {
+      setShowPaymentModal(true);
+      setNotificationToast({
+        type: 'payment',
+        title: '💳 Bill & Payment Request',
+        message: `${pro} has submitted final bill (₹${total}). Choose Pay Online or Cash.`,
+      });
+    } else if (norm === 'working') {
+      setNotificationToast({
+        type: 'working',
+        title: '⚡ Work in Progress',
+        message: `${pro} started inspecting & performing repairs.`,
+      });
+    } else if (norm === 'on_the_way') {
+      setNotificationToast({
+        type: 'on_the_way',
+        title: '🛵 Specialist On The Way',
+        message: `${pro} has started navigating to your address.`,
+      });
+    } else if (norm === 'completed' || norm === 'payment_completed') {
+      setNotificationToast({
+        type: 'success',
+        title: '🎉 Payment Successful!',
+        message: 'Service completed! Invoice and receipt ready.',
+      });
+    }
+  };
+
+  // Auto-dismiss notification toasts
+  useEffect(() => {
+    if (notificationToast) {
+      const t = setTimeout(() => {
+        setNotificationToast(null);
+      }, 8000);
+      return () => clearTimeout(t);
+    }
+  }, [notificationToast]);
+
   // 1. Fetch live booking details
   const fetchTrackingData = async (initial = false) => {
     try {
@@ -121,13 +191,21 @@ export default function LiveTrackingPage() {
       const cLat = data.customer_lat || 28.6315;
       const cLng = data.customer_lng || 77.2167;
 
+      const norm = (data.status || '').toLowerCase();
       if (initial || !proCoords) {
         setProCoords({ lat: pLat, lng: pLng });
         setCustCoords({ lat: cLat, lng: cLng });
         setLiveDistance(data.distance_km || 0.8);
         setLiveEta(data.eta_minutes !== undefined ? data.eta_minutes : 3);
         setActiveStage(mapStatusToStage(data.status));
+      } else {
+        setActiveStage(mapStatusToStage(data.status));
       }
+
+      if (!initial && prevStatusRef.current && prevStatusRef.current !== norm) {
+        triggerStatusNotification(norm, data);
+      }
+      prevStatusRef.current = norm;
 
       // If already paid or completed, load invoice
       if (['payment_completed', 'completed', 'reviewed'].includes(data.status)) {
@@ -199,6 +277,10 @@ export default function LiveTrackingPage() {
         const norm = (data.normalizedStatus || data.status).toLowerCase();
         setBooking((prev) => ({ ...prev, ...data, status: norm }));
         setActiveStage(mapStatusToStage(norm));
+        if (norm !== prevStatusRef.current) {
+          triggerStatusNotification(norm, data);
+          prevStatusRef.current = norm;
+        }
         if (norm === 'payment_completed' || norm === 'completed') {
           loadInvoice();
         }
@@ -207,10 +289,21 @@ export default function LiveTrackingPage() {
 
     socket.on('booking:status', handleStatusUpdate);
     socket.on('booking:status-change', handleStatusUpdate);
+    socket.on('booking:arrived', (data) => {
+      setActiveStage('arrived');
+      triggerStatusNotification('arrived', data);
+      fetchTrackingData(false);
+    });
+    socket.on('booking:working', (data) => {
+      setActiveStage('working');
+      triggerStatusNotification('working', data);
+      fetchTrackingData(false);
+    });
 
     // Handle bill submission
     socket.on('booking:bill-submitted', (data) => {
       setActiveStage('payment_pending');
+      triggerStatusNotification('payment_pending', data);
       fetchTrackingData(false);
     });
 
@@ -218,6 +311,7 @@ export default function LiveTrackingPage() {
     socket.on('payment:success', (data) => {
       setPaymentSuccessData(data);
       setActiveStage('completed');
+      triggerStatusNotification('completed', data);
       loadInvoice();
     });
 
@@ -225,6 +319,7 @@ export default function LiveTrackingPage() {
     socket.on('payment:cash-confirmed', (data) => {
       setPaymentSuccessData(data);
       setActiveStage('completed');
+      triggerStatusNotification('completed', data);
       loadInvoice();
     });
 
@@ -452,6 +547,22 @@ export default function LiveTrackingPage() {
     }
   };
 
+  const handleSimulateProAction = async (action) => {
+    try {
+      setIsProcessingPayment(true);
+      await bookingsAPI.simulateProAction(bookingId, {
+        action,
+        serviceAmount: serviceFee || 399,
+        visitingCharge: visitingCharge || 149,
+      });
+      setIsProcessingPayment(false);
+      await fetchTrackingData(false);
+    } catch (err) {
+      setIsProcessingPayment(false);
+      console.warn('Simulation error:', err);
+    }
+  };
+
   const handleSetStage = async (stage) => {
     setActiveStage(stage);
     let newStatus = 'accepted';
@@ -662,49 +773,149 @@ export default function LiveTrackingPage() {
           </div>
         </div>
 
-        {/* ===================== INTERACTIVE STAGE SWITCHER TABS ===================== */}
+        {/* ===================== REAL-TIME STATUS PROGRESS STEPPER (READ-ONLY FOR CUSTOMER) ===================== */}
         <div
           style={{
             background: 'var(--bg-card)',
-            borderRadius: '16px',
+            borderRadius: '20px',
             border: '1px solid var(--border)',
-            padding: '0.5rem',
-            display: 'flex',
-            gap: '0.5rem',
+            padding: '1rem 1.25rem',
             marginBottom: '1.5rem',
             boxShadow: 'var(--shadow-sm)',
-            overflowX: 'auto',
           }}
         >
-          {[
-            { id: 'confirmed', label: '1. Confirmed' },
-            { id: 'on_the_way', label: '2. Live Ride' },
-            { id: 'arrived', label: '3. Arrived' },
-            { id: 'working', label: '4. In Progress' },
-            { id: 'payment_pending', label: '5. Bill & Pay' },
-            { id: 'completed', label: '6. Receipt & Done' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleSetStage(tab.id)}
-              style={{
-                flex: 1,
-                minWidth: '140px',
-                padding: '0.65rem 0.85rem',
-                borderRadius: '12px',
-                border: 'none',
-                background: activeStage === tab.id ? 'var(--primary)' : 'transparent',
-                color: activeStage === tab.id ? '#ffffff' : 'var(--text-muted)',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                transition: 'all 0.18s ease',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 8px #10b981' }} />
+              <strong style={{ fontSize: '0.875rem', color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Live Service Progress
+              </strong>
+            </div>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+              Driven by Specialist Updates
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              position: 'relative',
+              overflowX: 'auto',
+              paddingBottom: '4px',
+            }}
+          >
+            {[
+              { id: 'confirmed', num: 1, label: 'Confirmed', icon: '📋' },
+              { id: 'on_the_way', num: 2, label: 'On The Way', icon: '🛵' },
+              { id: 'arrived', num: 3, label: 'Arrived', icon: '📍' },
+              { id: 'working', num: 4, label: 'Work Started', icon: '🔧' },
+              { id: 'payment_pending', num: 5, label: 'Payment', icon: '💳' },
+              { id: 'completed', num: 6, label: 'Done', icon: '✅' },
+            ].map((step, idx, arr) => {
+              const currentOrder = getStageOrder(activeStage);
+              const isPast = step.num < currentOrder;
+              const isCurrent = step.num === currentOrder;
+
+              return (
+                <div
+                  key={step.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flex: idx === arr.length - 1 ? '0 0 auto' : '1 1 auto',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      minWidth: '78px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 800,
+                        fontSize: '0.85rem',
+                        transition: 'all 0.3s ease',
+                        background: isPast
+                          ? '#10b981'
+                          : isCurrent
+                          ? 'var(--primary)'
+                          : 'var(--bg-main)',
+                        color: isPast || isCurrent ? '#ffffff' : 'var(--text-muted)',
+                        border: isCurrent
+                          ? '3px solid rgba(255, 106, 0, 0.35)'
+                          : isPast
+                          ? '2px solid #10b981'
+                          : '1.5px solid var(--border)',
+                        boxShadow: isCurrent
+                          ? '0 0 14px rgba(255, 106, 0, 0.45)'
+                          : 'none',
+                      }}
+                    >
+                      {isPast ? <Check size={18} strokeWidth={3} /> : step.icon}
+                    </div>
+
+                    <span
+                      style={{
+                        marginTop: '6px',
+                        fontSize: '0.75rem',
+                        fontWeight: isCurrent ? 800 : 600,
+                        color: isCurrent
+                          ? 'var(--primary)'
+                          : isPast
+                          ? '#10b981'
+                          : 'var(--text-muted)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {step.label}
+                    </span>
+
+                    {isCurrent && (
+                      <span
+                        style={{
+                          fontSize: '0.65rem',
+                          background: 'rgba(255, 106, 0, 0.12)',
+                          color: 'var(--primary)',
+                          padding: '1px 6px',
+                          borderRadius: '999px',
+                          fontWeight: 800,
+                          marginTop: '2px',
+                        }}
+                      >
+                        LIVE
+                      </span>
+                    )}
+                  </div>
+
+                  {idx < arr.length - 1 && (
+                    <div
+                      style={{
+                        flex: 1,
+                        height: '3px',
+                        background: isPast ? '#10b981' : 'var(--border)',
+                        margin: '0 4px',
+                        borderRadius: '2px',
+                        position: 'relative',
+                        top: '-12px',
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* ===================== RESPONSIVE MAIN WORKFLOW CONTAINER ===================== */}
@@ -1061,25 +1272,22 @@ export default function LiveTrackingPage() {
                     <Phone size={18} /> Call Professional ({proPhone})
                   </a>
 
-                  <button
-                    onClick={() => handleSetStage('working')}
-                    className="btn"
+                  <div
                     style={{
-                      background: 'transparent',
-                      color: 'var(--primary)',
-                      border: '1.5px solid var(--primary)',
+                      background: 'rgba(16, 185, 129, 0.08)',
+                      border: '1.5px solid rgba(16, 185, 129, 0.25)',
                       borderRadius: '14px',
-                      padding: '0.85rem',
-                      fontSize: '0.95rem',
-                      fontWeight: 700,
+                      padding: '0.95rem 1.15rem',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
+                      gap: '0.75rem',
                     }}
                   >
-                    <Wrench size={18} /> Specialist Started Work &rarr;
-                  </button>
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 8px #10b981' }} />
+                    <span style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: 700 }}>
+                      Specialist will start the work and inspection shortly.
+                    </span>
+                  </div>
                 </div>
               </>
             )}
@@ -1119,13 +1327,19 @@ export default function LiveTrackingPage() {
                   </p>
                 </div>
 
-                <button
-                  onClick={() => handleSetStage('payment_pending')}
-                  className="btn btn-primary"
-                  style={{ width: '100%', borderRadius: '14px', padding: '0.9rem', fontWeight: 800 }}
+                <div
+                  style={{
+                    background: 'var(--bg-main)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '14px',
+                    padding: '0.9rem 1.15rem',
+                    textAlign: 'center',
+                  }}
                 >
-                  Work Completed &bull; Proceed to Final Bill &rarr;
-                </button>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                    Specialist will submit the final invoice upon finishing the service.
+                  </p>
+                </div>
               </>
             )}
 
@@ -1465,13 +1679,12 @@ export default function LiveTrackingPage() {
                   return (
                     <div
                       key={s.id}
-                      onClick={() => handleSetStage(s.id)}
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         gap: '0.35rem',
-                        cursor: 'pointer',
+                        cursor: 'default',
                         zIndex: 2,
                       }}
                     >
@@ -1671,6 +1884,344 @@ export default function LiveTrackingPage() {
           }
         }
       />
+
+      {/* ===================== FLOATING NOTIFICATION BANNER ===================== */}
+      {notificationToast && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 10000,
+            maxWidth: '480px',
+            width: 'calc(100% - 32px)',
+            background: 'var(--bg-card)',
+            border: '2px solid var(--primary)',
+            borderRadius: '16px',
+            boxShadow: '0 12px 30px rgba(0,0,0,0.25)',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '20px' }}>
+              {notificationToast.type === 'arrived' ? '🔔' : notificationToast.type === 'payment' ? '💳' : '⚡'}
+            </span>
+            <div>
+              <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
+                {notificationToast.title}
+              </strong>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                {notificationToast.message}
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={() => setNotificationToast(null)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-muted)',
+              fontSize: '18px',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
+      {/* ===================== ARRIVAL NOTIFICATION MODAL ===================== */}
+      {showArrivalModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.7)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1.25rem',
+          }}
+        >
+          <div
+            style={{
+              background: 'var(--bg-card)',
+              borderRadius: '24px',
+              border: '1px solid var(--border)',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+              maxWidth: '440px',
+              width: '100%',
+              padding: '2rem 1.5rem',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: '76px',
+                height: '76px',
+                borderRadius: '50%',
+                background: 'rgba(16, 185, 129, 0.15)',
+                color: '#10b981',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1.25rem',
+                border: '3px solid #10b981',
+                boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
+              }}
+            >
+              <Bell size={38} />
+            </div>
+
+            <div style={{ display: 'inline-block', background: '#dcfce7', color: '#15803d', padding: '3px 12px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              DING DONG! DOORBELL 🔔
+            </div>
+
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)', margin: '0 0 0.5rem' }}>
+              Specialist Has Arrived!
+            </h2>
+
+            <p style={{ fontSize: '0.925rem', color: 'var(--text-muted)', margin: '0 auto 1.5rem', maxWidth: '320px', lineHeight: 1.5 }}>
+              <strong style={{ color: 'var(--text-main)' }}>{proName}</strong> is right outside your doorstep. Please open the door and explain the problem.
+            </p>
+
+            <div
+              style={{
+                background: 'var(--bg-main)',
+                border: '1px solid var(--border)',
+                borderRadius: '16px',
+                padding: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '1.5rem',
+                textAlign: 'left',
+              }}
+            >
+              <img
+                src="/pro-arrived-avatar.png"
+                alt={proName}
+                style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover' }}
+              />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <strong style={{ fontSize: '1rem', color: 'var(--text-main)' }}>{proName}</strong>
+                  <ShieldCheck size={16} color="#16a34a" fill="#16a34a" />
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  Verified Specialist &bull; ⭐ {proRating} ({proReviews} reviews)
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <button
+                onClick={() => setShowArrivalModal(false)}
+                className="btn btn-primary"
+                style={{
+                  width: '100%',
+                  borderRadius: '14px',
+                  padding: '1rem',
+                  fontSize: '1rem',
+                  fontWeight: 800,
+                  boxShadow: '0 4px 14px rgba(255, 106, 0, 0.35)',
+                }}
+              >
+                🚪 I'm Opening the Door &bull; Got It
+              </button>
+
+              <a
+                href={`tel:${proPhone}`}
+                className="btn"
+                style={{
+                  background: 'var(--bg-main)',
+                  color: 'var(--text-main)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '14px',
+                  padding: '0.85rem',
+                  fontSize: '0.925rem',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  textDecoration: 'none',
+                }}
+              >
+                <Phone size={16} /> Call Specialist ({proPhone})
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===================== PAYMENT REQUEST NOTIFICATION MODAL ===================== */}
+      {showPaymentModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1.25rem',
+          }}
+        >
+          <div
+            style={{
+              background: 'var(--bg-card)',
+              borderRadius: '24px',
+              border: '1px solid var(--border)',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+              maxWidth: '460px',
+              width: '100%',
+              padding: '2rem 1.5rem',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: '76px',
+                height: '76px',
+                borderRadius: '50%',
+                background: 'rgba(255, 106, 0, 0.12)',
+                color: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1rem',
+                border: '3px solid var(--primary)',
+                boxShadow: '0 8px 24px rgba(255, 106, 0, 0.25)',
+              }}
+            >
+              <CreditCard size={38} />
+            </div>
+
+            <div style={{ display: 'inline-block', background: '#fef3c7', color: '#b45309', padding: '3px 12px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              SERVICE COMPLETED &bull; BILL SUBMITTED
+            </div>
+
+            <h2 style={{ fontSize: '1.45rem', fontWeight: 900, color: 'var(--text-main)', margin: '0 0 0.35rem' }}>
+              Payment Request Received
+            </h2>
+
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: '0 auto 1.25rem', maxWidth: '340px' }}>
+              {proName} has completed the service. Total amount payable:
+            </p>
+
+            {/* Bill Summary */}
+            <div
+              style={{
+                background: 'var(--bg-main)',
+                border: '1px solid var(--border)',
+                borderRadius: '16px',
+                padding: '1rem',
+                marginBottom: '1.25rem',
+                textAlign: 'left',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                <span>Service &amp; Repair Fee:</span>
+                <strong style={{ color: 'var(--text-main)' }}>₹{serviceFee.toFixed(2)}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                <span>Visiting Charge:</span>
+                <strong style={{ color: 'var(--text-main)' }}>₹{visitingCharge.toFixed(2)}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.65rem' }}>
+                <span>Platform Fee (included):</span>
+                <span>₹{platformFee.toFixed(2)}</span>
+              </div>
+              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>Total Amount:</strong>
+                <strong style={{ fontSize: '1.4rem', color: 'var(--primary)' }}>₹{totalAmount.toFixed(2)}</strong>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem', textAlign: 'left' }}>
+              How would you like to pay?
+            </div>
+
+            {/* Two Action Buttons: Pay Online vs Pay Cash */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
+              <button
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  setPaymentMethodTab('online');
+                  handleRazorpayOnlinePayment();
+                }}
+                disabled={isProcessingPayment}
+                className="btn btn-primary"
+                style={{
+                  borderRadius: '14px',
+                  padding: '1rem',
+                  fontSize: '1rem',
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 14px rgba(255, 106, 0, 0.35)',
+                }}
+              >
+                <CreditCard size={18} />
+                Pay Online (UPI / Cards / Netbanking)
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  setPaymentMethodTab('cash');
+                  handleMarkCashPaid();
+                }}
+                disabled={isProcessingPayment}
+                className="btn"
+                style={{
+                  background: 'var(--bg-main)',
+                  border: '2px solid #10b981',
+                  color: '#10b981',
+                  borderRadius: '14px',
+                  padding: '0.95rem',
+                  fontSize: '0.95rem',
+                  fontWeight: 800,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                }}
+              >
+                <Banknote size={18} />
+                Pay in Cash to Professional (₹{totalAmount.toFixed(2)})
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-muted)',
+                fontSize: '0.825rem',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+              }}
+            >
+              Review itemized bill on page
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

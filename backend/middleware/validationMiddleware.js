@@ -4,15 +4,16 @@ const { errorResponse } = require('../utils/response');
  * Validate user registration request body
  */
 function validateRegister(req, res, next) {
-  const { name, email, password, role } = req.body;
+  let { name, email, password, role } = req.body;
   const errors = [];
 
   if (!name || typeof name !== 'string' || name.trim().length < 2) {
     errors.push('Name is required and must be at least 2 characters');
   }
 
+  const trimmedEmail = typeof email === 'string' ? email.trim() : '';
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !emailRegex.test(email)) {
+  if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
     errors.push('A valid email address is required');
   }
 
@@ -29,18 +30,21 @@ function validateRegister(req, res, next) {
     return errorResponse(res, 400, 'Validation failed', errors);
   }
 
+  // Pre-sanitize values on req.body
+  req.body.name = name.trim();
+  req.body.email = trimmedEmail.toLowerCase();
   next();
 }
 
 /**
- * Validate login request body
+ * Validate login request body (accepts email OR mobile number)
  */
 function validateLogin(req, res, next) {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
   const errors = [];
 
-  if (!email || typeof email !== 'string' || !email.includes('@')) {
-    errors.push('A valid email address is required');
+  if (!email || typeof email !== 'string' || !email.trim()) {
+    errors.push('Email address or mobile number is required');
   }
 
   if (!password || typeof password !== 'string') {
@@ -51,6 +55,7 @@ function validateLogin(req, res, next) {
     return errorResponse(res, 400, 'Validation failed', errors);
   }
 
+  req.body.email = email.trim();
   next();
 }
 

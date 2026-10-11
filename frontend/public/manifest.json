@@ -1,0 +1,27 @@
+{
+  "short_name": "SabFix",
+  "name": "SabFix - On-Demand Local Services & Home Repairs",
+  "description": "SabFix connects you with trusted nearby skilled professionals like plumbers, electricians, AC repairers, carpenters, and more. Get It Fixed.",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "192x150"
+    },
+    {
+      "src": "/sabfix-icon-clean.png",
+      "type": "image/png",
+      "sizes": "560x375"
+    },
+    {
+      "src": "/Logo_Sabfix.png",
+      "type": "image/png",
+      "sizes": "560x375"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#ff6a00",
+  "display": "standalone",
+  "orientation": "portrait"
+}

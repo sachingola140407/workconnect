@@ -7,13 +7,68 @@ import {
   saveRegisteredProfessional,
 } from './mockData';
 
-const apiBase = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/api`
-  : '/api';
+const isAndroidEmulator =
+  typeof navigator !== 'undefined' &&
+  (/sdk|emulator|google_sdk|x86/i.test(navigator.userAgent || '') ||
+    (typeof window !== 'undefined' && window.location.hostname === '10.0.2.2'));
+
+const getApiBase = () => {
+  const custom = typeof window !== 'undefined' && localStorage.getItem('sabfix_custom_api_url');
+  if (custom) {
+    return `${custom.replace(/\/+$/, '')}/api`;
+  }
+  if (import.meta.env.VITE_API_URL) {
+    return `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/api`;
+  }
+  if (typeof window !== 'undefined' && (window.location.protocol === 'capacitor:' || window.Capacitor)) {
+    if (isAndroidEmulator) {
+      return 'http://10.0.2.2:5000/api';
+    }
+    return 'http://10.171.236.130:5000/api';
+  }
+  return '/api';
+};
+
+const apiBase = getApiBase();
 
 export const getSocketUrl = () => {
-  return import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || '/';
+  const custom = typeof window !== 'undefined' && localStorage.getItem('sabfix_custom_api_url');
+  if (custom) {
+    return custom.replace(/\/+$/, '');
+  }
+  if (import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined' && (window.location.protocol === 'capacitor:' || window.Capacitor)) {
+    if (isAndroidEmulator) {
+      return 'http://10.0.2.2:5000';
+    }
+    return 'http://10.171.236.130:5000';
+  }
+  return '/';
 };
+
+// Probe for live backend host in mobile environment
+if (typeof window !== 'undefined' && (window.location.protocol === 'capacitor:' || window.Capacitor)) {
+  const candidates = [
+    'http://10.0.2.2:5000',
+    'http://10.171.236.130:5000',
+    'http://localhost:5000',
+  ];
+  Promise.any(
+    candidates.map((host) =>
+      fetch(`${host}/api/health`, { method: 'GET', signal: AbortSignal.timeout(1800) }).then((res) => {
+        if (res.ok) return host;
+        throw new Error('Not ok');
+      })
+    )
+  )
+    .then((fastHost) => {
+      console.log('[SabFix Network] Connected to backend server at:', fastHost);
+      api.defaults.baseURL = `${fastHost}/api`;
+    })
+    .catch(() => {});
+}
 
 const api = axios.create({
   baseURL: apiBase,
@@ -52,96 +107,77 @@ api.interceptors.response.use(
 
 export const authAPI = {
   register: async (data) => {
-    try {
-      const res = await api.post('/auth/register', data);
-      if (res.data?.data?.user?.role === 'professional') {
-        const u = res.data.data.user;
-        const p = u.professional || {};
-        saveRegisteredProfessional({
-          id: p.id || 'pro_' + u.id,
-          user_id: u.id,
-          name: u.name,
-          email: u.email,
-          phone: u.phone,
-          bio: p.bio || data.professionalDetails?.bio || 'SabFix Verified Professional',
-          experience: p.experience || data.professionalDetails?.experience || 3,
-          price: p.price || data.professionalDetails?.price || 300,
-          visiting_charge: 99,
-          address: p.address || data.professionalDetails?.address || 'Service Area',
-          latitude: p.latitude || data.professionalDetails?.latitude,
-          longitude: p.longitude || data.professionalDetails?.longitude,
-          is_available: true,
-          is_verified: true,
-          is_online: true,
-          is_busy: false,
-          rating: 5.0,
-          review_count: 0,
-          services: [
-            {
-              id: data.professionalDetails?.serviceId || '11111111-1111-1111-1111-111111111102',
-              name: 'Plumber',
-              category: 'Plumbing',
-            },
-          ],
-        });
-      }
-      return res;
-    } catch (err) {
-      // Standalone Vercel preview fallback
-      if (data.role === 'professional' || data.role === 'customer') {
-        const fakeUserId = 'usr_' + Date.now();
-        const fakeUser = {
-          id: fakeUserId,
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          role: data.role,
-        };
-        if (data.role === 'professional') {
-          const proObj = {
-            id: 'pro_' + fakeUserId,
-            user_id: fakeUserId,
-            name: data.name,
-            email: data.email,
-            phone: data.phone,
-            bio: data.professionalDetails?.bio || `Expert ${data.name} delivering verified services on SabFix.`,
-            experience: parseInt(data.professionalDetails?.experience, 10) || 3,
-            price: parseFloat(data.professionalDetails?.price) || 300,
-            visiting_charge: 99,
-            address: data.professionalDetails?.address || 'Service Area',
-            latitude: data.professionalDetails?.latitude || 28.6139,
-            longitude: data.professionalDetails?.longitude || 77.2090,
-            is_available: true,
-            is_verified: true,
-            is_online: true,
-            is_busy: false,
-            rating: 5.0,
-            review_count: 0,
-            services: [
-              {
-                id: data.professionalDetails?.serviceId || '11111111-1111-1111-1111-111111111102',
-                name: 'Plumber',
-                category: 'Plumbing',
-              },
-            ],
-          };
-          fakeUser.professional = proObj;
-          saveRegisteredProfessional(proObj);
-        }
-        return {
-          data: {
-            success: true,
-            data: {
-              token: 'resilient_jwt_' + Date.now(),
-              user: fakeUser,
-            },
+    const res = await api.post('/auth/register', data);
+    if (res.data?.data?.user?.role === 'professional') {
+      const u = res.data.data.user;
+      const p = u.professional || {};
+      saveRegisteredProfessional({
+        id: p.id || 'pro_' + u.id,
+        user_id: u.id,
+        name: u.name,
+        email: u.email,
+        phone: u.phone,
+        bio: p.bio || data.professionalDetails?.bio || 'SabFix Verified Professional',
+        experience: p.experience || data.professionalDetails?.experience || 3,
+        price: p.price || data.professionalDetails?.price || 300,
+        visiting_charge: 99,
+        address: p.address || data.professionalDetails?.address || 'Service Area',
+        latitude: p.latitude || data.professionalDetails?.latitude,
+        longitude: p.longitude || data.professionalDetails?.longitude,
+        is_available: true,
+        is_verified: true,
+        is_online: true,
+        is_busy: false,
+        rating: 5.0,
+        review_count: 0,
+        services: [
+          {
+            id: data.professionalDetails?.serviceId || '11111111-1111-1111-1111-111111111102',
+            name: 'Plumber',
+            category: 'Plumbing',
           },
-        };
-      }
-      throw err;
+        ],
+      });
     }
+    return res;
   },
   login: (data) => api.post('/auth/login', data),
+  mobileLogin: (data) => api.post('/auth/mobile-login', data),
+  mobileRegister: async (data) => {
+    const res = await api.post('/auth/mobile-register', data);
+    if (res.data?.data?.user?.role === 'professional') {
+      const u = res.data.data.user;
+      const p = u.professional || {};
+      saveRegisteredProfessional({
+        id: p.id || 'pro_' + u.id,
+        user_id: u.id,
+        name: u.name,
+        email: u.email || `${u.role}_${u.phone}@sabfix.local`,
+        phone: u.phone,
+        bio: p.bio || data.professionalDetails?.bio || `SabFix Verified ${data.professionalDetails?.category || 'Professional'}`,
+        experience: p.experience || data.professionalDetails?.experience || 3,
+        price: p.price || data.professionalDetails?.price || 300,
+        visiting_charge: 99,
+        address: p.address || data.professionalDetails?.address || 'Service Area',
+        latitude: p.latitude || data.professionalDetails?.latitude || 28.6139,
+        longitude: p.longitude || data.professionalDetails?.longitude || 77.2090,
+        is_available: true,
+        is_verified: true,
+        is_online: true,
+        is_busy: false,
+        rating: 5.0,
+        review_count: 0,
+        services: [
+          {
+            id: data.professionalDetails?.serviceId || '11111111-1111-1111-1111-111111111102',
+            name: data.professionalDetails?.category || 'Service',
+            category: data.professionalDetails?.category || 'Service',
+          },
+        ],
+      });
+    }
+    return res;
+  },
   getMe: () => api.get('/auth/me'),
   logout: () => api.post('/auth/logout'),
 };
@@ -160,6 +196,17 @@ export const adminAPI = {
   verifyProfessional: (id, isVerified) => api.patch(`/admin/professionals/${id}/verify`, { isVerified }),
   getProfessionalActivity: (params) => api.get('/admin/professionals/activity', { params }),
   getProfessionalJobHistory: (id) => api.get(`/admin/professionals/${id}/jobs`),
+  getBookings: (params) => api.get('/admin/bookings', { params }),
+  getActiveTracking: () => api.get('/admin/tracking'),
+  getPayments: (params) => api.get('/admin/payments', { params }),
+  getInvoices: (params) => api.get('/admin/invoices', { params }),
+  getReviews: (params) => api.get('/admin/reviews', { params }),
+  deleteReview: (id) => api.delete(`/admin/reviews/${id}`),
+  getComplaints: (params) => api.get('/admin/complaints', { params }),
+  updateComplaint: (id, data) => api.patch(`/admin/complaints/${id}/status`, data),
+  getReports: (params) => api.get('/admin/reports', { params }),
+  getConfig: () => api.get('/admin/config'),
+  getPublicConfig: () => api.get('/config'),
 };
 
 // Resilient Services API: talks to backend, or gracefully falls back to catalog
@@ -357,6 +404,8 @@ export const bookingsAPI = {
       api.patch(`/bookings/${id}/track-location`, data).catch(() => ({ data: { success: true } }))
     );
   },
+
+  simulateProAction: (id, data) => api.post(`/bookings/${id}/simulate-pro-action`, data),
 };
 
 export const paymentsAPI = {

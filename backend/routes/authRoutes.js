@@ -20,6 +20,20 @@ router.post('/register', authRateLimiter, validateRegister, authController.regis
 router.post('/login', authRateLimiter, validateLogin, authController.login);
 
 /**
+ * @route   POST /api/auth/mobile-login
+ * @desc    Fast mobile-only login (No password/email)
+ * @access  Public
+ */
+router.post('/mobile-login', authRateLimiter, authController.mobileLogin);
+
+/**
+ * @route   POST /api/auth/mobile-register
+ * @desc    Fast mobile-only registration
+ * @access  Public
+ */
+router.post('/mobile-register', authRateLimiter, authController.mobileRegister);
+
+/**
  * @route   GET /api/auth/me
  * @desc    Get currently logged in user profile
  * @access  Private (Any authenticated role)
