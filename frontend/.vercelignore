@@ -1,0 +1,3 @@
+# Ignore Android native directory for Vercel web deployments
+android/
+*.log
